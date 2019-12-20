@@ -69,5 +69,5 @@ and lastly make sure we add it to the format:
         'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'
     }
 
-Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ and
-`django-crequest <https://github.com/Alir3z4/django-crequest>`_
+Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a
+`django-crequest <https://github.com/Alir3z4/django-crequest>`_ approach.
