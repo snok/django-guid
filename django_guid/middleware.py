@@ -5,6 +5,8 @@ from typing import Union
 
 from django.http import HttpRequest, HttpResponse
 
+from django_guid.config import settings
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +72,11 @@ class GuidMiddleware(object):
 
     @staticmethod
     def _validate_guid(original_guid: str) -> bool:
+        """
+        Validates a GUID
+        :param original_guid: GUID to check
+        :return: bool
+        """
         try:
             guid_value = uuid.UUID(original_guid, version=4)
         except ValueError:
@@ -78,19 +85,30 @@ class GuidMiddleware(object):
 
     def _get_correlation_id_from_header(self, request: HttpRequest) -> str:
         """
-        Returns either the provided GUID or a new one, depending on if it's a valid GUID or not.
+        Returns either the provided GUID or a new one,
+        depending on if it's a valid GUID or not and the specified settings
         :param request: HttpRequest object
-        :return: guid
+        :return: GUID
         """
         given_guid = str(request.headers.get('Correlation-ID'))
-        if self._validate_guid(given_guid):
+        if settings.VALIDATE_GUID is True and self._validate_guid(given_guid):
+            return given_guid
+        elif settings.VALIDATE_GUID is False:
             return given_guid
         return self._generate_guid()
 
     def _get_id_from_header(self, request: HttpRequest) -> str:
-        logger.info(request.headers)
-        if request.headers.get('Correlation-ID'):  # Case insensitive headers.get added in Django2.2 so this is safe
-            logger.info(f"Header found {request.headers.get('Correlation-ID')}")
+        """
+        Checks if there is a header with the specified name. Default is `Correlation-ID`.
+        If there is, it will fetch it and potentially validate it as a GUID, based on the settings.
+        
+        If there is no header found, it will generate a GUID.
+        :param request: Request object
+        :return: GUID
+        """
+        guid_header_name = settings.GUID_HEADER_NAME
+        if request.headers.get(guid_header_name):  # Case insensitive headers.get added in Django2.2 so this is safe
+            logger.info(f"Correlation-ID found in the header: {request.headers.get(guid_header_name)}")
             request.correlation_id = self._get_correlation_id_from_header(request)
         else:
             request.correlation_id = self._generate_guid()
