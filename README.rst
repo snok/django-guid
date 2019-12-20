@@ -34,7 +34,7 @@ Add a filter to your ``LOGGING``:
     LOGGING = {
         'filters': {
             'correlation_id': {
-                '()': 'django_guid_injection.log_filters.CorrelationId'
+                '()': 'django_guid.log_filters.CorrelationId'
             }
         }
     }
