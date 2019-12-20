@@ -26,6 +26,15 @@ Python package::
 
 In your project's ``settings.py`` add these settings:
 
+Add the middleware to the middleware (To ensure the GUID to be injected in all logs, put it on top)
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        'django_guid.middleware.GuidMiddleware',
+        ...
+     ]
+
 
 Add a filter to your ``LOGGING``:
 
