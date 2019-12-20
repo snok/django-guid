@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 from django_guid import __version__
 
-with open('README.md') as readme_file:
+with open('README.rst') as readme_file:
     readme = readme_file.read()
 with open('CHANGELOG.rst') as changelog_file:
     changelog = changelog_file.read()
@@ -29,23 +29,25 @@ setup(
         'guid'
     ],
     platforms='OS Independent',
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Web Environment', 'Framework :: Django',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
-        'Topic :: Internet :: WWW/HTTP :: WSGI',
-        'Topic :: Software Development',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Software Development :: Libraries :: Application Frameworks',
-        'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    classifiers=['Development Status :: 5 - Production/Stable',
+                 'Development Status :: 5 - Production/Stable',
+                 'Environment :: Web Environment',
+                 'Framework :: Django',
+                 'Framework :: Django :: 2.2',
+                 'Framework :: Django :: 3.0',
+                 'Intended Audience :: Developers',
+                 'License :: OSI Approved :: BSD License',
+                 'Operating System :: OS Independent',
+                 'Programming Language :: Python',
+                 'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
+                 'Programming Language :: Python :: 3.8',
+                 'Topic :: Internet :: WWW/HTTP',
+                 'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+                 'Topic :: Internet :: WWW/HTTP :: WSGI',
+                 'Topic :: Software Development',
+                 'Topic :: Software Development :: Libraries',
+                 'Topic :: Software Development :: Libraries :: Application Frameworks',
+                 'Topic :: Software Development :: Libraries :: Python Modules']
+
 )
