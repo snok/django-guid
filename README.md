@@ -1,7 +1,7 @@
 # Django GUID Injection
-Django GUID injection spawns a local thread for each request and stores a GUID in the thread.  
-The thread is accessible from anywhere within the application throughout a request, making it possible to 
-inject the request into the logs.
+Django GUID injection attach a GUID to the local thread for a request.   
+The GUID is accessible from anywhere within the application throughout a request, making it possible to 
+inject the GUID into the logs.
 
 # Installation
 Will come on PyPi soon™

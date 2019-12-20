@@ -10,8 +10,7 @@ logger = logging.getLogger(__name__)
 
 class GuidInjection(object):
     """
-    Injects a GUID into the application that is accessible from anywhere in the Django app
-
+    Injects a GUID into the thread that is accessible from anywhere in the Django app
     """
 
     _guid = {}
@@ -21,14 +20,14 @@ class GuidInjection(object):
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
-        Spawn a thread and set a guid to that thread. Also handles deletion of that thread after the request
-        is done.
+        Fetches the current thread from the pool and stores the GUID to that thread, making it
+        accessible through this class.
+        Also handles deletion of that thread after the request is done.
         :param request: HttpRequest from Django
         :return: Passes on the Request or Response to the next middleware
         """
-        # Process request and set the guid to a GUID.
+        # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
-
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
 
