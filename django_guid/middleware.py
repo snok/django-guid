@@ -8,7 +8,7 @@ from django.http import HttpRequest, HttpResponse
 logger = logging.getLogger(__name__)
 
 
-class GuidInjection(object):
+class GuidMiddleware(object):
     """
     Injects a GUID into the thread that is accessible from anywhere in the Django app
     """
