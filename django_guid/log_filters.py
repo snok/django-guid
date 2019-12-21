@@ -1,6 +1,6 @@
 import logging
 
-from django_guid_injection.middleware import GuidInjection
+from django_guid.middleware import GuidMiddleware
 
 
 class CorrelationId(logging.Filter):
@@ -15,5 +15,5 @@ class CorrelationId(logging.Filter):
         :param record: Log record
         :return: True
         """
-        record.correlation_id = GuidInjection.get_guid()
+        record.correlation_id = GuidMiddleware.get_guid()
         return True
