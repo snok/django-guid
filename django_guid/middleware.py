@@ -108,9 +108,9 @@ class GuidMiddleware(object):
         """
         guid_header_name = settings.GUID_HEADER_NAME
         if request.headers.get(guid_header_name):  # Case insensitive headers.get added in Django2.2 so this is safe
-            logger.info(f"Correlation-ID found in the header: {request.headers.get(guid_header_name)}")
+            logger.info(f'{guid_header_name} found in the header: {request.headers.get(guid_header_name)}')
             request.correlation_id = self._get_correlation_id_from_header(request)
         else:
             request.correlation_id = self._generate_guid()
-            logger.info(f'No Correlation-ID found in the header. Added correlation id: {request.correlation_id}')
+            logger.info(f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}')
         return request.correlation_id
