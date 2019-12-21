@@ -31,4 +31,5 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        pytest
+        echo "write tests before activating pytest"
+#        pytest
