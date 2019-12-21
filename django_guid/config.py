@@ -14,7 +14,6 @@ class Settings(object):
         self.VALIDATE_GUID = True
 
         required_settings = [
-            'GUID_HEADER_NAME'
         ]
 
         if not hasattr(django_settings, 'DJANGO_GUID'):
