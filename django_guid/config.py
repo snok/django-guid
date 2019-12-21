@@ -4,12 +4,13 @@ from django.core.exceptions import ImproperlyConfigured
 
 class Settings(object):
     """
-    Settings for django_guid read from the Django settings in `settings.py`
+    Settings for django_guid read from the Django settings in `settings.py`.
+
     Inspired by django-auth-adfs from @jobec
     """
 
     def __init__(self):
-        self.GUID_HEADER_NAME = 'Correlation-ID'  # Required
+        self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
 
         required_settings = [
