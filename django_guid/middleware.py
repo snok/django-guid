@@ -104,7 +104,7 @@ class GuidMiddleware(object):
     def _get_id_from_header(self, request: HttpRequest) -> str:
         """
         Checks if the request contains the header specified in the Django settings.
-        If there is, we fetch the header and attempt to validate the contents as GUID, based on the settings.
+        If it does, we fetch the header and attempt to validate the contents as GUID.
         If no header is found, we generate a GUID to be injected instead.
         :param request: HttpRequest object
         :return: GUID
@@ -113,8 +113,9 @@ class GuidMiddleware(object):
 
         if request.headers.get(guid_header_name):  # Case insensitive headers.get added in Django2.2 so this is safe
             logger.info(f'{guid_header_name} found in the header: {request.headers.get(guid_header_name)}')
-            return self._get_correlation_id_from_header(request)
+            request.correlation_id = self._get_correlation_id_from_header(request)
         else:
             request.correlation_id = self._generate_guid()
             logger.info(f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}')
-            return request.correlation_id
+
+        return request.correlation_id
