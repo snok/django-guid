@@ -14,7 +14,7 @@ class GuidMiddleware(object):
     """
     Checks for an existing GUID (correlation ID) in a request's headers.
     If a header value is found, the value is validated as a GUID and stored, before the request is passed to the next middleware.
-    If no value is found, or one is found but is invalid, we generate and store a new GUID.
+    If no value is found, or one is found but is invalid, we generate and store a new GUID on the thread.
     Stored GUIDs are accessible from anywhere in the Django app.
     """
 
