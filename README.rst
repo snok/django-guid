@@ -12,7 +12,6 @@ Django GUID attaches a GUID to the local thread of a request.
 The GUID is accessible from anywhere within the application throughout a request, making it possible to 
 inject the GUID into the logs.
 
-
 * Free software: BSD License
 * Homepage: https://github.com/JonasKs/django-guid
 * Documentation: Incoming
