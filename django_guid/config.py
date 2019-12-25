@@ -13,28 +13,22 @@ class Settings(object):
         self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
 
-        required_settings = [
-        ]
+        if hasattr(django_settings, 'DJANGO_GUID'):
+            _settings = django_settings.DJANGO_GUID
 
-        if not hasattr(django_settings, 'DJANGO_GUID'):
-            raise ImproperlyConfigured('DJANGO_GUID settings not found.')
-        _settings = django_settings.DJANGO_GUID
+            # Set user settings if provided
+            for setting, value in _settings.items():
+                if hasattr(self, setting):
+                    setattr(self, setting, value)
+                else:
+                    raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid.')
 
-        # Set user settings if provided
-        for setting, value in _settings.items():
-            if hasattr(self, setting):
-                setattr(self, setting, value)
-            else:
-                raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid.')
-
-        if not isinstance(self.VALIDATE_GUID, bool):
-            raise ImproperlyConfigured('VALIDATE_GUID must be a boolean.')
-        if not isinstance(self.GUID_HEADER_NAME, str):
-            raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
-
-        for setting in required_settings:
-            if not getattr(self, setting):
-                raise ImproperlyConfigured(f'django_guid setting {setting} must be set.')
+            if not isinstance(self.VALIDATE_GUID, bool):
+                raise ImproperlyConfigured('VALIDATE_GUID must be a boolean.')
+            if not isinstance(self.GUID_HEADER_NAME, str):
+                raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
+        else:
+            pass  # Do nothing if DJANGO_GUID not found in settings
 
 
 settings = Settings()
