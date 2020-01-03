@@ -95,11 +95,15 @@ class GuidMiddleware(object):
         """
         given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
         if not settings.VALIDATE_GUID:
+            logger.debug('VALIDATE_GUID is not True, will not validate given GUID.')
             return given_guid
         elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
+            logger.debug(f'{given_guid} is a valid GUID.')
             return given_guid
         else:
-            return self._generate_guid()
+            new_guid = self._generate_guid()
+            logger.info(f'{given_guid} is not a valid GUID. New GUID is {new_guid}')
+            return new_guid
 
     def _get_id_from_header(self, request: HttpRequest) -> str:
         """
@@ -116,6 +120,7 @@ class GuidMiddleware(object):
             request.correlation_id = self._get_correlation_id_from_header(request)
         else:
             request.correlation_id = self._generate_guid()
-            logger.info(f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}')
+            logger.info(
+                f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}')
 
         return request.correlation_id
