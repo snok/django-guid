@@ -1,6 +1,4 @@
-from copy import deepcopy
 from unittest.mock import patch
-from django.test import override_settings
 
 
 @patch('django_guid.middleware.uuid.uuid4')
@@ -60,7 +58,7 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     :param monkeypatch: Monkeypatch for django settings
     """
     from django_guid.config import settings as guid_settings
-    monkeypatch.setattr(guid_settings, "VALIDATE_GUID", False)
+    monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [None,  # log message about finding a GUID
                 None,  # log message that confirms that the GUID is not to be validated.

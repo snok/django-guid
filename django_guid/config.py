@@ -21,10 +21,10 @@ class Settings(object):
                 if hasattr(self, setting):
                     setattr(self, setting, value)
                 else:
-                    raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid.')
+                    raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid')
 
             if not isinstance(self.VALIDATE_GUID, bool):
-                raise ImproperlyConfigured('VALIDATE_GUID must be a boolean.')
+                raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
             if not isinstance(self.GUID_HEADER_NAME, str):
                 raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
         else:
