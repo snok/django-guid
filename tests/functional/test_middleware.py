@@ -1,17 +1,23 @@
-from unittest.mock import patch
+import pytest
 
 
-@patch('django_guid.middleware.uuid.uuid4')
-def test_request_with_no_correlation_id(mock_uuid, client, caplog):
+@pytest.fixture
+def mock_uuid(monkeypatch):
+    class MockUUid:
+        hex = '704ae5472cae4f8daa8f2cc5a5a8mock'
+
+    monkeypatch.setattr('django_guid.middleware.uuid.uuid4', MockUUid)
+
+
+def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     """
     Tests a request without any correlation-ID in it logs the correct things.
     In this case, it means that the first log message should not have any correlation-ID in it, but the next two
     (from views and services.useless_file) should have.
-    :param mock_uuid: uuid4 patch
+    :param mock_uuid: Monkeypatch fixture for mocking UUID
     :param client: Django client
     :param caplog: caplog fixture
     """
-    mock_uuid.return_value.hex = '704ae5472cae4f8daa8f2cc5a5a8mock'
     client.get('/')
     expected = [None,
                 '704ae5472cae4f8daa8f2cc5a5a8mock',
@@ -33,15 +39,13 @@ def test_request_with_correlation_id(client, caplog):
     assert [x.correlation_id for x in caplog.records] == expected
 
 
-@patch('django_guid.middleware.uuid.uuid4')
-def test_request_with_invalid_correlation_id(mock_uuid, client, caplog):
+def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     """
     Tests that a request with an invalid GUID is replaced when VALIDATE_GUID is True.
     :param client: Django client
     :param caplog: Caplog fixture
+    :param mock_uuid: Monkeypatch fixture for mocking UUID
     """
-    mock_uuid.return_value.hex = '704ae5472cae4f8daa8f2cc5a5a8mock'
-
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [None,  # log message about finding a GUID
                 None,  # log message that confirms that the GUID is not validated.

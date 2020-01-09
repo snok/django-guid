@@ -7,3 +7,4 @@ dist/
 *.egg-info/
 notes
 .pytest_cache
+.coverage
