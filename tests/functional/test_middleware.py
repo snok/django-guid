@@ -80,7 +80,7 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
-def test_request_with_skip_cleanup(client, caplog, monkeypatch, mocker, mock_uuid):
+def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
     """
     Tests that a request skips cleanup if SKIP_CLEANUP is True
     :param client: Django client
