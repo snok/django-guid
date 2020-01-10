@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 class GuidMiddleware(object):
     """
     Checks for an existing GUID (correlation ID) in a request's headers.
-    If a header value is found, the value is validated as a GUID and stored, before the request is passed to the next middleware.
+    If a header value is found, the value is validated as a GUID and stored, before the request is passed to the
+    next middleware.
     If no value is found, or one is found but is invalid, we generate and store a new GUID on the thread.
     Stored GUIDs are accessible from anywhere in the Django app.
     """
@@ -25,18 +26,22 @@ class GuidMiddleware(object):
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
-        Fetches the current thread from the pool and stores the GUID to that thread,
-        making it accessible via this class.
-        Also handles deletion of that thread after the request is done.
+        Fetches the current thread ID from the pool and stores the GUID in the _guid class variable, with the 
+        thread ID as the key.
+        Deletes the GUID from the object unless settings are overwritten.
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
+        # Ensure we don't get the previous request GUID attached to the logs from this file.
+        if settings.SKIP_CLEANUP:
+            self.__class__.del_guid()
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
-        # Delete the current request to avoid memory leak
-        self.__class__.del_guid()
+        if not settings.SKIP_CLEANUP:
+            # Delete the current request to avoid memory leak
+            self.__class__.del_guid()
         return response
 
     @classmethod
@@ -61,10 +66,13 @@ class GuidMiddleware(object):
     @classmethod
     def del_guid(cls) -> None:
         """
-        Delete the guid that was stored for the current thread.
+        Delete the GUID that was stored for the current thread.
         :return: None
         """
-        cls._guid.pop(threading.current_thread(), None)
+        guid = cls.get_guid()
+        if guid:
+            logger.debug(f'Deleting {guid} from _guid')
+            cls._guid.pop(threading.current_thread(), None)
 
     @staticmethod
     def _generate_guid() -> str:
@@ -95,10 +103,10 @@ class GuidMiddleware(object):
         """
         given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
         if not settings.VALIDATE_GUID:
-            logger.debug('VALIDATE_GUID is not True, will not validate given GUID.')
+            logger.debug('VALIDATE_GUID is not True, will not validate given GUID')
             return given_guid
         elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
-            logger.debug(f'{given_guid} is a valid GUID.')
+            logger.debug(f'{given_guid} is a valid GUID')
             return given_guid
         else:
             new_guid = self._generate_guid()

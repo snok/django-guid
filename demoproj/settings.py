@@ -83,7 +83,8 @@ TEMPLATES = [
 # Non required DJANGO_GUID settings (Set to default values here)
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
-    'VALIDATE_GUID': True
+    'VALIDATE_GUID': True,
+    'SKIP_CLEANUP': False
 }
 
 # Set up logging for the project

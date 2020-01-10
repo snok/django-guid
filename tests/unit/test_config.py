@@ -21,3 +21,18 @@ def test_invalid_header_name(monkeypatch):
     monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'GUID_HEADER_NAME': True})
     with pytest.raises(ImproperlyConfigured, match='GUID_HEADER_NAME must be a string'):
         Settings()
+
+
+def test_invalid_skip_guid_setting(monkeypatch):
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': 'string'})
+    with pytest.raises(ImproperlyConfigured, match='SKIP_CLEANUP must be a boolean'):
+        Settings()
+
+
+def test_valid_settings(monkeypatch):
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': True,
+                                                         'VALIDATE_GUID': False,
+                                                         'GUID_HEADER_NAME': 'Correlation-ID-TEST'})
+    assert not Settings().VALIDATE_GUID
+    assert Settings().SKIP_CLEANUP
+    assert Settings().GUID_HEADER_NAME == 'Correlation-ID-TEST'

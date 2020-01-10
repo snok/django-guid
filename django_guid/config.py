@@ -12,6 +12,7 @@ class Settings(object):
     def __init__(self):
         self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
+        self.SKIP_CLEANUP = False
 
         if hasattr(django_settings, 'DJANGO_GUID'):
             _settings = django_settings.DJANGO_GUID
@@ -23,6 +24,8 @@ class Settings(object):
                 else:
                     raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid')
 
+            if not isinstance(self.SKIP_CLEANUP, bool):
+                raise ImproperlyConfigured('SKIP_CLEANUP must be a boolean')
             if not isinstance(self.VALIDATE_GUID, bool):
                 raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
             if not isinstance(self.GUID_HEADER_NAME, str):
