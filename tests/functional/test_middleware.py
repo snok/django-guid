@@ -89,47 +89,20 @@ def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
     """
     from django_guid.config import settings as guid_settings
     monkeypatch.setattr(guid_settings, 'SKIP_CLEANUP', True)
+    monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
     expected = [
         # First request
-        (
-            'Correlation-ID found in the header: bad-guid',
-            None
-        ),
-        (
-            'bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock',
-            None,
-        ),
-        (
-            'This log message should have a GUID',
-            '704ae5472cae4f8daa8f2cc5a5a8mock'
-        ),
-        (
-            'Some warning in a function',
-            '704ae5472cae4f8daa8f2cc5a5a8mock'
-        ),
+        ('Correlation-ID found in the header: bad-guid', None),
+        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('This log message should have a GUID', 'bad-guid'),
+        ('Some warning in a function', 'bad-guid'),
+        ('Deleting bad-guid from _guid', 'bad-guid'),
         # Second request
-        (
-            'Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid',
-            '704ae5472cae4f8daa8f2cc5a5a8mock'
-        ),
-        (
-            'Correlation-ID found in the header: another-bad-guid',
-            None
-        ),
-        (
-            'another-bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock',
-            None
-        ),
-        (
-            'This log message should have a GUID',
-            '704ae5472cae4f8daa8f2cc5a5a8mock'
-        ),
-        (
-            'Some warning in a function',
-            '704ae5472cae4f8daa8f2cc5a5a8mock'
-        )
-
+        ('Correlation-ID found in the header: another-bad-guid', None),
+        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('This log message should have a GUID', 'another-bad-guid'),
+        ('Some warning in a function', 'another-bad-guid')
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
