@@ -19,10 +19,12 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     :param caplog: caplog fixture
     """
     client.get('/')
-    expected = [None,
-                '704ae5472cae4f8daa8f2cc5a5a8mock',
-                '704ae5472cae4f8daa8f2cc5a5a8mock']
-    assert [x.correlation_id for x in caplog.records] == expected
+    expected = [
+        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock')]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
 def test_request_with_correlation_id(client, caplog):
@@ -32,11 +34,12 @@ def test_request_with_correlation_id(client, caplog):
     :param caplog: caplog fixture
     """
     client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
-    expected = [None,  # log message about finding a GUID
-                None,  # log message that confirms that the GUID has been validated
-                '97c304252fd14b25b72d6aee31565843',  # view and function should log the correlation ID we provided
-                '97c304252fd14b25b72d6aee31565843']
-    assert [x.correlation_id for x in caplog.records] == expected
+    expected = [('Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565843', None),
+                ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
+                ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
+                ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
+                ('Deleting 97c304252fd14b25b72d6aee31565843 from _guid', '97c304252fd14b25b72d6aee31565843')]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
 def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
@@ -47,11 +50,14 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     :param mock_uuid: Monkeypatch fixture for mocking UUID
     """
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    expected = [None,  # log message about finding a GUID
-                None,  # log message that confirms that the GUID is not validated.
-                '704ae5472cae4f8daa8f2cc5a5a8mock',  # Should have a new generated UUID and not bad-guid
-                '704ae5472cae4f8daa8f2cc5a5a8mock']
-    assert [x.correlation_id for x in caplog.records] == expected
+    expected = [
+        ('Correlation-ID found in the header: bad-guid', None),
+        ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock')
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
 def test_request_with_invalid_correlation_id_without_validation(client, caplog, monkeypatch):
@@ -64,8 +70,66 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     from django_guid.config import settings as guid_settings
     monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    expected = [None,  # log message about finding a GUID
-                None,  # log message that confirms that the GUID is not to be validated.
-                'bad-guid',  # Should have bad-guid, as we do not generate new ones
-                'bad-guid']
-    assert [x.correlation_id for x in caplog.records] == expected
+    expected = [
+        ('Correlation-ID found in the header: bad-guid', None),
+        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('This log message should have a GUID', 'bad-guid'),
+        ('Some warning in a function', 'bad-guid'),
+        ('Deleting bad-guid from _guid', 'bad-guid')
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+
+
+def test_request_with_skip_cleanup(client, caplog, monkeypatch, mocker, mock_uuid):
+    """
+    Tests that a request skips cleanup if SKIP_CLEANUP is True
+    :param client: Django client
+    :param caplog: Caplog fixture
+    :param monkeypatch: Monkeypatch for django settings
+    """
+    from django_guid.config import settings as guid_settings
+    monkeypatch.setattr(guid_settings, 'SKIP_CLEANUP', True)
+    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+    client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
+    expected = [
+        # First request
+        (
+            'Correlation-ID found in the header: bad-guid',
+            None
+        ),
+        (
+            'bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock',
+            None,
+        ),
+        (
+            'This log message should have a GUID',
+            '704ae5472cae4f8daa8f2cc5a5a8mock'
+        ),
+        (
+            'Some warning in a function',
+            '704ae5472cae4f8daa8f2cc5a5a8mock'
+        ),
+        # Second request
+        (
+            'Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid',
+            '704ae5472cae4f8daa8f2cc5a5a8mock'
+        ),
+        (
+            'Correlation-ID found in the header: another-bad-guid',
+            None
+        ),
+        (
+            'another-bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock',
+            None
+        ),
+        (
+            'This log message should have a GUID',
+            '704ae5472cae4f8daa8f2cc5a5a8mock'
+        ),
+        (
+            'Some warning in a function',
+            '704ae5472cae4f8daa8f2cc5a5a8mock'
+        )
+
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected

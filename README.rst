@@ -8,13 +8,39 @@ GUID injection for Django
 .. image:: https://img.shields.io/pypi/djversions/django-guid.svg
     :target: https://pypi.python.org/pypi/django-guid
 
-Django GUID attaches a GUID to the local thread of a request.   
-The GUID is accessible from anywhere within the application throughout a request, making it possible to 
-inject the GUID into the logs.
+Django GUID stores a GUID to an object, making it accessible by using the ID of the current thread.
+The GUID is accessible from anywhere within the application throughout a request,
+allowing us to inject it into the logs.
 
 * Free software: BSD License
 * Homepage: https://github.com/JonasKs/django-guid
 * Documentation: Incoming
+
+
+Settings
+--------
+
+* **SKIP_CLEANUP**
+        After the request is done, the GUID is deleted to avoid memory leaks. Memory leaks can happen in the
+        case of many threads, or especially when using Gunicorn `max_requests` or similar settings, where the number of
+        thread IDs can potentially scale for ever.
+        Having clean up enabled ensures we can not have memory leaks, but comes at the cost that anything that happens
+        after this middleware will not have the GUID attached, such as `django.request` or `django.server` logs.
+        If you do not want clean up of GUIDs and know what you're doing, you can enable SKIP_CLEANUP.
+
+    Default: False
+
+* **GUID_HEADER_NAME**
+        The name of the GUID to look for in an incoming request. Remember that it's case insensitive.
+
+    Default: Correlation-ID
+
+* **VALIDATE_GUID**
+        Whether the *GUID_HEADER_NAME* should be validated or not. If the GUID sent to through the header is not a valid
+        GUID (`uuid.uuid4`).
+
+    Default: True
+
 
 Installation
 ------------
@@ -24,6 +50,10 @@ Python package::
     pip install django-guid
 
 In your project's ``settings.py`` add these settings:
+
+(If these settings are confusing, please have a look in the demo project
+`settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete setup.)
+
 
 Add the middleware to the middleware (To ensure the GUID to be injected in all logs, put it on top)
 
@@ -52,21 +82,28 @@ and put that filter in your handler:
 
 .. code-block:: python
 
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'medium',
-            'filters': ['correlation_id'],
+    LOGGING = {
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'medium',
+                'filters': ['correlation_id'],
+            }
         }
     }
 
-and lastly make sure we add it to the format:
+and lastly make sure we add the new `correlation_id` filter to the formatters:
 
 .. code-block:: python
 
-    'medium': {
-        'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'
+    LOGGING = {
+        'formatters': {
+            'medium': {
+                'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'
+            }
+        }
     }
+
 
 Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a
 `django-crequest <https://github.com/Alir3z4/django-crequest>`_ approach.
