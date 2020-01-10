@@ -20,24 +20,24 @@ allowing us to inject it into the logs.
 Settings
 --------
 
-* **SKIP_CLEANUP**
+* :code:`SKIP_CLEANUP`
         After the request is done, the GUID is deleted to avoid memory leaks. Memory leaks can happen in the
-        case of many threads, or especially when using Gunicorn `max_requests` or similar settings, where the number of
-        thread IDs can potentially scale for ever.
+        case of many threads, or especially when using Gunicorn :code:`max_requests` or similar settings,
+        where the number of thread IDs can potentially scale for ever.
         Having clean up enabled ensures we can not have memory leaks, but comes at the cost that anything that happens
-        after this middleware will not have the GUID attached, such as `django.request` or `django.server` logs.
-        If you do not want clean up of GUIDs and know what you're doing, you can enable SKIP_CLEANUP.
+        after this middleware will not have the GUID attached, such as :code:`django.request` or :code:`django.server`
+        logs. If you do not want clean up of GUIDs and know what you're doing, you can enable :code:`SKIP_CLEANUP`.
 
     Default: False
 
-* **GUID_HEADER_NAME**
-        The name of the GUID to look for in an incoming request. Remember that it's case insensitive.
+* :code:`GUID_HEADER_NAME`
+        The name of the GUID to look for in a header in an incoming request. Remember that it's case insensitive.
 
     Default: Correlation-ID
 
-* **VALIDATE_GUID**
-        Whether the *GUID_HEADER_NAME* should be validated or not. If the GUID sent to through the header is not a valid
-        GUID (`uuid.uuid4`).
+* :code:`VALIDATE_GUID`
+        Whether the :code:`GUID_HEADER_NAME` should be validated or not.
+        If the GUID sent to through the header is not a valid GUID (:code:`uuid.uuid4`).
 
     Default: True
 
@@ -49,7 +49,7 @@ Python package::
 
     pip install django-guid
 
-In your project's ``settings.py`` add these settings:
+In your project's :code:`settings.py` add these settings:
 
 (If these settings are confusing, please have a look in the demo project
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete setup.)
