@@ -12,7 +12,7 @@ Changelog
 
 * Improved all tests to be more verbose
 
-* Made the README more correct, with more information and listing all the settings.
+* Improved the README with more information and a list of all the available settings.
 
 
 `0.2.3`_ - 2020-01-09
