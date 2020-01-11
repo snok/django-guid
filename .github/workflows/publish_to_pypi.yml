@@ -18,7 +18,7 @@ jobs:
         pip install -r requirements-publish-pypi.txt
     - name: Build
       run: |
-        python -m setup.py sdist bdist_wheel
+        python setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
       if: startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
