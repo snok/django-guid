@@ -8,3 +8,6 @@ dist/
 notes
 .pytest_cache
 .coverage
+
+# Sphinx documentation
+docs/_build/

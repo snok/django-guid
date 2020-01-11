@@ -55,7 +55,7 @@ In your project's :code:`settings.py` add these settings:
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete setup.)
 
 
-Add the middleware to the middleware (To ensure the GUID to be injected in all logs, put it on top)
+Add the middleware to the :code:`MIDDLEWARE` setting (To ensure the GUID to be injected in all logs, put it on top):
 
 .. code-block:: python
 
