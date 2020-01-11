@@ -7,6 +7,8 @@ GUID injection for Django
     :target: https://pypi.python.org/pypi/django-guid#downloads
 .. image:: https://img.shields.io/pypi/djversions/django-guid.svg
     :target: https://pypi.python.org/pypi/django-guid
+.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jonasks/django-guid
 
 Django GUID stores a GUID to an object, making it accessible by using the ID of the current thread.
 The GUID is accessible from anywhere within the application throughout a request,
