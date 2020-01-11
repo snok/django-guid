@@ -80,6 +80,8 @@ TEMPLATES = [
     },
 ]
 
+# fmt: off
+
 # Non required DJANGO_GUID settings (Set to default values here)
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
@@ -117,10 +119,11 @@ LOGGING = {
             'handlers': ['console'],  # <-- Specify handlers
             'level': 'DEBUG'
         },
-        'django_guid':
-            {
-                'handlers': ['console'],
-                'level': 'DEBUG'  # <-- Set to DEBUG to show log messages from DJANGO_GUID
-            }
+        'django_guid': {
+            'handlers': ['console'],
+            'level': 'DEBUG'  # <-- Set to DEBUG to show log messages from DJANGO_GUID
+        }
     }
 }
+
+# fmt: on

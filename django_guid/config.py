@@ -9,7 +9,7 @@ class Settings(object):
     Inspired by django-auth-adfs from @jobec
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
         self.SKIP_CLEANUP = False
