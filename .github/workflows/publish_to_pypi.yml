@@ -20,13 +20,13 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
     - name: Publish distribution of django-guid to Test PyPI 📦
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && contains(github.event.ref, '-rc')
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && contains(github.ref, '-rc')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
     - name: Publish distribution of django-guid to PyPI 📦
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && !contains(github.event.ref, '-rc')
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && !contains(github.ref, '-rc')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.pypi_password }}
