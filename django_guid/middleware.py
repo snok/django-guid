@@ -2,7 +2,7 @@ import logging
 import threading
 import uuid
 from typing import Union
-
+from typing import Callable
 from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
@@ -21,14 +21,15 @@ class GuidMiddleware(object):
 
     _guid = {}
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: Callable) -> None:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
-        Fetches the current thread ID from the pool and stores the GUID in the _guid class variable, with the 
-        thread ID as the key.
+        Fetches the current thread ID from the pool and stores the GUID in the _guid class variable,
+        with the thread ID as the key.
         Deletes the GUID from the object unless settings are overwritten.
+
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
@@ -45,11 +46,12 @@ class GuidMiddleware(object):
         return response
 
     @classmethod
-    def get_guid(cls, default=None):
+    def get_guid(cls, default: str = None) -> str:
         """
         Fetches the GUID of the current thread, from _guid.
         If no value has been set for the current thread yet, we return a default value.
         :default: Optional value to return if no GUID has been set on the current thread.
+
         :return: GUID or default.
         """
         return cls._guid.get(threading.current_thread(), default)
@@ -58,6 +60,7 @@ class GuidMiddleware(object):
     def set_guid(cls, guid: str) -> None:
         """
         Assigns a GUID to the thread.
+
         :param guid: str
         :return: None
         """
@@ -67,6 +70,7 @@ class GuidMiddleware(object):
     def del_guid(cls) -> None:
         """
         Delete the GUID that was stored for the current thread.
+
         :return: None
         """
         guid = cls.get_guid()
@@ -78,6 +82,7 @@ class GuidMiddleware(object):
     def _generate_guid() -> str:
         """
         Generates an UUIDv4/GUID as a string.
+
         :return: GUID
         """
         return uuid.uuid4().hex
@@ -86,6 +91,7 @@ class GuidMiddleware(object):
     def _validate_guid(original_guid: str) -> bool:
         """
         Validates a GUID.
+
         :param original_guid: string to validate
         :return: bool
         """
@@ -97,7 +103,8 @@ class GuidMiddleware(object):
     def _get_correlation_id_from_header(self, request: HttpRequest) -> str:
         """
         Returns either the provided GUID or a new one,
-        depending on if the provided GUID is valid, and the specified settings
+        depending on if the provided GUID is valid, and the specified settings.
+
         :param request: HttpRequest object
         :return: GUID
         """
@@ -118,6 +125,7 @@ class GuidMiddleware(object):
         Checks if the request contains the header specified in the Django settings.
         If it does, we fetch the header and attempt to validate the contents as GUID.
         If no header is found, we generate a GUID to be injected instead.
+
         :param request: HttpRequest object
         :return: GUID
         """
@@ -129,6 +137,7 @@ class GuidMiddleware(object):
         else:
             request.correlation_id = self._generate_guid()
             logger.info(
-                f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}')
+                f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}'
+            )
 
         return request.correlation_id

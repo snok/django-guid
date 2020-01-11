@@ -30,9 +30,11 @@ def test_invalid_skip_guid_setting(monkeypatch):
 
 
 def test_valid_settings(monkeypatch):
-    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': True,
-                                                         'VALIDATE_GUID': False,
-                                                         'GUID_HEADER_NAME': 'Correlation-ID-TEST'})
+    monkeypatch.setattr(
+        django_settings,
+        'DJANGO_GUID',
+        {'SKIP_CLEANUP': True, 'VALIDATE_GUID': False, 'GUID_HEADER_NAME': 'Correlation-ID-TEST'},
+    )
     assert not Settings().VALIDATE_GUID
     assert Settings().SKIP_CLEANUP
     assert Settings().GUID_HEADER_NAME == 'Correlation-ID-TEST'

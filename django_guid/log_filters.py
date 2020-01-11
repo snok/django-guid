@@ -1,11 +1,10 @@
-import logging
+from logging import Filter, LogRecord
 
 from django_guid.middleware import GuidMiddleware
 
 
-class CorrelationId(logging.Filter):
-
-    def filter(self, record) -> bool:
+class CorrelationId(Filter):
+    def filter(self, record: LogRecord) -> bool:
         """
         Determines that the specified record is to be logged.
 

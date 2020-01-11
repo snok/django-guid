@@ -1,0 +1,10 @@
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+(
+    (\.eggs|\.git|\.hg|\.mypy_cache|\.tox|\.venv|\venv|\migrations|\static|\__pycache__)
+)
+'''
