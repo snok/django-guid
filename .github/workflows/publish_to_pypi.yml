@@ -14,17 +14,12 @@ jobs:
         python-version: 3.7
     - name: Install deps
       run: >-
-        python -m
-        pip install --upgrade
-        wheel
-        setuptools
-        --user
+        python -m pip install --upgrade pip
+        python -m pip install .
+        python -m pip install twine --user
     - name: Build
       run: >-
-        python -m
-        setup.py
-        sdist
-        bdist_wheel
+        python -m setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
