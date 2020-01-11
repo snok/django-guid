@@ -8,18 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Set up Python 3.7
+    - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
-    - name: Install deps
-      run: >-
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel twine
+        pip install -r requirements-publish-pypi.txt
     - name: Build
-      run: >-
+      run: |
         python -m setup.py sdist bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
+      if: startsWith(github.event.ref, 'refs/tags')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.test_pypi_password }}
