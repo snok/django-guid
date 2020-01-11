@@ -16,7 +16,7 @@ allowing us to inject it into the logs.
 
 * Free software: BSD License
 * Homepage: https://github.com/JonasKs/django-guid
-* Documentation: Incoming
+* Documentation: https://django-guid.readthedocs.io
 
 
 Settings
