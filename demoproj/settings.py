@@ -80,15 +80,23 @@ TEMPLATES = [
     },
 ]
 
+# fmt: off
+
 # Non required DJANGO_GUID settings (Set to default values here)
-DJANGO_GUID = {'GUID_HEADER_NAME': 'Correlation-ID', 'VALIDATE_GUID': True, 'SKIP_CLEANUP': False}
+DJANGO_GUID = {
+    'GUID_HEADER_NAME': 'Correlation-ID',
+    'VALIDATE_GUID': True,
+    'SKIP_CLEANUP': False
+}
 
 # Set up logging for the project
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
-        'correlation_id': {'()': 'django_guid.log_filters.CorrelationId'}  # <-- Add correlation ID to the filters
+        'correlation_id': {
+            '()': 'django_guid.log_filters.CorrelationId'  # <-- Add correlation ID to the filters
+        }
     },
     'formatters': {
         'medium': {
@@ -103,11 +111,19 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {'handlers': ['console'], 'level': 'INFO'},  # <-- Specify handlers
-        'demoproj': {'handlers': ['console'], 'level': 'DEBUG'},  # <-- Specify handlers
+        'django': {
+            'handlers': ['console'],  # <-- Specify handlers
+            'level': 'INFO'
+        },
+        'demoproj': {
+            'handlers': ['console'],  # <-- Specify handlers
+            'level': 'DEBUG'
+        },
         'django_guid': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # <-- Set to DEBUG to show log messages from DJANGO_GUID
-        },
-    },
+            'level': 'DEBUG'  # <-- Set to DEBUG to show log messages from DJANGO_GUID
+        }
+    }
 }
+
+# fmt: on
