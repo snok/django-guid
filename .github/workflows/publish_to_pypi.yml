@@ -1,13 +1,10 @@
 name: Publish django-guid to PyPI and TestPyPI 📦
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   build-and-publish:
-    name: Build and publish django-guid to PyPI and TestPyPI 📦
+    name: Build and publish
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -22,14 +19,14 @@ jobs:
     - name: Build
       run: |
         python setup.py sdist bdist_wheel
-    - name: Publish distribution 📦 to Test PyPI
+    - name: Publish distribution of django-guid to Test PyPI 📦
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && contains(github.event.ref, '.rc')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
     - name: Publish distribution of django-guid to PyPI 📦
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && !contains(github.event.ref, '.rc')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.pypi_password }}
