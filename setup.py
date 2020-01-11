@@ -26,7 +26,9 @@ setup(
         'request',
         'web',
         'uuid',
-        'guid'
+        'guid',
+        'correlation',
+        'correlation-id',
     ],
     platforms='OS Independent',
     classifiers=['Development Status :: 5 - Production/Stable',
