@@ -1,6 +1,14 @@
 Changelog
 =========
 
+
+`0.3.1`_ - 2020-01-13
+---------------------
+**Improvements**
+
+* Changed logging from f'strings' to %strings.
+
+
 `0.3.0`_ - 2020-01-10
 ---------------------
 
@@ -61,3 +69,4 @@ Changelog
 .. _0.2.2: https://github.com/jonasks/django-guid/compare/0.2.1...0.2.2
 .. _0.2.3: https://github.com/jonasks/django-guid/compare/0.2.2...0.2.3
 .. _0.3.0: https://github.com/jonasks/django-guid/compare/0.2.3...0.3.0
+.. _0.3.1: https://github.com/jonasks/django-guid/compare/0.3.0...0.3.1

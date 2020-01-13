@@ -26,7 +26,9 @@ repos:
           'flake8-docstrings==1.5.0',  # Verifies that all functions/methods have docstrings
           'flake8-type-annotations==0.1.0',  # Looks for misconfigured type annotations
           'flake8-annotations==1.1.1',  # Enforces type annotation
+          'flake8-logging-format==0.6.0',
         ]
+        args: ['--enable-extensions=G']
   - repo: local
     hooks:
       - id: rst
