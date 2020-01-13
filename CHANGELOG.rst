@@ -6,7 +6,14 @@ Changelog
 ---------------------
 **Improvements**
 
-* Changed logging from f'strings' to %strings.
+* Changed logging from f'strings' to %strings
+
+* Pre-commit hooks added, including ``black`` and ``flake8``
+
+* Added ``CONTRIBUTING.rst``
+
+* Added github actions to push to ``PyPi`` with github tags
+
 
 
 `0.3.0`_ - 2020-01-10
@@ -20,7 +27,7 @@ Changelog
 
 * Improved all tests to be more verbose
 
-* Improved the README with more information and a list of all the available settings.
+* Improved the README with more information and a list of all the available settings
 
 
 `0.2.3`_ - 2020-01-09
