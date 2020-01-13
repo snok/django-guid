@@ -75,7 +75,7 @@ class GuidMiddleware(object):
         """
         guid = cls.get_guid()
         if guid:
-            logger.debug(f'Deleting {guid} from _guid')
+            logger.debug('Deleting %s from _guid', guid)
             cls._guid.pop(threading.current_thread(), None)
 
     @staticmethod
@@ -113,11 +113,11 @@ class GuidMiddleware(object):
             logger.debug('VALIDATE_GUID is not True, will not validate given GUID')
             return given_guid
         elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
-            logger.debug(f'{given_guid} is a valid GUID')
+            logger.debug('%s is a valid GUID', given_guid)
             return given_guid
         else:
             new_guid = self._generate_guid()
-            logger.info(f'{given_guid} is not a valid GUID. New GUID is {new_guid}')
+            logger.info(f'%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
             return new_guid
 
     def _get_id_from_header(self, request: HttpRequest) -> str:
@@ -130,14 +130,14 @@ class GuidMiddleware(object):
         :return: GUID
         """
         guid_header_name = settings.GUID_HEADER_NAME
-
-        if request.headers.get(guid_header_name):  # Case insensitive headers.get added in Django2.2 so this is safe
-            logger.info(f'{guid_header_name} found in the header: {request.headers.get(guid_header_name)}')
+        header = request.headers.get(guid_header_name)  # Case insensitive headers.get added in Django2.2
+        if header:
+            logger.info('%s found in the header: %s', guid_header_name, header)
             request.correlation_id = self._get_correlation_id_from_header(request)
         else:
             request.correlation_id = self._generate_guid()
             logger.info(
-                f'No {guid_header_name} found in the header. Added {guid_header_name}: {request.correlation_id}'
+                'No %s found in the header. Added %s: %s', guid_header_name, guid_header_name, request.correlation_id
             )
 
         return request.correlation_id
