@@ -42,5 +42,5 @@ RETURN_HEADER
 * **Default**: ``True``
 * **Type**: ``boolean``
 
-Whether to return the GUID(Correlation-ID) as a header in the response or not.
+Whether to return the GUID (Correlation-ID) as a header in the response or not.
 It will have the same name as the :code:`GUID_HEADER_NAME` setting.
