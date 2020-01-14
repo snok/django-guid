@@ -18,7 +18,7 @@ Changelog
 
 * Added tests for the new setting
 
-* Added examples on how the log messages gets formatted in the ``README.rst`` and in the docs
+* Added examples to ``README.rst`` and docs, to show how the log messages get formatted
 
 * Added an API page to the docs
 
