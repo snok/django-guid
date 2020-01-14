@@ -35,14 +35,16 @@ class GuidMiddleware(object):
         """
         # Ensure we don't get the previous request GUID attached to the logs from this file.
         if settings.SKIP_CLEANUP:
-            self.__class__.del_guid()
+            self.delete_guid()
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
+        if settings.RETURN_HEADER:
+            response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
         if not settings.SKIP_CLEANUP:
             # Delete the current request to avoid memory leak
-            self.__class__.del_guid()
+            self.delete_guid()
         return response
 
     @classmethod
@@ -67,7 +69,7 @@ class GuidMiddleware(object):
         cls._guid[threading.current_thread()] = guid
 
     @classmethod
-    def del_guid(cls) -> None:
+    def delete_guid(cls) -> None:
         """
         Delete the GUID that was stored for the current thread.
 
@@ -117,7 +119,7 @@ class GuidMiddleware(object):
             return given_guid
         else:
             new_guid = self._generate_guid()
-            logger.info(f'%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
+            logger.info('%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
             return new_guid
 
     def _get_id_from_header(self, request: HttpRequest) -> str:

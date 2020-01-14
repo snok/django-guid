@@ -18,7 +18,7 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     :param client: Django client
     :param caplog: caplog fixture
     """
-    client.get('/')
+    response = client.get('/')
     expected = [
         ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -26,6 +26,7 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
 
 
 def test_request_with_correlation_id(client, caplog):
@@ -34,7 +35,7 @@ def test_request_with_correlation_id(client, caplog):
     :param client: Django client
     :param caplog: caplog fixture
     """
-    client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
+    response = client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
     expected = [
         ('Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565843', None),
         ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
@@ -43,6 +44,7 @@ def test_request_with_correlation_id(client, caplog):
         ('Deleting 97c304252fd14b25b72d6aee31565843 from _guid', '97c304252fd14b25b72d6aee31565843'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    assert response['Correlation-ID'] == '97c304252fd14b25b72d6aee31565843'
 
 
 def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
@@ -52,7 +54,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     :param caplog: Caplog fixture
     :param mock_uuid: Monkeypatch fixture for mocking UUID
     """
-    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+    response = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
         ('Correlation-ID found in the header: bad-guid', None),
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
@@ -61,6 +63,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
 
 
 def test_request_with_invalid_correlation_id_without_validation(client, caplog, monkeypatch):
@@ -84,6 +87,30 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
+def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
+    """
+    Tests that it does not return the GUID if RETURN_HEADER is false.
+    This test also tests a DRF response, just to confirm everything works in both worlds.
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
+    response = client.get('/api')
+    expected = [
+        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    assert not response.get('Correlation-ID')
+
+
+#
+# Important: All tests below this comment should have SKIP_CLEANUP set to True.
+#
+
+
 def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
     """
     Tests that a request skips cleanup if SKIP_CLEANUP is True
@@ -95,8 +122,8 @@ def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
 
     monkeypatch.setattr(guid_settings, 'SKIP_CLEANUP', True)
     monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
-    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
+    a = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+    b = client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
     expected = [
         # First request
         ('Correlation-ID found in the header: bad-guid', None),

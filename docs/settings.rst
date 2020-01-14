@@ -35,3 +35,12 @@ VALIDATE_GUID
 
 Whether the :code:`GUID_HEADER_NAME` should be validated or not.
 If the GUID sent to through the header is not a valid GUID (:code:`uuid.uuid4`).
+
+
+RETURN_HEADER
+-------------
+* **Default**: ``True``
+* **Type**: ``boolean``
+
+Whether to return the GUID(Correlation-ID) as a header in the response or not.
+It will have the same name as the :code:`GUID_HEADER_NAME` setting.

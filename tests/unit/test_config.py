@@ -33,8 +33,14 @@ def test_valid_settings(monkeypatch):
     monkeypatch.setattr(
         django_settings,
         'DJANGO_GUID',
-        {'SKIP_CLEANUP': True, 'VALIDATE_GUID': False, 'GUID_HEADER_NAME': 'Correlation-ID-TEST'},
+        {
+            'SKIP_CLEANUP': True,
+            'VALIDATE_GUID': False,
+            'GUID_HEADER_NAME': 'Correlation-ID-TEST',
+            'RETURN_HEADER': False,
+        },
     )
     assert not Settings().VALIDATE_GUID
     assert Settings().SKIP_CLEANUP
     assert Settings().GUID_HEADER_NAME == 'Correlation-ID-TEST'
+    assert not Settings().RETURN_HEADER
