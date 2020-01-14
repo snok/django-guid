@@ -4,4 +4,4 @@ This file is imported by setup.py
 Adding imports here will break setup.py
 """
 
-__version__ = '0.3.1'
+__version__ = '1.0.0'

@@ -23,6 +23,37 @@ allowing us to inject it into the logs.
 * Documentation: https://django-guid.readthedocs.io
 
 
+Example
+-------
+
+Using ``demoproj`` as an example, all the log messages **without** ``django-guid`` would look like this:
+
+.. code-block:: bash
+
+    INFO 2020-01-14 12:28:42,194 django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
+    INFO 2020-01-14 12:28:42,353 demoproj.views This is a DRF view log, and should have a GUID.
+    INFO 2020-01-14 12:28:42,354 demoproj.services.useless_file Some warning in a function
+
+With ``django-guid`` every log message has a GUID (``97c304252fd14b25b72d6aee31565843``) attached to it,
+through the entire stack:
+
+.. code-block:: bash
+
+    INFO 2020-01-14 12:28:42,194 [None] django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
+    INFO 2020-01-14 12:28:42,353 [97c304252fd14b25b72d6aee31565843] demoproj.views This is a DRF view log, and should have a GUID.
+    INFO 2020-01-14 12:28:42,354 [97c304252fd14b25b72d6aee31565843] demoproj.services.useless_file Some warning in a function
+
+For multiple requests at the same time over multiple threads, see the :ref:`extended_example`.
+
+Why
+---
+
+``django-guid`` makes it extremely easy to track exactly what happened in any request. If you see one error
+in your log, you can use the attached GUID to search for any connected log message to that single request.
+The GUID can also be returned as a header and displayed to the end user of your application, allowing them
+to report an issue with a connected ID. ``django-guid`` makes troubleshooting easy.
+
+
 Contents
 --------
 
@@ -31,5 +62,9 @@ Contents
 
     install
     settings
+    api
+    extended_example
     troubleshooting
+    contributing
+    publish
     changelog

@@ -2,8 +2,33 @@ Changelog
 =========
 
 
+`1.0.0`_ - 2020-01-14
+---------------------
+
+**Features**
+
+* Added a ``RETURN_HEADER`` setting, which will return the GUID as a header with the same name
+
+
+**Improvements**
+
+* Added a Django Rest Framework test and added DRF to the ``demoproj``
+
+* Improved tests to also check for headers in the response
+
+* Added tests for the new setting
+
+* Added examples to ``README.rst`` and docs, to show how the log messages get formatted
+
+* Added an API page to the docs
+
+* Fixed the ``readthedocs`` menu bug
+
+
+
 `0.3.1`_ - 2020-01-13
 ---------------------
+
 **Improvements**
 
 * Changed logging from f'strings' to %strings
@@ -77,3 +102,4 @@ Changelog
 .. _0.2.3: https://github.com/jonasks/django-guid/compare/0.2.2...0.2.3
 .. _0.3.0: https://github.com/jonasks/django-guid/compare/0.2.3...0.3.0
 .. _0.3.1: https://github.com/jonasks/django-guid/compare/0.3.0...0.3.1
+.. _1.0.0: https://github.com/jonasks/django-guid/compare/0.3.0...1.0.0

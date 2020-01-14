@@ -24,6 +24,39 @@ allowing us to inject it into the logs.
 * Documentation: https://django-guid.readthedocs.io
 
 
+Example
+-------
+
+Using ``demoproj`` as an example, all the log messages **without** ``django-guid`` would look like this:
+
+.. code-block:: bash
+
+    INFO 2020-01-14 12:28:42,194 django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
+    INFO 2020-01-14 12:28:42,353 demoproj.views This is a DRF view log, and should have a GUID.
+    INFO 2020-01-14 12:28:42,354 demoproj.services.useless_file Some warning in a function
+
+
+With ``django-guid`` every log message has a GUID attached to it(``97c304252fd14b25b72d6aee31565843``),
+through the entire stack:
+
+.. code-block:: bash
+
+    INFO 2020-01-14 12:28:42,194 [None] django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
+    INFO 2020-01-14 12:28:42,353 [97c304252fd14b25b72d6aee31565843] demoproj.views This is a DRF view log, and should have a GUID.
+    INFO 2020-01-14 12:28:42,354 [97c304252fd14b25b72d6aee31565843] demoproj.services.useless_file Some warning in a function
+
+For multiple requests at the same time over multiple threads, see the `extended example docs <https://django-guid.readthedocs.io/en/latest/extended_example.html>`_.
+
+
+Why
+---
+
+``django-guid`` makes it extremely easy to track exactly what happened in any request. If you see an error
+in your log, you can use the attached GUID to search for any connected log message to that single request.
+The GUID can also be returned as a header and displayed to the end user of your application, allowing them
+to report an issue with a connected ID. ``django-guid`` makes troubleshooting easy.
+
+
 Settings
 --------
 
@@ -45,6 +78,12 @@ Settings
 * :code:`VALIDATE_GUID`
         Whether the :code:`GUID_HEADER_NAME` should be validated or not.
         If the GUID sent to through the header is not a valid GUID (:code:`uuid.uuid4`).
+
+    Default: True
+
+* :code:`RETURN_HEADER`
+        Whether to return the GUID (Correlation-ID) as a header in the response or not.
+        It will have the same name as the :code:`GUID_HEADER_NAME` setting.
 
     Default: True
 
