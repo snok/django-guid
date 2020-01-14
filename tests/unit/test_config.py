@@ -29,6 +29,12 @@ def test_invalid_skip_guid_setting(monkeypatch):
         Settings()
 
 
+def test_invalid_return_header_setting(monkeypatch):
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'RETURN_HEADER': 'string'})
+    with pytest.raises(ImproperlyConfigured, match='RETURN_HEADER must be a boolean'):
+        Settings()
+
+
 def test_valid_settings(monkeypatch):
     monkeypatch.setattr(
         django_settings,
