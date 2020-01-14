@@ -45,6 +45,8 @@ through the entire stack:
     INFO 2020-01-14 12:28:42,353 [97c304252fd14b25b72d6aee31565843] demoproj.views This is a DRF view log, and should have a GUID.
     INFO 2020-01-14 12:28:42,354 [97c304252fd14b25b72d6aee31565843] demoproj.services.useless_file Some warning in a function
 
+For multiple requests at the same time over multiple threads, see the `extended example docs <https://django-guid.readthedocs.io/en/latest/extended_example.html>`_.
+
 
 Why
 ---

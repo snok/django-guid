@@ -43,6 +43,7 @@ through the entire stack:
     INFO 2020-01-14 12:28:42,353 [97c304252fd14b25b72d6aee31565843] demoproj.views This is a DRF view log, and should have a GUID.
     INFO 2020-01-14 12:28:42,354 [97c304252fd14b25b72d6aee31565843] demoproj.services.useless_file Some warning in a function
 
+For multiple requests at the same time over multiple threads, see the :ref:`extended_example`.
 
 Why
 ---
@@ -62,6 +63,7 @@ Contents
     install
     settings
     api
+    extended_example
     troubleshooting
     contributing
     publish
