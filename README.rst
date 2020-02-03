@@ -151,5 +151,5 @@ and lastly make sure we add the new `correlation_id` filter to the formatters:
     }
 
 
-Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a
-`django-crequest <https://github.com/Alir3z4/django-crequest>`_ approach.
+Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a complete rewritten
+`django-echelon <https://github.com/seveas/django-echelon>`_ approach. 
