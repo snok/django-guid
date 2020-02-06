@@ -100,6 +100,7 @@ class GuidMiddleware(object):
         try:
             return original_guid.replace('-','') == uuid.UUID(original_guid, version=4).hex
         except ValueError:
+            logger.warning('Failed to validate GUID %s', original_guid)
             return False
 
     def _get_correlation_id_from_header(self, request: HttpRequest) -> str:
