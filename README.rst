@@ -98,7 +98,7 @@ Install using pip:
 
 Then, in your project's :code:`settings.py` add these settings:
 
-- Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
+``-`` Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
 
 .. code-block:: python
 
@@ -108,11 +108,12 @@ Then, in your project's :code:`settings.py` add these settings:
      ]
 
 
-- Add a filter to your ``LOGGING``:
+``-`` Add a filter to your ``LOGGING``:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'filters': {
             'correlation_id': {
                 '()': 'django_guid.log_filters.CorrelationId'
@@ -121,11 +122,12 @@ Then, in your project's :code:`settings.py` add these settings:
     }
 
 
-- Put that filter in your handler:
+``-`` Put that filter in your handler:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
@@ -135,11 +137,12 @@ Then, in your project's :code:`settings.py` add these settings:
         }
     }
 
-- Lastly make sure we add the new `correlation_id` filter to the formatters:
+``-`` Lastly make sure we add the new `correlation_id` filter to the formatters:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'formatters': {
             'medium': {
                 'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'
@@ -152,18 +155,20 @@ If these settings were confusing, please have a look in the demo project's
 
 
 
-These are all the configurations you need to generate correlation-ID's for all you logging. If you also wish to add logging from the package middleware itself, you can also add :code:`django_guid` as a logger in your project:
+If you wish to aggregate the django-guid logs to your console or other handlers, add django_guid to your loggers in the project. Example:
 
 .. code-block:: python
-
-    'loggers': {
+    LOGGING = {
         ...
-        'django_guid': {
-            'handlers': ['console', 'logstash'],
-            'level': 'WARNING',
-            'propagate': False,
+        'loggers': {
+            'django_guid': {
+                'handlers': ['console', 'logstash'],
+                'level': 'WARNING',
+                'propagate': False,
+            }
         }
     }
+
 
 ----------
 
