@@ -41,7 +41,8 @@ Then, in your project's :code:`settings.py` add these settings:
     }
 
 
-``-`` Put that filter in your handler:
+::
+    Put that filter in your handler:
 
 .. code-block:: python
 
@@ -56,7 +57,7 @@ Then, in your project's :code:`settings.py` add these settings:
         }
     }
 
-``-`` Lastly make sure we add the new `correlation_id` filter to the formatters:
++ Lastly make sure we add the new `correlation_id` filter to the formatters:
 
 .. code-block:: python
 
