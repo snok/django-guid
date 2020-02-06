@@ -57,6 +57,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     response = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
         ('Correlation-ID found in the header: bad-guid', None),
+        ('Failed to validate GUID bad-guid', None),
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -64,6 +65,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
+    print(caplog.records)
 
 
 def test_request_with_invalid_correlation_id_without_validation(client, caplog, monkeypatch):
