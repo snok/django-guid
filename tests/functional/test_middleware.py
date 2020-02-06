@@ -65,7 +65,6 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
-    print(caplog.records)
 
 
 def test_request_with_invalid_correlation_id_without_validation(client, caplog, monkeypatch):
