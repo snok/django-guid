@@ -7,7 +7,7 @@ from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django_guid')
 
 
 class GuidMiddleware(object):
