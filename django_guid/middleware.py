@@ -98,7 +98,7 @@ class GuidMiddleware(object):
         :return: bool
         """
         try:
-            return original_guid == uuid.UUID(original_guid, version=4).hex
+            return original_guid.replace('-','') == uuid.UUID(original_guid, version=4).hex
         except ValueError:
             return False
 
