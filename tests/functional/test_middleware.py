@@ -106,9 +106,10 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     assert not response.get('Correlation-ID')
 
 
-def test_no_expose_header(client, monkeypatch, mock_uuid):
+def test_no_expose_header_return_header_true(client, monkeypatch, mock_uuid):
     """
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
+    and RETURN_HEADER is True
     """
     from django_guid.config import settings as guid_settings
 
@@ -117,15 +118,57 @@ def test_no_expose_header(client, monkeypatch, mock_uuid):
     assert not response.get('Access-Control-Expose-Headers')
 
 
-def test_expose_header(client, monkeypatch, mock_uuid):
+def test_expose_header_return_header_true(client, monkeypatch, mock_uuid):
     """
     Tests that it does return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
+    and RETURN_HEADER is True
     """
     from django_guid.config import settings as guid_settings
 
     monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', True)
     response = client.get('/api')
     assert response.get('Access-Control-Expose-Headers')
+
+
+def test_no_expose_header_return_header_false(client, caplog, monkeypatch, mock_uuid):
+    """
+    Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
+    and RETURN_HEADER is False
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', False)
+    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
+    expected = [
+        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    response = client.get('/api')
+    assert not response.get('Access-Control-Expose-Headers')
+
+
+def test_expose_header_return_header_false(client, caplog, monkeypatch, mock_uuid):
+    """
+    Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
+    and RETURN_HEADER is False
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', True)
+    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
+    expected = [
+        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+
+    response = client.get('/api')
+    assert not response.get('Access-Control-Expose-Headers')
 
 
 #
