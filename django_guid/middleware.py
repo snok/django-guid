@@ -42,6 +42,8 @@ class GuidMiddleware(object):
         response = self.get_response(request)
         if settings.RETURN_HEADER:
             response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
+            if settings.EXPOSE_HEADER:
+                response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
         if not settings.SKIP_CLEANUP:
             # Delete the current request to avoid memory leak
             self.delete_guid()

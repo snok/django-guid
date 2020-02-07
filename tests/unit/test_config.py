@@ -35,6 +35,12 @@ def test_invalid_return_header_setting(monkeypatch):
         Settings()
 
 
+def test_invalid_expose_header_setting(monkeypatch):
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'EXPOSE_HEADER': 'string'})
+    with pytest.raises(ImproperlyConfigured, match='EXPOSE_HEADER must be a boolean'):
+        Settings()
+
+
 def test_valid_settings(monkeypatch):
     monkeypatch.setattr(
         django_settings,
@@ -44,6 +50,7 @@ def test_valid_settings(monkeypatch):
             'VALIDATE_GUID': False,
             'GUID_HEADER_NAME': 'Correlation-ID-TEST',
             'RETURN_HEADER': False,
+            'EXPOSE_HEADER': False,
         },
     )
     assert not Settings().VALIDATE_GUID

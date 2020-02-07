@@ -14,6 +14,7 @@ class Settings(object):
         self.VALIDATE_GUID = True
         self.SKIP_CLEANUP = False
         self.RETURN_HEADER = True
+        self.EXPOSE_HEADER = True
 
         if hasattr(django_settings, 'DJANGO_GUID'):
             _settings = django_settings.DJANGO_GUID
@@ -33,6 +34,8 @@ class Settings(object):
                 raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
             if not isinstance(self.RETURN_HEADER, bool):
                 raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
+            if not isinstance(self.RETURN_HEADER, bool):
+                raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
         else:
             pass  # Do nothing if DJANGO_GUID not found in settings
 

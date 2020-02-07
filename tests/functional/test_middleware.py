@@ -106,6 +106,28 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     assert not response.get('Correlation-ID')
 
 
+def test_no_expose_header(client, monkeypatch, mock_uuid):
+    """
+    Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', False)
+    response = client.get('/api')
+    assert not response.get('Access-Control-Expose-Headers')
+
+
+def test_expose_header(client, monkeypatch, mock_uuid):
+    """
+    Tests that it does return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', True)
+    response = client.get('/api')
+    assert response.get('Access-Control-Expose-Headers')
+
+
 #
 # Important: All tests below this comment should have SKIP_CLEANUP set to True.
 #
