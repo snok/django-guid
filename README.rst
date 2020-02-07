@@ -100,12 +100,12 @@ Then, in your project's :code:`settings.py` add these settings:
 
 * Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
 
-    .. code-block:: python
+.. code-block:: python
 
-        MIDDLEWARE = [
-            'django_guid.middleware.GuidMiddleware',
-            ...
-         ]
+    MIDDLEWARE = [
+        'django_guid.middleware.GuidMiddleware',
+        ...
+     ]
 
 
 * Add a filter to your ``LOGGING``:
