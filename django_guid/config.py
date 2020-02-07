@@ -34,7 +34,7 @@ class Settings(object):
                 raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
             if not isinstance(self.RETURN_HEADER, bool):
                 raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
-            if not isinstance(self.RETURN_HEADER, bool):
+            if not isinstance(self.EXPOSE_HEADER, bool):
                 raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
         else:
             pass  # Do nothing if DJANGO_GUID not found in settings
