@@ -77,6 +77,7 @@ If these settings were confusing, please have a look in the demo project's
 If you wish to aggregate the django-guid logs to your console or other handlers, add django_guid to your loggers in the project. Example:
 
 .. code-block:: python
+
     LOGGING = {
         ...
         'loggers': {
