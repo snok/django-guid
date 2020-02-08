@@ -91,17 +91,14 @@ Settings
 Installation
 ------------
 
-Python package::
+Install using pip:
 
     pip install django-guid
 
-In your project's :code:`settings.py` add these settings:
 
-(If these settings are confusing, please have a look in the demo project
-`settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete setup.)
+Then, in your project's :code:`settings.py` add these settings:
 
-
-Add the middleware to the :code:`MIDDLEWARE` setting (To ensure the GUID to be injected in all logs, put it on top):
+1. Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
 
 .. code-block:: python
 
@@ -111,11 +108,12 @@ Add the middleware to the :code:`MIDDLEWARE` setting (To ensure the GUID to be i
      ]
 
 
-Add a filter to your ``LOGGING``:
+2. Add a filter to your ``LOGGING``:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'filters': {
             'correlation_id': {
                 '()': 'django_guid.log_filters.CorrelationId'
@@ -124,11 +122,12 @@ Add a filter to your ``LOGGING``:
     }
 
 
-and put that filter in your handler:
+3. Put that filter in your handler:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'handlers': {
             'console': {
                 'class': 'logging.StreamHandler',
@@ -138,11 +137,12 @@ and put that filter in your handler:
         }
     }
 
-and lastly make sure we add the new `correlation_id` filter to the formatters:
+4. Lastly make sure we add the new `correlation_id` filter to the formatters:
 
 .. code-block:: python
 
     LOGGING = {
+        ...
         'formatters': {
             'medium': {
                 'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'
@@ -150,6 +150,28 @@ and lastly make sure we add the new `correlation_id` filter to the formatters:
         }
     }
 
+If these settings were confusing, please have a look in the demo project's
+`settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
+
+
+
+If you wish to aggregate the django-guid logs to your console or other handlers, add django_guid to your loggers in the project. Example:
+
+.. code-block:: python
+
+    LOGGING = {
+        ...
+        'loggers': {
+            'django_guid': {
+                'handlers': ['console', 'logstash'],
+                'level': 'WARNING',
+                'propagate': False,
+            }
+        }
+    }
+
+
+----------
 
 Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a complete rewritten
 `django-echelon <https://github.com/seveas/django-echelon>`_ approach. 

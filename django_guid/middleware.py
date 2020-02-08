@@ -7,7 +7,7 @@ from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('django_guid')
 
 
 class GuidMiddleware(object):
@@ -98,8 +98,9 @@ class GuidMiddleware(object):
         :return: bool
         """
         try:
-            return original_guid == uuid.UUID(original_guid, version=4).hex
+            return bool(uuid.UUID(original_guid, version=4).hex)
         except ValueError:
+            logger.warning('Failed to validate GUID %s', original_guid)
             return False
 
     def _get_correlation_id_from_header(self, request: HttpRequest) -> str:
