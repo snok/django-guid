@@ -17,7 +17,7 @@ Install using pip:
 
 Then, in your project's :code:`settings.py` add these settings:
 
-1. Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
+Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
 
 .. code-block:: python
 
@@ -27,7 +27,7 @@ Then, in your project's :code:`settings.py` add these settings:
      ]
 
 
-2. Add a filter to your ``LOGGING``:
+Add a filter to your ``LOGGING``:
 
 .. code-block:: python
 
@@ -41,7 +41,7 @@ Then, in your project's :code:`settings.py` add these settings:
     }
 
 
-3. Put that filter in your handler:
+Put that filter in your handler:
 
 .. code-block:: python
 
@@ -56,7 +56,7 @@ Then, in your project's :code:`settings.py` add these settings:
         }
     }
 
-4. Lastly make sure we add the new `correlation_id` filter to the formatters:
+Lastly make sure we add the new ``correlation_id`` filter to the formatters:
 
 .. code-block:: python
 
