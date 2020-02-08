@@ -1,6 +1,22 @@
 Changelog
 =========
 
+`1.0.1`_ - 2020-02-08
+---------------------
+
+**Improvements**
+
+* Changed the ``middleware.py`` logger name to ``django_guid``
+
+* Added a WARNING-logger for when validation fails
+
+* Improved README
+
+**Other**
+
+* Added ``CONTRIBUTORS.rst``
+
+
 
 `1.0.0`_ - 2020-01-14
 ---------------------
@@ -103,3 +119,4 @@ Changelog
 .. _0.3.0: https://github.com/jonasks/django-guid/compare/0.2.3...0.3.0
 .. _0.3.1: https://github.com/jonasks/django-guid/compare/0.3.0...0.3.1
 .. _1.0.0: https://github.com/jonasks/django-guid/compare/0.3.0...1.0.0
+.. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
