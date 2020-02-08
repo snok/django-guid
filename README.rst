@@ -137,7 +137,7 @@ Then, in your project's :code:`settings.py` add these settings:
         }
     }
 
-4. Lastly make sure we add the new `correlation_id` filter to the formatters:
+4. Lastly make sure we add the new ``correlation_id`` filter to the formatters:
 
 .. code-block:: python
 
