@@ -1,8 +1,21 @@
 Changelog
 =========
 
+`1.1.0`_ - 2020-02-10
+---------------------
+
+**Features**
+
+* Added a ``EXPOSE_HEADER`` setting, which will add the ``Access-Control-Expose-Headers`` with the ``RETURN_HEADER`` as value to the response. This is to allow the JavaScript Fetch API to access the header with the GUID
+
+
+
 `1.0.1`_ - 2020-02-08
 ---------------------
+
+**Bugfix**
+
+* Fixed validation of incoming GUID
 
 **Improvements**
 
@@ -120,3 +133,4 @@ Changelog
 .. _0.3.1: https://github.com/jonasks/django-guid/compare/0.3.0...0.3.1
 .. _1.0.0: https://github.com/jonasks/django-guid/compare/0.3.0...1.0.0
 .. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
+.. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
