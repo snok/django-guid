@@ -44,3 +44,13 @@ RETURN_HEADER
 
 Whether to return the GUID (Correlation-ID) as a header in the response or not.
 It will have the same name as the :code:`GUID_HEADER_NAME` setting.
+
+
+EXPOSE_HEADER
+-------------
+* **Default**: ``True``
+* **Type**: ``boolean``
+
+Whether to return :code:`Access-Control-Expose-Headers` for the GUID header if
+:code:`RETURN_HEADER` is :code:`True`, has no effect if :code:`RETURN_HEADER` is :code:`False`.
+This is allows the JavaScript Fetch API to access the header when CORS is enabled.

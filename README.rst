@@ -87,6 +87,13 @@ Settings
 
     Default: True
 
+* :code:`RETURN_HEADER`
+        Whether to return :code:`Access-Control-Expose-Headers` for the GUID header if
+        :code:`RETURN_HEADER` is :code:`True`, has no effect if :code:`RETURN_HEADER` is :code:`False`.
+        This is allows the JavaScript Fetch API to access the header when CORS is enabled.
+
+    Default: True
+
 
 Installation
 ------------
@@ -174,4 +181,4 @@ If you wish to aggregate the django-guid logs to your console or other handlers,
 ----------
 
 Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a complete rewritten
-`django-echelon <https://github.com/seveas/django-echelon>`_ approach. 
+`django-echelon <https://github.com/seveas/django-echelon>`_ approach.
