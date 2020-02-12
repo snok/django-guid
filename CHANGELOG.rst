@@ -1,6 +1,14 @@
 Changelog
 =========
 
+`1.1.1`_ - 2020-02-12
+---------------------
+
+**Improvements**
+
+* Fixed ``EXPOSE_HEADER`` documentation issue. New release has to be pushed to fix PyPi docs.
+
+
 `1.1.0`_ - 2020-02-10
 ---------------------
 
@@ -134,3 +142,4 @@ Changelog
 .. _1.0.0: https://github.com/jonasks/django-guid/compare/0.3.0...1.0.0
 .. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
 .. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
+.. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
