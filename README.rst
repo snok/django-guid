@@ -87,7 +87,7 @@ Settings
 
     Default: True
 
-* :code:`RETURN_HEADER`
+* :code:`EXPOSE_HEADER`
         Whether to return :code:`Access-Control-Expose-Headers` for the GUID header if
         :code:`RETURN_HEADER` is :code:`True`, has no effect if :code:`RETURN_HEADER` is :code:`False`.
         This is allows the JavaScript Fetch API to access the header when CORS is enabled.
