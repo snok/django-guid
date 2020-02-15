@@ -21,31 +21,33 @@ this makes debugging your application easy.
 
 Further integration is also possible, as the ID can be returned as a header, or you can include it as a header in outgoing requests, to extend the reach of IDs to whole systems.
 
-Log output with a GUID:
-
-.. code-block::
-
-    INFO 2020-01-14 15:40:48,955 [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.views This is a DRF view log, and should have a GUID.
-    INFO 2020-01-14 15:40:48,955 [99d44111e9174c5a9494275aa7f28858] project.views This is a DRF view log, and should have a GUID.
-    WARNING 2020-01-14 15:40:48,955 [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.services.file Some warning in a function
-    WARNING 2020-01-14 15:40:48,955 [99d44111e9174c5a9494275aa7f28858] project.services.file Some warning in a function
-    ...
-
-Log output without:
-
-.. code-block::
-
-    INFO 2020-01-14 15:40:48,955 project.views This is a DRF view log, and should have a GUID.
-    INFO 2020-01-14 15:40:48,955 project.views This is a DRF view log, and should have a GUID.
-    WARNING 2020-01-14 15:40:48,955 project.services.file Some warning in a function
-    WARNING 2020-01-14 15:40:48,955 project.services.file Some warning in a function
-    ...
-
-Resources:
+**Resources**:
 
 * Documentation: https://django-guid.readthedocs.io
 * Homepage: https://github.com/JonasKs/django-guid
 * Free software: BSD License
+
+**Examples**
+
+Log output with a GUID:
+
+.. code-block::
+
+    INFO ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.views This is a DRF view log, and should have a GUID.
+    INFO ... [99d44111e9174c5a9494275aa7f28858] project.views This is a DRF view log, and should have a GUID.
+    WARNING ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.services.file Some warning in a function
+    WARNING ... [99d44111e9174c5a9494275aa7f28858] project.services.file Some warning in a function
+
+Log output without a GUID:
+
+.. code-block::
+
+    INFO ... project.views This is a DRF view log, and should have a GUID.
+    INFO ... project.views This is a DRF view log, and should have a GUID.
+    WARNING ... project.services.file Some warning in a function
+    WARNING ... project.services.file Some warning in a function
+
+
 
 ************
 Installation
