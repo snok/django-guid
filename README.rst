@@ -16,10 +16,11 @@ Django GUID
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
 
 
-Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. Since every error now has an ID tying connecting it to all other relevant logs,
-this makes debugging your application easy.
+Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. This means that every error now has an ID connecting it to all other relevant logs, making
+debugging simple.
 
-Further integration is also possible, as the ID can be returned as a header, or you can include it as a header in outgoing requests, to extend the reach of IDs to whole systems.
+Integration are also made possible, as the ID can be *returned as a header*,
+or can be added as an *outgoing header* in external requests, making it possible to extend the reach of correlation IDs to whole systems.
 
 **Resources**:
 
@@ -207,7 +208,7 @@ Simply add django_guid to your loggers in the project, like in the example below
         }
     }
 
-
+This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
 
 ----------
 
