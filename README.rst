@@ -33,21 +33,26 @@ Log output with a GUID:
 
 .. code-block::
 
+    INFO ... [773fa6885e03493498077a273d1b7f2d] project.views This is a DRF view log, and should have a GUID.
+    WARNING ... [773fa6885e03493498077a273d1b7f2d] project.services.file Some warning in a function
     INFO ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.views This is a DRF view log, and should have a GUID.
     INFO ... [99d44111e9174c5a9494275aa7f28858] project.views This is a DRF view log, and should have a GUID.
     WARNING ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.services.file Some warning in a function
     WARNING ... [99d44111e9174c5a9494275aa7f28858] project.services.file Some warning in a function
+
 
 Log output without a GUID:
 
 .. code-block::
 
     INFO ... project.views This is a DRF view log, and should have a GUID.
+    WARNING ... project.services.file Some warning in a function
+    INFO ... project.views This is a DRF view log, and should have a GUID.
     INFO ... project.views This is a DRF view log, and should have a GUID.
     WARNING ... project.services.file Some warning in a function
     WARNING ... project.services.file Some warning in a function
 
-
+See the `documentation <https://django-guid.readthedocs.io>`_ for more examples.
 
 ************
 Installation
