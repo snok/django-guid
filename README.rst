@@ -69,7 +69,7 @@ Install using pip:
 Settings
 ********
 
-Package settings are added in your :code:`settings.py`:
+Package settings are added in your ``settings.py``:
 
 .. code-block:: python
 
@@ -123,7 +123,7 @@ Package settings are added in your :code:`settings.py`:
 Configuration
 *************
 
-Once settings have been added, in your project's :code:`settings.py` you need to do the following:
+Once settings have set up, add the following to your projects' ``settings.py``:
 
 1. Middleware
 =============
@@ -140,8 +140,8 @@ Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
 
 It is recommended that you add the middleware at the top, so that the remaining middleware loggers include the requests GUID.
 
-2. Configuring Logging
-======================
+2. Logging Configuration
+========================
 
 Add :code:`django_guid.log_filters.CorrelationId` as a filter in your ``LOGGING`` configuration:
 
@@ -185,10 +185,10 @@ And make sure to add the new ``correlation_id`` filter to one or all of your for
     }
 
 
-If these settings were confusing, please have a look in the demo project's
+If these settings were confusing, please have a look in the demo projects'
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
 
-3. Adding the Django GUID logger
+3. Django GUID Logger (Optional)
 ================================
 
 If you wish to see the Django GUID middleware outputs, you may configure a logger for the module.
