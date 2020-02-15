@@ -82,6 +82,9 @@ Package settings are added in your :code:`settings.py`:
     }
 
 
+
+**Optional Parameters**
+
 * :code:`GUID_HEADER_NAME`
         The name of the GUID to look for in a header in an incoming request. Remember that it's case insensitive.
 
