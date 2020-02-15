@@ -23,9 +23,9 @@ Further integration is also possible, as the ID can be returned as a header, or 
 
 **Resources**:
 
+* Free software: BSD License
 * Documentation: https://django-guid.readthedocs.io
 * Homepage: https://github.com/JonasKs/django-guid
-* Free software: BSD License
 
 **Examples**
 
@@ -59,6 +59,8 @@ Installation
 ************
 
 Install using pip:
+
+.. code-block:: bash
 
     pip install django-guid
 
