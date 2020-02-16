@@ -26,8 +26,6 @@ class Settings(object):
                 else:
                     raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid')
 
-            if not isinstance(self.SKIP_CLEANUP, bool):
-                raise ImproperlyConfigured('SKIP_CLEANUP must be a boolean')
             if not isinstance(self.VALIDATE_GUID, bool):
                 raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
             if not isinstance(self.GUID_HEADER_NAME, str):
@@ -36,6 +34,15 @@ class Settings(object):
                 raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
             if not isinstance(self.EXPOSE_HEADER, bool):
                 raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
+
+            # SKIP_CLEANUP was deprecated in v1.2.0 and should be removed completely in v2.0.0
+            if 'SKIP_CLEANUP' in _settings:
+                # flake8: noqa: T001
+                print(
+                    'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
+                    'Please remove it from your DJANGO_GUID settings.'
+                )
+
         else:
             pass  # Do nothing if DJANGO_GUID not found in settings
 

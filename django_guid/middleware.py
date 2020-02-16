@@ -1,8 +1,11 @@
 import logging
 import threading
 import uuid
+from typing import Callable, Optional
 from typing import Union
-from typing import Callable
+
+from django.core.signals import request_finished
+from django.dispatch import receiver
 from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
@@ -33,20 +36,15 @@ class GuidMiddleware(object):
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
-        # Ensure we don't get the previous request GUID attached to the logs from this file.
-        if settings.SKIP_CLEANUP:
-            self.delete_guid()
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
+
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
         if settings.RETURN_HEADER:
             response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
             if settings.EXPOSE_HEADER:
                 response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
-        if not settings.SKIP_CLEANUP:
-            # Delete the current request to avoid memory leak
-            self.delete_guid()
         return response
 
     @classmethod
@@ -115,7 +113,7 @@ class GuidMiddleware(object):
         """
         given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
         if not settings.VALIDATE_GUID:
-            logger.debug('VALIDATE_GUID is not True, will not validate given GUID')
+            logger.debug('Returning ID from header without validating it as a GUID')
             return given_guid
         elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
             logger.debug('%s is a valid GUID', given_guid)
@@ -146,3 +144,13 @@ class GuidMiddleware(object):
             )
 
         return request.correlation_id
+
+
+@receiver(request_finished)
+def clean_finished_request_guid(sender: Optional[dict], **kwargs) -> None:
+    """
+    When a request is finished, this function is called to delete the GUID of the request thread.
+    The signal is sent as the last step when a response is closed, which should ensure memory safety.
+    """
+    logger.debug('Request closed')  # TODO: Remove after testing?
+    GuidMiddleware.delete_guid()

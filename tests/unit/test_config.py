@@ -23,10 +23,13 @@ def test_invalid_header_name(monkeypatch):
         Settings()
 
 
-def test_invalid_skip_guid_setting(monkeypatch):
-    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': 'string'})
-    with pytest.raises(ImproperlyConfigured, match='SKIP_CLEANUP must be a boolean'):
-        Settings()
+def test_invalid_skip_guid_setting(capsys):
+    Settings()
+    captured = capsys.readouterr()
+    assert (
+        'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
+        'Please remove it from your DJANGO_GUID settings.' in captured.out
+    )
 
 
 def test_invalid_return_header_setting(monkeypatch):
