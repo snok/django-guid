@@ -1,23 +1,24 @@
+************
 Installation
-============
-
-Requirements
-------------
-
-* Python 3.6 and above (May work on older versions too)
-* Django 2.2 and above (Header setting used in the middleware was added in Django 2.2)
-
-Package installation
---------------------
+************
 
 Install using pip:
+
+.. code-block:: bash
 
     pip install django-guid
 
 
-Then, in your project's :code:`settings.py` add these settings:
+*************
+Configuration
+*************
 
-Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
+Once settings have set up, add the following to your projects' ``settings.py``:
+
+1. Middleware
+=============
+
+Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
 
 .. code-block:: python
 
@@ -27,7 +28,12 @@ Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlatio
      ]
 
 
-Add a filter to your ``LOGGING``:
+It is recommended that you add the middleware at the top, so that the remaining middleware loggers include the requests GUID.
+
+2. Logging Configuration
+========================
+
+Add :code:`django_guid.log_filters.CorrelationId` as a filter in your ``LOGGING`` configuration:
 
 .. code-block:: python
 
@@ -39,7 +45,6 @@ Add a filter to your ``LOGGING``:
             }
         }
     }
-
 
 Put that filter in your handler:
 
@@ -56,7 +61,7 @@ Put that filter in your handler:
         }
     }
 
-Lastly make sure we add the new ``correlation_id`` filter to the formatters:
+And make sure to add the new ``correlation_id`` filter to one or all of your formatters:
 
 .. code-block:: python
 
@@ -69,12 +74,15 @@ Lastly make sure we add the new ``correlation_id`` filter to the formatters:
         }
     }
 
-If these settings were confusing, please have a look in the demo project's
+
+If these settings were confusing, please have a look in the demo projects'
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
 
+3. Django GUID Logger (Optional)
+================================
 
-
-If you wish to aggregate the django-guid logs to your console or other handlers, add django_guid to your loggers in the project. Example:
+If you wish to see the Django GUID middleware outputs, you may configure a logger for the module.
+Simply add django_guid to your loggers in the project, like in the example below:
 
 .. code-block:: python
 
@@ -88,3 +96,5 @@ If you wish to aggregate the django-guid logs to your console or other handlers,
             }
         }
     }
+
+This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
