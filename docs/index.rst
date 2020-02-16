@@ -52,3 +52,18 @@ Log output without a GUID:
     INFO ... project.views This is a DRF view log, and should have a GUID.
     WARNING ... project.services.file Some warning in a function
     WARNING ... project.services.file Some warning in a function
+
+Contents
+--------
+
+.. toctree::
+    :maxdepth: 3
+
+    install
+    settings
+    api
+    extended_example
+    troubleshooting
+    contributing
+    publish
+    changelog
