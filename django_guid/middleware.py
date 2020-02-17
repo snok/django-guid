@@ -1,9 +1,7 @@
 import logging
 import threading
 import uuid
-from typing import Callable
-from typing import Optional
-from typing import Union
+from typing import Callable, Optional, Union
 
 from django.core.signals import request_finished
 from django.dispatch import receiver

@@ -37,7 +37,6 @@ class Settings(object):
             if not isinstance(self.EXPOSE_HEADER, bool):
                 raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
 
-            # SKIP_CLEANUP was deprecated in v1.2.0 and should be removed completely in v2.0.0
             if 'SKIP_CLEANUP' in _settings:
                 warn(
                     'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
