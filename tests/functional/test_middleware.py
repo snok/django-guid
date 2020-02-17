@@ -173,8 +173,8 @@ def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
 
     monkeypatch.setattr(guid_settings, 'SKIP_CLEANUP', True)
     monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
-    a = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    b = client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
+    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+    client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
 
     expected = [
         # First request

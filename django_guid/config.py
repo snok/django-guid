@@ -1,3 +1,5 @@
+from warnings import warn
+
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -37,11 +39,14 @@ class Settings(object):
 
             # SKIP_CLEANUP was deprecated in v1.2.0 and should be removed completely in v2.0.0
             if 'SKIP_CLEANUP' in _settings:
-                # flake8: noqa: T001
-                print(
+                warn(
                     'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
-                    'Please remove it from your DJANGO_GUID settings.'
+                    'Please remove it from your DJANGO_GUID settings.',
+                    PendingDeprecationWarning,
                 )
 
         else:
             pass  # Do nothing if DJANGO_GUID not found in settings
+
+
+settings = Settings()

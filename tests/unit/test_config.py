@@ -24,12 +24,11 @@ def test_invalid_header_name(monkeypatch):
 
 
 def test_invalid_skip_guid_setting(capsys):
-    Settings()
-    captured = capsys.readouterr()
-    assert (
-        'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
-        'Please remove it from your DJANGO_GUID settings.' in captured.out
-    )
+    """
+    Assert that a deprecation warning is called when settings are instantiated with SKIP_CLEANUP == True or False
+    """
+    with pytest.deprecated_call():
+        Settings()
 
 
 def test_invalid_return_header_setting(monkeypatch):
