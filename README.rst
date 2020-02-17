@@ -19,8 +19,7 @@ Django GUID
 Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. This means that every error now has an ID connecting it to all other relevant logs, making
 debugging simple.
 
-Integration are also made possible, as the ID can be *returned as a header*,
-or can be added as an *outgoing header* in external requests, making it possible to extend the reach of correlation IDs to whole systems.
+Integration are also made possible, as the ID can be returned as a header, or added as an outgoing header in external requests, making it possible to extend the reach of correlation IDs to whole systems.
 
 **Resources**:
 
