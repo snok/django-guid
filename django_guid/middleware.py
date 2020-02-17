@@ -6,7 +6,8 @@ from typing import Union
 
 from django.http import HttpRequest, HttpResponse
 
-from django_guid.config import settings
+from django_guid.config import Settings
+
 
 logger = logging.getLogger('django_guid')
 
@@ -24,6 +25,7 @@ class GuidMiddleware(object):
 
     def __init__(self, get_response: Callable) -> None:
         self.get_response = get_response
+        self.settings = Settings()
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
@@ -39,10 +41,10 @@ class GuidMiddleware(object):
 
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
-        if settings.RETURN_HEADER:
-            response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
-            if settings.EXPOSE_HEADER:
-                response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
+        if self.settings.RETURN_HEADER:
+            response[self.settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
+            if self.settings.EXPOSE_HEADER:
+                response['Access-Control-Expose-Headers'] = self.settings.GUID_HEADER_NAME
         return response
 
     @classmethod
@@ -109,11 +111,11 @@ class GuidMiddleware(object):
         :param request: HttpRequest object
         :return: GUID
         """
-        given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
-        if not settings.VALIDATE_GUID:
+        given_guid = str(request.headers.get(self.settings.GUID_HEADER_NAME))
+        if not self.settings.VALIDATE_GUID:
             logger.debug('Returning ID from header without validating it as a GUID')
             return given_guid
-        elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
+        elif self.settings.VALIDATE_GUID and self._validate_guid(given_guid):
             logger.debug('%s is a valid GUID', given_guid)
             return given_guid
         else:
@@ -130,7 +132,7 @@ class GuidMiddleware(object):
         :param request: HttpRequest object
         :return: GUID
         """
-        guid_header_name = settings.GUID_HEADER_NAME
+        guid_header_name = self.settings.GUID_HEADER_NAME
         header = request.headers.get(guid_header_name)  # Case insensitive headers.get added in Django2.2
         if header:
             logger.info('%s found in the header: %s', guid_header_name, header)

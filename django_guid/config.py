@@ -45,6 +45,3 @@ class Settings(object):
 
         else:
             pass  # Do nothing if DJANGO_GUID not found in settings
-
-
-settings = Settings()

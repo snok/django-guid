@@ -1,7 +1,6 @@
 """
-Don't put imports or code here.
-This file is imported by setup.py
-Adding imports here will break setup.py
+If you have to put code here, make sure to test that you haven't broken setup.py
+You can test this by installing the package locally with `pip install -e .`
 """
 from . import signals  # noqa: F401
 
