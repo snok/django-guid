@@ -23,7 +23,6 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
         ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Request closed', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -42,7 +41,6 @@ def test_request_with_correlation_id(client, caplog):
         ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
         ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
         ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
-        ('Request closed', '97c304252fd14b25b72d6aee31565843'),
         ('Deleting 97c304252fd14b25b72d6aee31565843 from _guid', '97c304252fd14b25b72d6aee31565843'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -63,7 +61,6 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Request closed', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -86,7 +83,6 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
-        ('Request closed', 'bad-guid'),
         ('Deleting bad-guid from _guid', 'bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -105,7 +101,6 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
         ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Request closed', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -187,14 +182,12 @@ def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
-        ('Request closed', 'bad-guid'),
         ('Deleting bad-guid from _guid', 'bad-guid'),
         # Second request
         ('Correlation-ID found in the header: another-bad-guid', None),
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'another-bad-guid'),
         ('Some warning in a function', 'another-bad-guid'),
-        ('Request closed', 'another-bad-guid'),
         ('Deleting another-bad-guid from _guid', 'another-bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected

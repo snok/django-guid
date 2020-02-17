@@ -1,11 +1,9 @@
 import logging
 import threading
 import uuid
-from typing import Callable, Optional
+from typing import Callable
 from typing import Union
 
-from django.core.signals import request_finished
-from django.dispatch import receiver
 from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
@@ -144,13 +142,3 @@ class GuidMiddleware(object):
             )
 
         return request.correlation_id
-
-
-@receiver(request_finished)
-def clean_finished_request_guid(sender: Optional[dict], **kwargs) -> None:
-    """
-    When a request is finished, this function is called to delete the GUID of the request thread.
-    The signal is sent as the last step when a response is closed, which should ensure memory safety.
-    """
-    logger.debug('Request closed')  # TODO: Remove after testing?
-    GuidMiddleware.delete_guid()
