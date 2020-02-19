@@ -1,5 +1,6 @@
+###########
 Django GUID
-===========
+###########
 
 .. image:: https://img.shields.io/pypi/v/django-guid.svg
     :target: https://pypi.python.org/pypi/django-guid
@@ -7,68 +8,84 @@ Django GUID
     :target: https://pypi.python.org/pypi/django-guid#downloads
 .. image:: https://img.shields.io/pypi/djversions/django-guid.svg
     :target: https://pypi.python.org/pypi/django-guid
-.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jonasks/django-guid
 .. image:: https://readthedocs.org/projects/django-guid/badge/?version=latest
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
+.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jonasks/django-guid
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+    :target: https://github.com/pre-commit/pre-commit
 
 
-Django GUID stores a GUID to an object, making it accessible by using the ID of the current thread.
-The GUID is accessible from anywhere within the application throughout a request,
-allowing us to inject it into the logs.
+Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. In other words, every error, and really every log now has an ID connecting it to all other relevant logs, making
+debugging simple.
+
+The package stores a GUID to an object, making it accessible by using the ID of the current thread. This makes integrations possible, as the ID can be returned as a header (built in setting) or forwarded manually to other systems (built in API), making it possible to extend the reach of correlation IDs to whole systems.
+
+**Resources**:
 
 * Free software: BSD License
-* Homepage: https://github.com/JonasKs/django-guid
 * Documentation: https://django-guid.readthedocs.io
+* Homepage: https://github.com/JonasKs/django-guid
+
+**Examples**
+
+Log output with a GUID:
+
+.. code-block::
+
+    INFO ... [773fa6885e03493498077a273d1b7f2d] project.views This is a DRF view log, and should have a GUID.
+    WARNING ... [773fa6885e03493498077a273d1b7f2d] project.services.file Some warning in a function
+    INFO ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.views This is a DRF view log, and should have a GUID.
+    INFO ... [99d44111e9174c5a9494275aa7f28858] project.views This is a DRF view log, and should have a GUID.
+    WARNING ... [0d1c3919e46e4cd2b2f4ac9a187a8ea1] project.services.file Some warning in a function
+    WARNING ... [99d44111e9174c5a9494275aa7f28858] project.services.file Some warning in a function
 
 
-Example
--------
+Log output without a GUID:
 
-Using ``demoproj`` as an example, all the log messages **without** ``django-guid`` would look like this:
+.. code-block::
+
+    INFO ... project.views This is a DRF view log, and should have a GUID.
+    WARNING ... project.services.file Some warning in a function
+    INFO ... project.views This is a DRF view log, and should have a GUID.
+    INFO ... project.views This is a DRF view log, and should have a GUID.
+    WARNING ... project.services.file Some warning in a function
+    WARNING ... project.services.file Some warning in a function
+
+See the `documentation <https://django-guid.readthedocs.io>`_ for more examples.
+
+************
+Installation
+************
+
+Install using pip:
 
 .. code-block:: bash
 
-    INFO 2020-01-14 12:28:42,194 django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
-    INFO 2020-01-14 12:28:42,353 demoproj.views This is a DRF view log, and should have a GUID.
-    INFO 2020-01-14 12:28:42,354 demoproj.services.useless_file Some warning in a function
+    pip install django-guid
 
 
-With ``django-guid`` every log message has a GUID attached to it(``97c304252fd14b25b72d6aee31565843``),
-through the entire stack:
-
-.. code-block:: bash
-
-    INFO 2020-01-14 12:28:42,194 [None] django_guid.middleware No Correlation-ID found in the header. Added Correlation-ID: 97c304252fd14b25b72d6aee31565843
-    INFO 2020-01-14 12:28:42,353 [97c304252fd14b25b72d6aee31565843] demoproj.views This is a DRF view log, and should have a GUID.
-    INFO 2020-01-14 12:28:42,354 [97c304252fd14b25b72d6aee31565843] demoproj.services.useless_file Some warning in a function
-
-For multiple requests at the same time over multiple threads, see the `extended example docs <https://django-guid.readthedocs.io/en/latest/extended_example.html>`_.
-
-
-Why
----
-
-``django-guid`` makes it extremely easy to track exactly what happened in any request. If you see an error
-in your log, you can use the attached GUID to search for any connected log message to that single request.
-The GUID can also be returned as a header and displayed to the end user of your application, allowing them
-to report an issue with a connected ID. ``django-guid`` makes troubleshooting easy.
-
-
+********
 Settings
---------
+********
 
-* :code:`SKIP_CLEANUP`
-        After the request is done, the GUID is deleted to avoid memory leaks. Memory leaks can happen in the
-        case of many threads, or especially when using Gunicorn :code:`max_requests` or similar settings,
-        where the number of thread IDs can potentially scale for ever.
-        Having clean up enabled ensures we can not have memory leaks, but comes at the cost that anything that happens
-        after this middleware will not have the GUID attached, such as :code:`django.request` or :code:`django.server`
-        logs. If you do not want clean up of GUIDs and know what you're doing, you can enable :code:`SKIP_CLEANUP`.
+Package settings are added in your ``settings.py``:
 
-    Default: False
+.. code-block:: python
+
+    DJANGO_GUID = {
+        GUID_HEADER_NAME = 'Correlation-ID',
+        VALIDATE_GUID = True,
+        RETURN_HEADER = True,
+        EXPOSE_HEADER = True,
+        SKIP_CLEANUP = False,
+    }
+
+
+
+**Optional Parameters**
 
 * :code:`GUID_HEADER_NAME`
         The name of the GUID to look for in a header in an incoming request. Remember that it's case insensitive.
@@ -94,18 +111,26 @@ Settings
 
     Default: True
 
+* :code:`SKIP_CLEANUP`
+        After the request is done, the GUID is deleted to avoid memory leaks. Memory leaks can happen in the
+        case of many threads, or especially when using Gunicorn :code:`max_requests` or similar settings,
+        where the number of thread IDs can potentially scale for ever.
+        Having clean up enabled ensures we can not have memory leaks, but comes at the cost that anything that happens
+        after this middleware will not have the GUID attached, such as :code:`django.request` or :code:`django.server`
+        logs. If you do not want clean up of GUIDs and know what you're doing, you can enable :code:`SKIP_CLEANUP`.
 
-Installation
-------------
+    Default: False
 
-Install using pip:
+*************
+Configuration
+*************
 
-    pip install django-guid
+Once settings have set up, add the following to your projects' ``settings.py``:
 
+1. Middleware
+=============
 
-Then, in your project's :code:`settings.py` add these settings:
-
-Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlation-ID to span your middleware-logs, put it on top):
+Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
 
 .. code-block:: python
 
@@ -115,7 +140,12 @@ Add the middleware to the :code:`MIDDLEWARE` setting (if you want the correlatio
      ]
 
 
-Add a filter to your ``LOGGING``:
+It is recommended that you add the middleware at the top, so that the remaining middleware loggers include the requests GUID.
+
+2. Logging Configuration
+========================
+
+Add :code:`django_guid.log_filters.CorrelationId` as a filter in your ``LOGGING`` configuration:
 
 .. code-block:: python
 
@@ -127,7 +157,6 @@ Add a filter to your ``LOGGING``:
             }
         }
     }
-
 
 Put that filter in your handler:
 
@@ -144,7 +173,7 @@ Put that filter in your handler:
         }
     }
 
-Lastly make sure we add the new ``correlation_id`` filter to the formatters:
+And make sure to add the new ``correlation_id`` filter to one or all of your formatters:
 
 .. code-block:: python
 
@@ -157,12 +186,15 @@ Lastly make sure we add the new ``correlation_id`` filter to the formatters:
         }
     }
 
-If these settings were confusing, please have a look in the demo project's
+
+If these settings were confusing, please have a look in the demo projects'
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
 
+3. Django GUID Logger (Optional)
+================================
 
-
-If you wish to aggregate the django-guid logs to your console or other handlers, add django_guid to your loggers in the project. Example:
+If you wish to see the Django GUID middleware outputs, you may configure a logger for the module.
+Simply add django_guid to your loggers in the project, like in the example below:
 
 .. code-block:: python
 
@@ -177,8 +209,4 @@ If you wish to aggregate the django-guid logs to your console or other handlers,
         }
     }
 
-
-----------
-
-Inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a complete rewritten
-`django-echelon <https://github.com/seveas/django-echelon>`_ approach.
+This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
