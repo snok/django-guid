@@ -14,7 +14,7 @@ class Settings(object):
     def __init__(self) -> None:
         self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
-        self.SKIP_CLEANUP = False
+        self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
         self.RETURN_HEADER = True
         self.EXPOSE_HEADER = True
 

@@ -80,7 +80,6 @@ Package settings are added in your ``settings.py``:
         VALIDATE_GUID = True,
         RETURN_HEADER = True,
         EXPOSE_HEADER = True,
-        SKIP_CLEANUP = False,
     }
 
 
@@ -111,15 +110,6 @@ Package settings are added in your ``settings.py``:
 
     Default: True
 
-* :code:`SKIP_CLEANUP`
-        After the request is done, the GUID is deleted to avoid memory leaks. Memory leaks can happen in the
-        case of many threads, or especially when using Gunicorn :code:`max_requests` or similar settings,
-        where the number of thread IDs can potentially scale for ever.
-        Having clean up enabled ensures we can not have memory leaks, but comes at the cost that anything that happens
-        after this middleware will not have the GUID attached, such as :code:`django.request` or :code:`django.server`
-        logs. If you do not want clean up of GUIDs and know what you're doing, you can enable :code:`SKIP_CLEANUP`.
-
-    Default: False
 
 *************
 Configuration
