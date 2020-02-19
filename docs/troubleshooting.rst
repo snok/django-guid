@@ -10,7 +10,7 @@ Set the logger to log DEBUG logs from django-guid:
 
     LOGGING = {
         'loggers': {
-            'django-guid': {
+            'django_guid': {
                 'handlers': ['console'],
                 'level': 'DEBUG',
             },
