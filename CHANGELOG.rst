@@ -1,6 +1,15 @@
 Changelog
 =========
 
+`1.2.0`_ - 2020-02-20
+---------------------
+
+**Improvements**
+
+* Deprecated ``SKIP_CLEANUP`` in favor of cleaning up all requests, after all other processes finish, using the ``request_finished`` Django signal.
+* Restructured README and docs.
+
+
 `1.1.1`_ - 2020-02-12
 ---------------------
 
@@ -143,3 +152,4 @@ Changelog
 .. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
 .. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
 .. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
+.. _1.2.0: https://github.com/jonasks/django-guid/compare/1.1.1...1.2.0

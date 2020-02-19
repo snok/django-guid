@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-from django_guid import __version__
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -9,7 +8,7 @@ with open('CHANGELOG.rst') as changelog_file:
 
 setup(
     name='django-guid',
-    version=__version__,
+    version='1.2.0',
     description='Middleware that makes a request GUID available from anywhere and injects it into your logs.',
     include_package_data=True,
     long_description=readme + '\n\n' + changelog,

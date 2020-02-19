@@ -23,7 +23,7 @@ def test_invalid_header_name(monkeypatch):
         Settings()
 
 
-def test_invalid_skip_guid_setting(capsys):
+def test_invalid_skip_guid_setting():
     """
     Assert that a deprecation warning is called when settings are instantiated with SKIP_CLEANUP == True or False
     """

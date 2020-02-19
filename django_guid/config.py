@@ -41,7 +41,7 @@ class Settings(object):
                 warn(
                     'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
                     'Please remove it from your DJANGO_GUID settings.',
-                    PendingDeprecationWarning,
+                    DeprecationWarning,
                 )
 
         else:
