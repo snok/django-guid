@@ -9,14 +9,14 @@ Install using pip:
     pip install django-guid
 
 
-*************
+
 Configuration
-*************
+=============
 
 Once settings have set up, add the following to your projects' ``settings.py``:
 
 1. Middleware
-=============
+-------------
 
 Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
 
@@ -31,7 +31,7 @@ Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
 It is recommended that you add the middleware at the top, so that the remaining middleware loggers include the requests GUID.
 
 2. Logging Configuration
-========================
+------------------------
 
 Add :code:`django_guid.log_filters.CorrelationId` as a filter in your ``LOGGING`` configuration:
 
@@ -79,7 +79,7 @@ If these settings were confusing, please have a look in the demo projects'
 `settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
 
 3. Django GUID Logger (Optional)
-================================
+--------------------------------
 
 If you wish to see the Django GUID middleware outputs, you may configure a logger for the module.
 Simply add django_guid to your loggers in the project, like in the example below:
