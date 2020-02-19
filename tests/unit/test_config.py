@@ -23,10 +23,11 @@ def test_invalid_header_name(monkeypatch):
         Settings()
 
 
-def test_invalid_skip_guid_setting():
+def test_invalid_skip_guid_setting(monkeypatch):
     """
     Assert that a deprecation warning is called when settings are instantiated with SKIP_CLEANUP == True or False
     """
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': True})
     with pytest.deprecated_call():
         Settings()
 
