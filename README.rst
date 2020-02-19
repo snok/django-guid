@@ -8,18 +8,20 @@ Django GUID
     :target: https://pypi.python.org/pypi/django-guid#downloads
 .. image:: https://img.shields.io/pypi/djversions/django-guid.svg
     :target: https://pypi.python.org/pypi/django-guid
-.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jonasks/django-guid
 .. image:: https://readthedocs.org/projects/django-guid/badge/?version=latest
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
+.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/jonasks/django-guid
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+    :target: https://github.com/pre-commit/pre-commit
 
 
-Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. This means that every error now has an ID connecting it to all other relevant logs, making
+Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. In other words, every error, and really every log now has an ID connecting it to all other relevant logs, making
 debugging simple.
 
-Integration are also made possible, as the ID can be returned as a header, or forwarded, making it possible to extend the reach of correlation IDs to whole systems.
+The package stores a GUID to an object, making it accessible by using the ID of the current thread. This makes integrations possible, as the ID can be returned as a header (built in setting) or forwarded manually to other systems (built in API), making it possible to extend the reach of correlation IDs to whole systems.
 
 **Resources**:
 
@@ -208,8 +210,3 @@ Simply add django_guid to your loggers in the project, like in the example below
     }
 
 This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
-
-----------
-
-This package was inspired by `django-log-request-id <https://github.com/dabapps/django-log-request-id>`_ with a complete rewritten
-`django-echelon <https://github.com/seveas/django-echelon>`_ approach.
