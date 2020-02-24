@@ -16,7 +16,7 @@ def delete_guid(sender: Optional[dict], **kwargs: dict) -> None:
 
     When a request is finished, delete a requests _guid reference to prevent memory leaks.
 
-    :param sender: dict or None
+    :param sender: The sender of the signal. By documentation, we must allow this input parameter.
     :param kwargs: dict
     :return: None
     """
