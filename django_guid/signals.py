@@ -4,7 +4,7 @@ from typing import Optional
 from django.core.signals import request_finished
 from django.dispatch import receiver
 
-from .middleware import GuidMiddleware
+from django_guid.middleware import GuidMiddleware
 
 logger = logging.getLogger('django_guid')
 
