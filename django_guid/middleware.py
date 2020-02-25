@@ -5,7 +5,7 @@ from typing import Callable, Union
 
 from django.http import HttpRequest, HttpResponse
 
-from .config import settings
+from django_guid.config import settings
 
 logger = logging.getLogger('django_guid')
 
