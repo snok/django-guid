@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 
 
 @pytest.fixture
@@ -192,3 +193,12 @@ def test_cleanup_signal(client, caplog, monkeypatch, mock_uuid):
         ('Deleting another-bad-guid from _guid', 'another-bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+
+
+def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
+    """
+    Test that the app will fail if `is_installed('django_guid')` is `False`.
+    """
+    monkeypatch.setattr('django_guid.middleware.apps.is_installed', lambda x: False)
+    with pytest.raises(ImproperlyConfigured, match='django_guid must be in installed apps'):
+        client.get('/')

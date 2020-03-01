@@ -3,6 +3,8 @@ import threading
 import uuid
 from typing import Callable, Union
 
+from django.apps import apps
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
@@ -22,7 +24,15 @@ class GuidMiddleware(object):
     _guid = {}
 
     def __init__(self, get_response: Callable) -> None:
+        """
+        One-time configuration and initialization.
+        """
         self.get_response = get_response
+
+        # django_guid must be in installed apps for signals to work.
+        # Without signals there may be a memory leak
+        if not apps.is_installed('django_guid'):
+            raise ImproperlyConfigured('django_guid must be in installed apps')
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
