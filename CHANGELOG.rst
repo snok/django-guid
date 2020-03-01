@@ -1,7 +1,7 @@
 Changelog
 =========
 
-`2.0.0`_ - 2020-02-20
+`2.0.0`_ - 2020-03-02
 ---------------------
 **This version contains backwards incompatible changes. Read the entire changelog before upgrading**
 
