@@ -1,8 +1,10 @@
 import logging
 import threading
 import uuid
-from typing import Union
-from typing import Callable
+from typing import Callable, Union
+
+from django.apps import apps
+from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
@@ -22,7 +24,15 @@ class GuidMiddleware(object):
     _guid = {}
 
     def __init__(self, get_response: Callable) -> None:
+        """
+        One-time configuration and initialization.
+        """
         self.get_response = get_response
+
+        # django_guid must be in installed apps for signals to work.
+        # Without signals there may be a memory leak
+        if not apps.is_installed('django_guid'):
+            raise ImproperlyConfigured('django_guid must be in installed apps')
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
@@ -33,20 +43,15 @@ class GuidMiddleware(object):
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
-        # Ensure we don't get the previous request GUID attached to the logs from this file.
-        if settings.SKIP_CLEANUP:
-            self.delete_guid()
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
+
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
         if settings.RETURN_HEADER:
             response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
             if settings.EXPOSE_HEADER:
                 response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
-        if not settings.SKIP_CLEANUP:
-            # Delete the current request to avoid memory leak
-            self.delete_guid()
         return response
 
     @classmethod
@@ -115,7 +120,7 @@ class GuidMiddleware(object):
         """
         given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
         if not settings.VALIDATE_GUID:
-            logger.debug('VALIDATE_GUID is not True, will not validate given GUID')
+            logger.debug('Returning ID from header without validating it as a GUID')
             return given_guid
         elif settings.VALIDATE_GUID and self._validate_guid(given_guid):
             logger.debug('%s is a valid GUID', given_guid)

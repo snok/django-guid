@@ -1,6 +1,26 @@
 Changelog
 =========
 
+`2.0.0`_ - 2020-03-02
+---------------------
+**This version contains backwards incompatible changes. Read the entire changelog before upgrading**
+
+
+**Deprecated**
+
+* ``SKIP_CLEANUP``: After a request is finished, the Correlation ID is cleaned up using the ``request_finished`` Django signal.
+
+
+**Incompatible changes**
+
+* ``django_guid`` must be in ``INSTALLED_APPS`` due to usage of signals.
+
+
+**Improvements**
+
+* Restructured README and docs.
+
+
 `1.1.1`_ - 2020-02-12
 ---------------------
 
@@ -143,3 +163,4 @@ Changelog
 .. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
 .. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
 .. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
+.. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0

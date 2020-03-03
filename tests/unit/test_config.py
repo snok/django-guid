@@ -24,8 +24,11 @@ def test_invalid_header_name(monkeypatch):
 
 
 def test_invalid_skip_guid_setting(monkeypatch):
-    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': 'string'})
-    with pytest.raises(ImproperlyConfigured, match='SKIP_CLEANUP must be a boolean'):
+    """
+    Assert that a deprecation warning is called when settings are instantiated with SKIP_CLEANUP == True or False
+    """
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': True})
+    with pytest.deprecated_call():
         Settings()
 
 
@@ -46,7 +49,6 @@ def test_valid_settings(monkeypatch):
         django_settings,
         'DJANGO_GUID',
         {
-            'SKIP_CLEANUP': True,
             'VALIDATE_GUID': False,
             'GUID_HEADER_NAME': 'Correlation-ID-TEST',
             'RETURN_HEADER': False,
@@ -54,6 +56,5 @@ def test_valid_settings(monkeypatch):
         },
     )
     assert not Settings().VALIDATE_GUID
-    assert Settings().SKIP_CLEANUP
     assert Settings().GUID_HEADER_NAME == 'Correlation-ID-TEST'
     assert not Settings().RETURN_HEADER

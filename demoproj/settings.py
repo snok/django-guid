@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_guid',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,6 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'SKIP_CLEANUP': False
 }
 
 # Set up logging for the project

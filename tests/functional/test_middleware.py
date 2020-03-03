@@ -1,4 +1,5 @@
 import pytest
+from django.core.exceptions import ImproperlyConfigured
 
 
 @pytest.fixture
@@ -23,6 +24,7 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
         ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -41,6 +43,7 @@ def test_request_with_correlation_id(client, caplog):
         ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
         ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
         ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
+        ('Received signal `request_finished`', '97c304252fd14b25b72d6aee31565843'),
         ('Deleting 97c304252fd14b25b72d6aee31565843 from _guid', '97c304252fd14b25b72d6aee31565843'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -61,6 +64,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -80,9 +84,10 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
         ('Correlation-ID found in the header: bad-guid', None),
-        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
+        ('Received signal `request_finished`', 'bad-guid'),
         ('Deleting bad-guid from _guid', 'bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -101,6 +106,7 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
         ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -157,35 +163,42 @@ def test_expose_header_return_header_false(client, monkeypatch, mock_uuid):
     assert not response.get('Access-Control-Expose-Headers')
 
 
-#
-# Important: All tests below this comment should have SKIP_CLEANUP set to True.
-#
-
-
-def test_request_with_skip_cleanup(client, caplog, monkeypatch, mock_uuid):
+def test_cleanup_signal(client, caplog, monkeypatch, mock_uuid):
     """
-    Tests that a request skips cleanup if SKIP_CLEANUP is True
+    Tests that a request cleans up a request after finishing.
     :param client: Django client
     :param caplog: Caplog fixture
     :param monkeypatch: Monkeypatch for django settings
     """
     from django_guid.config import settings as guid_settings
 
-    monkeypatch.setattr(guid_settings, 'SKIP_CLEANUP', True)
     monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
-    a = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    b = client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
+    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+    client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
+
     expected = [
         # First request
         ('Correlation-ID found in the header: bad-guid', None),
-        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
+        ('Received signal `request_finished`', 'bad-guid'),
         ('Deleting bad-guid from _guid', 'bad-guid'),
         # Second request
         ('Correlation-ID found in the header: another-bad-guid', None),
-        ('VALIDATE_GUID is not True, will not validate given GUID', None),
+        ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'another-bad-guid'),
         ('Some warning in a function', 'another-bad-guid'),
+        ('Received signal `request_finished`', 'another-bad-guid'),
+        ('Deleting another-bad-guid from _guid', 'another-bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+
+
+def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
+    """
+    Test that the app will fail if `is_installed('django_guid')` is `False`.
+    """
+    monkeypatch.setattr('django_guid.middleware.apps.is_installed', lambda x: False)
+    with pytest.raises(ImproperlyConfigured, match='django_guid must be in installed apps'):
+        client.get('/')
