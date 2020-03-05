@@ -11,6 +11,14 @@ from django_guid.config import settings
 
 logger = logging.getLogger('django_guid')
 
+if settings.INTEGRATE_SENTRY:
+    # This should never fail, as the same logic is run in config.py
+    try:
+        import sentry_sdk
+    except ModuleNotFoundError:
+        raise ImproperlyConfigured('The `sentry-sdk` package needs to be installed to integrate with Sentry. '
+                                   'Please run `pip install sentry-sdk`, or set `INTEGRATE_SENTRY` to False in the settings.')
+
 
 class GuidMiddleware(object):
     """
@@ -45,6 +53,11 @@ class GuidMiddleware(object):
         """
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
+
+        # Set the Sentry tracing ID
+        if settings.INTEGRATE_SENTRY:
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag("transaction_id", self.get_guid())
 
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
