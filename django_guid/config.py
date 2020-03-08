@@ -40,6 +40,10 @@ class Settings(object):
             if not isinstance(self.INTEGRATIONS, list):
                 raise ImproperlyConfigured('INTEGRATIONS must be an array')
 
+            for integration in self.INTEGRATIONS:
+                if not hasattr(integration, 'run'):
+                    raise ImproperlyConfigured('Integration classes must be instantiated and contain a `run` method')
+
             if 'SKIP_CLEANUP' in _settings:
                 warn(
                     'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '

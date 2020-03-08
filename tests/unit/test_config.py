@@ -65,3 +65,14 @@ def test_bad_integrations_type(monkeypatch):
         monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'INTEGRATIONS': item})
         with pytest.raises(ImproperlyConfigured, match='INTEGRATIONS must be an array'):
             Settings()
+
+
+def test_integration_without_run_method(monkeypatch):
+    class FakeIntegration:
+        pass
+
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'INTEGRATIONS': [FakeIntegration()]})
+    with pytest.raises(
+        ImproperlyConfigured, match='Integration classes must be instantiated and contain a `run` method'
+    ):
+        Settings()

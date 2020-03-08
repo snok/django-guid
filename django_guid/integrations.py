@@ -6,12 +6,18 @@ logger = logging.getLogger('django_guid')
 
 
 class SentryIntegration:
+    """
+    This integrations, when added to the django_guid settings,
+    ensures that each requests correlation ID is passed on to Sentry exception logs.
+    """
+
     def __init__(self):
         """
-        Run when integration is initialized in the clients settings.py.
+        This is run when the integration is initialized in the clients settings.py.
 
-        Makes sure the client has installed the `sentry_sdk` package, and that the header is appropriately named.
+        Put all validation logic here.
         """
+        # Makes sure the client has installed the `sentry_sdk` package, and that the header is appropriately named.
         try:
             import sentry_sdk  # noqa: F401
         except ModuleNotFoundError:
@@ -23,7 +29,7 @@ class SentryIntegration:
     @staticmethod
     def run(self):
         """
-        Section run in the middleware
+        This method holds execution logic to be executed in the middleware.
         """
         import sentry_sdk
 

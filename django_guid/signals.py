@@ -14,11 +14,12 @@ def delete_guid(sender: Optional[dict], **kwargs: dict) -> None:
     """
     Receiver function for when a request finishes.
 
-    When a request is finished, delete a requests _guid reference to prevent memory leaks.
+    When a request is finished the delete_guid method is called to remove the request _guid reference.
+    This is important to maintain, to prevent a memory leak.
 
     :param sender: The sender of the signal. By documentation, we must allow this input parameter.
-    :param kwargs: The request_finished signal does not actually send any kwargs, but Django will throw an error 
-        if we don't accept them. This is because at any point arguments could get added to the signal, and the reciever
+    :param kwargs: The request_finished signal does not actually send any kwargs, but Django will throw an error
+        if we don't accept them. This is because at any point arguments could get added to the signal, and the receiver
         must be able to handle those new arguments.
     :return: None
     """
