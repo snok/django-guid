@@ -14,11 +14,7 @@ logger = logging.getLogger('django_guid')
 
 class GuidMiddleware(object):
     """
-    Checks for a GUID (correlation ID) in an incoming request's headers and stores it
-    If none is found, one is generated.
-
-    As every request spawns a new thread, this makes it possible to add logger IDs that only span a single request.
-
+    Gets a GUID from a request header, or generates a GUID if none is found, for each incoming request.
     Stored GUIDs are accessible from anywhere in the Django app.
     """
 
