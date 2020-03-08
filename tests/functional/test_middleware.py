@@ -21,7 +21,10 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     """
     response = client.get('/')
     expected = [
-        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        (
+            'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+            None,
+        ),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -103,7 +106,10 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
     response = client.get('/api')
     expected = [
-        ('No Correlation-ID found in the header. Added Correlation-ID: 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        (
+            'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+            None,
+        ),
         ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),

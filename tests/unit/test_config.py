@@ -58,3 +58,10 @@ def test_valid_settings(monkeypatch):
     assert not Settings().VALIDATE_GUID
     assert Settings().GUID_HEADER_NAME == 'Correlation-ID-TEST'
     assert not Settings().RETURN_HEADER
+
+
+def test_bad_integrations_type(monkeypatch):
+    for item in [{}, '', 2, None, -2]:
+        monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'INTEGRATIONS': item})
+        with pytest.raises(ImproperlyConfigured, match='INTEGRATIONS must be an array'):
+            Settings()
