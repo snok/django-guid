@@ -16,8 +16,8 @@ class SentryIntegration:
             import sentry_sdk  # noqa: F401
         except ModuleNotFoundError:
             raise ImproperlyConfigured(
-                'The package `sentry-sdk` is required for integrating with Sentry. '
-                'Please run `pip install sentry-sdk`, or set `INTEGRATE_SENTRY` to False in the DJANGO_GUID settings.'
+                'The package `sentry-sdk` is required for extending your tracing IDs to Sentry. '
+                'Please run `pip install sentry-sdk` if you wish to include this integration.'
             )
 
     @staticmethod
