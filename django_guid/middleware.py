@@ -14,7 +14,7 @@ logger = logging.getLogger('django_guid')
 
 class GuidMiddleware(object):
     """
-    Checks for a GUID (correlation ID) in an incoming request's headers and assigns it to the thread if found.
+    Checks for a GUID (correlation ID) in an incoming request's headers and stores it
     If none is found, one is generated.
 
     As every request spawns a new thread, this makes it possible to add logger IDs that only span a single request.
@@ -30,9 +30,6 @@ class GuidMiddleware(object):
         """
         self.get_response = get_response
 
-        # `django_guid` must be in installed apps for signals to work and if the signals dont work,
-        # it creates a memory leak, since _guid is never cleaned and can theoretically keep growing infinitely.
-        #
         # This logic cannot be moved to config.py because apps are not yet initialized when that is executed
         if not apps.is_installed('django_guid'):
             raise ImproperlyConfigured('django_guid must be in installed apps')
@@ -52,6 +49,7 @@ class GuidMiddleware(object):
 
         # Run all integrations
         for integration in settings.INTEGRATIONS:
+            logger.debug('Running integration: `%s`', integration.identifier)
             integration.run(self)
 
         # ^ Code above this line is executed before the view and later middleware
@@ -66,7 +64,6 @@ class GuidMiddleware(object):
     def get_guid(cls, default: str = None) -> str:
         """
         Fetches the GUID of the current thread from _guid.
-
         If no value has been set for the current thread yet, a default value is returned.
 
         :param default: Optional value to return if no GUID has been set on the current thread.
@@ -141,7 +138,6 @@ class GuidMiddleware(object):
     def _get_id_from_header(self, request: HttpRequest) -> str:
         """
         Checks if the request contains the header specified in the Django settings.
-
         If it does, we fetch the header and attempt to validate the contents as GUID.
         If no header is found, we generate a GUID to be injected instead.
 

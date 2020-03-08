@@ -6,7 +6,7 @@ def test_sentry_integration(client, monkeypatch, caplog):
     """
     Tests that the package handles multiple header values by defaulting to one and logging a warning.
     """
-    from django_guid.integrations import SentryIntegration
+    from django_guid.integrations.sentry import SentryIntegration
     from django_guid.config import settings as guid_settings
 
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
@@ -14,6 +14,7 @@ def test_sentry_integration(client, monkeypatch, caplog):
     expected = [
         (None, 'Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565842'),
         (None, '97c304252fd14b25b72d6aee31565842 is a valid GUID'),
+        ('97c304252fd14b25b72d6aee31565842', 'Running integration: `Sentry`'),
         ('97c304252fd14b25b72d6aee31565842', 'Setting Sentry transaction_id to 97c304252fd14b25b72d6aee31565842'),
         ('97c304252fd14b25b72d6aee31565842', 'This is a DRF view log, and should have a GUID.'),
         ('97c304252fd14b25b72d6aee31565842', 'Some warning in a function'),
@@ -28,7 +29,7 @@ def test_sentry_validation(client, monkeypatch, caplog):
     Tests that the package handles multiple header values by defaulting to one and logging a warning.
     """
     import sys
-    from django_guid.integrations import SentryIntegration
+    from django_guid.integrations.sentry import SentryIntegration
     from django_guid.config import settings as guid_settings
 
     # Mock away the sentry_sdk dependency
