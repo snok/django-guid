@@ -29,11 +29,7 @@ class SentryIntegration(Integration):
             )
 
     def run(self, middleware_context) -> None:
-        """
-        This method holds execution logic to be executed in the middleware.
-        """
         import sentry_sdk
-
         with sentry_sdk.configure_scope() as scope:
             guid = middleware_context.get_guid()
             logger.debug('Setting Sentry transaction_id to %s', guid)
