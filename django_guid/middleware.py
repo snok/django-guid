@@ -30,6 +30,10 @@ class GuidMiddleware(object):
         if not apps.is_installed('django_guid'):
             raise ImproperlyConfigured('django_guid must be in installed apps')
 
+        for integration in settings.INTEGRATIONS:
+            logger.debug('Running setup for integration: `%s`', integration.identifier)
+            integration.setup(self)
+
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
         Fetches the current thread ID from the pool and stores the GUID in the _guid class variable,

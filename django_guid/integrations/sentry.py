@@ -14,11 +14,10 @@ class SentryIntegration(Integration):
 
     identifier = 'Sentry'
 
-    def __init__(self) -> None:
+    def validate(self) -> None:
         """
-        Holds validation logic run on initialization.
+        Verifies that the sentry_sdk dependency is installed.
         """
-        super().__init__()
         # Makes sure the client has installed the `sentry_sdk` package, and that the header is appropriately named.
         try:
             import sentry_sdk  # noqa: F401
@@ -29,7 +28,11 @@ class SentryIntegration(Integration):
             )
 
     def run(self, middleware_context) -> None:
+        """
+        Sets the Sentry transaction_id.
+        """
         import sentry_sdk
+
         with sentry_sdk.configure_scope() as scope:
             guid = middleware_context.get_guid()
             logger.debug('Setting Sentry transaction_id to %s', guid)

@@ -12,6 +12,7 @@ def test_sentry_integration(client, monkeypatch, caplog):
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
     client.get('/api', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565842'})
     expected = [
+        (None, 'Running setup for integration: `Sentry`'),
         (None, 'Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565842'),
         (None, '97c304252fd14b25b72d6aee31565842 is a valid GUID'),
         ('97c304252fd14b25b72d6aee31565842', 'Running integration: `Sentry`'),
@@ -24,20 +25,22 @@ def test_sentry_integration(client, monkeypatch, caplog):
     assert [(x.correlation_id, x.message) for x in caplog.records] == expected
 
 
-def test_sentry_validation(client, monkeypatch, caplog):
+def test_sentry_validation(client, monkeypatch):
     """
     Tests that the package handles multiple header values by defaulting to one and logging a warning.
     """
     import sys
     from django_guid.integrations.sentry import SentryIntegration
-    from django_guid.config import settings as guid_settings
+    from django_guid.config import Settings
+    from django.conf import settings
 
     # Mock away the sentry_sdk dependency
     sys.modules['sentry_sdk'] = None
 
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [SentryIntegration()]})
     with pytest.raises(
         ImproperlyConfigured,
         match='The package `sentry-sdk` is required for extending your tracing IDs to Sentry. '
         'Please run `pip install sentry-sdk` if you wish to include this integration.',
     ):
-        monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
+        Settings()

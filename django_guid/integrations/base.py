@@ -8,14 +8,21 @@ class Integration(object):
 
     identifier = None  # Name the identifier
 
-    def __init__(self):
-        """
-        This is run when the integration is initialized in the clients settings.py.
-
-        Put all validation logic here.
-        """
+    def __init__(self) -> None:
         if self.identifier is None:
             raise ImproperlyConfigured('`identifier` cannot be None')
+
+    def validate(self) -> None:
+        """
+        Holds validation logic to be run when Django starts.
+        """
+        pass
+
+    def setup(self, middleware_context) -> None:
+        """
+        Holds setup logic to be run once when the middleware is initialized.
+        """
+        pass
 
     def run(self, middleware_context) -> None:
         """

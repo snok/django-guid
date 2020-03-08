@@ -41,8 +41,7 @@ class Settings(object):
                 raise ImproperlyConfigured('INTEGRATIONS must be an array')
 
             for integration in self.INTEGRATIONS:
-                if not hasattr(integration, 'run'):
-                    raise ImproperlyConfigured('Integration classes must be instantiated and contain a `run` method')
+                integration.validate()
 
             if 'SKIP_CLEANUP' in _settings:
                 warn(
