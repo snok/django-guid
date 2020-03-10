@@ -22,7 +22,7 @@ def test_missing_run_method(monkeypatch, client):
 
     monkeypatch.delattr(SentryIntegration, 'run')
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
-    with pytest.raises(ImproperlyConfigured, match='The integration `Sentry` is missing a `run` method'):
+    with pytest.raises(ImproperlyConfigured, match='The integration `SentryIntegration` is missing a `run` method'):
         client.get('/api')
 
 
@@ -56,14 +56,14 @@ def test_non_callable_methods(monkeypatch, client):
     # Non-callable run method
     x.run = 'test'
     monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
-    with pytest.raises(ImproperlyConfigured, match='Integration method `run` needs to be made callable for `Sentry`.'):
+    with pytest.raises(ImproperlyConfigured, match='Integration method `run` needs to be made callable for `SentryIntegration`.'):
         Settings()
 
     # # Non-callable validate method
     x.validate = 'test'
     monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
     with pytest.raises(
-        ImproperlyConfigured, match='Integration method `validate` needs to be made callable for `Sentry`.'
+        ImproperlyConfigured, match='Integration method `validate` needs to be made callable for `SentryIntegration`.'
     ):
         Settings()
 
@@ -71,7 +71,7 @@ def test_non_callable_methods(monkeypatch, client):
     x.setup = 'test'
     monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
     with pytest.raises(
-        ImproperlyConfigured, match='Integration method `setup` needs to be made callable for `Sentry`.'
+        ImproperlyConfigured, match='Integration method `setup` needs to be made callable for `SentryIntegration`.'
     ):
         Settings()
 

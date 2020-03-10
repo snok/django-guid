@@ -12,10 +12,10 @@ def test_sentry_integration(client, monkeypatch, caplog):
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
     client.get('/api', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565842'})
     expected = [
-        (None, 'Running setup for integration: `Sentry`'),
+        (None, 'Running setup for integration: `SentryIntegration`'),
         (None, 'Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565842'),
         (None, '97c304252fd14b25b72d6aee31565842 is a valid GUID'),
-        ('97c304252fd14b25b72d6aee31565842', 'Running integration: `Sentry`'),
+        ('97c304252fd14b25b72d6aee31565842', 'Running integration: `SentryIntegration`'),
         ('97c304252fd14b25b72d6aee31565842', 'Setting Sentry transaction_id to 97c304252fd14b25b72d6aee31565842'),
         ('97c304252fd14b25b72d6aee31565842', 'This is a DRF view log, and should have a GUID.'),
         ('97c304252fd14b25b72d6aee31565842', 'Some warning in a function'),
