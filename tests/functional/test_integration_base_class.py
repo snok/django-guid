@@ -24,3 +24,71 @@ def test_missing_run_method(monkeypatch, client):
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
     with pytest.raises(ImproperlyConfigured, match='The integration `Sentry` is missing a `run` method'):
         client.get('/api')
+
+
+def test_run_method_not_accepting_kwargs(monkeypatch, client):
+    """
+    Tests that an exception is raised when the run method doesn't accept kwargs.
+    """
+    from django_guid.integrations.sentry import SentryIntegration
+    from django.conf import settings
+    from django_guid.config import Settings
+
+    class BadIntegration(SentryIntegration):
+        def run(self, guid):
+            pass
+
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [BadIntegration()]})
+    with pytest.raises(ImproperlyConfigured, match='Integration method `run` must accept keyword arguments '):
+        Settings()
+
+
+def test_non_callable_methods(monkeypatch, client):
+    """
+    Tests that an exception is raised when any of the integration base methods are non-callable.
+    """
+    from django_guid.integrations.sentry import SentryIntegration
+    from django.conf import settings
+    from django_guid.config import Settings
+
+    x = SentryIntegration()
+
+    # Non-callable run method
+    x.run = 'test'
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
+    with pytest.raises(ImproperlyConfigured, match='Integration method `run` needs to be made callable for `Sentry`.'):
+        Settings()
+
+    # # Non-callable validate method
+    x.validate = 'test'
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
+    with pytest.raises(
+        ImproperlyConfigured, match='Integration method `validate` needs to be made callable for `Sentry`.'
+    ):
+        Settings()
+
+    # # Non-callable setup method
+    x.setup = 'test'
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
+    with pytest.raises(
+        ImproperlyConfigured, match='Integration method `setup` needs to be made callable for `Sentry`.'
+    ):
+        Settings()
+
+
+def test_base():
+    """
+    MVP integration test.
+    """
+    from django_guid.integrations.base import Integration
+
+    class MyCustomIntegration(Integration):
+        identifier = 'My custom integration'
+
+        def run(self, guid, **kwargs):
+            pass
+
+    x = MyCustomIntegration()
+    x.validate()
+    x.setup()
+    x.run('test')

@@ -31,8 +31,9 @@ class GuidMiddleware(object):
             raise ImproperlyConfigured('django_guid must be in installed apps')
 
         for integration in settings.INTEGRATIONS:
+            # Run the setup method
             logger.debug('Running setup for integration: `%s`', integration.identifier)
-            integration.setup(self)
+            integration.setup()
 
     def __call__(self, request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
         """
@@ -50,7 +51,7 @@ class GuidMiddleware(object):
         # Run all integrations
         for integration in settings.INTEGRATIONS:
             logger.debug('Running integration: `%s`', integration.identifier)
-            integration.run(self)
+            integration.run(guid=self.get_guid())
 
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
