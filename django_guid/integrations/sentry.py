@@ -27,7 +27,7 @@ class SentryIntegration(Integration):
                 'Please run `pip install sentry-sdk` if you wish to include this integration.'
             )
 
-    def run(self, guid, **kwargs) -> None:
+    def run(self, guid: str, **kwargs) -> None:
         """
         Sets the Sentry transaction_id.
         """
