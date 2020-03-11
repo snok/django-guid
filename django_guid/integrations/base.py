@@ -6,7 +6,7 @@ class Integration(object):
     Integration base class.
     """
 
-    identifier = None  # Name the identifier
+    identifier = None  # Set the identifier to the name of your integration
 
     def __init__(self) -> None:
         if self.identifier is None:
@@ -18,14 +18,20 @@ class Integration(object):
         """
         pass
 
-    def setup(self, middleware_context) -> None:
+    def setup(self) -> None:
         """
         Holds setup logic to be run once when the middleware is initialized.
         """
         pass
 
-    def run(self, middleware_context) -> None:
+    def run(self, guid: str, **kwargs) -> None:
         """
-        Code here is executed in the middleware.
+        Code here is executed in the middleware, before the view is called.
         """
         raise ImproperlyConfigured(f'The integration `{self.identifier}` is missing a `run` method')
+
+    def tear_down(self, **kwargs) -> None:
+        """
+        Code here is executed in the middleware, after the view is called.
+        """
+        pass

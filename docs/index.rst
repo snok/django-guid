@@ -63,6 +63,7 @@ Contents
     install
     settings
     api
+    integrations
     extended_example
     troubleshooting
     contributing

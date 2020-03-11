@@ -2,6 +2,7 @@ from warnings import warn
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.inspect import func_accepts_kwargs
 
 
 class Settings(object):
@@ -41,6 +42,25 @@ class Settings(object):
                 raise ImproperlyConfigured('INTEGRATIONS must be an array')
 
             for integration in self.INTEGRATIONS:
+
+                # Make sure all integration methods are callable
+                for method, name in [
+                    (integration.setup, 'setup'),
+                    (integration.validate, 'validate'),
+                    (integration.run, 'run'),
+                    (integration.tear_down, 'tear_down'),
+                ]:
+                    if not callable(method):
+                        raise ImproperlyConfigured(
+                            f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
+                        )
+
+                # Make sure the method takes kwargs
+                if not func_accepts_kwargs(integration.run):
+                    raise ImproperlyConfigured(
+                        f'Integration method `run` must '
+                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                    )
                 integration.validate()
 
             if 'SKIP_CLEANUP' in _settings:

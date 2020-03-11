@@ -12,7 +12,7 @@ class SentryIntegration(Integration):
     Ensures that each request's correlation ID is passed on to Sentry exception logs as a `transaction_id`.
     """
 
-    identifier = 'Sentry'
+    identifier = 'SentryIntegration'
 
     def validate(self) -> None:
         """
@@ -27,13 +27,12 @@ class SentryIntegration(Integration):
                 'Please run `pip install sentry-sdk` if you wish to include this integration.'
             )
 
-    def run(self, middleware_context) -> None:
+    def run(self, guid: str, **kwargs) -> None:
         """
         Sets the Sentry transaction_id.
         """
         import sentry_sdk
 
         with sentry_sdk.configure_scope() as scope:
-            guid = middleware_context.get_guid()
             logger.debug('Setting Sentry transaction_id to %s', guid)
             scope.set_tag('transaction_id', guid)

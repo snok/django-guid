@@ -12,9 +12,8 @@ Default settings are shown below:
         VALIDATE_GUID = True,
         RETURN_HEADER = True,
         EXPOSE_HEADER = True,
+        INTEGRATIONS = [],
     }
-
-
 
 
 
@@ -56,3 +55,12 @@ EXPOSE_HEADER
 Whether to return :code:`Access-Control-Expose-Headers` for the GUID header if
 :code:`RETURN_HEADER` is :code:`True`, has no effect if :code:`RETURN_HEADER` is :code:`False`.
 This is allows the JavaScript Fetch API to access the header when CORS is enabled.
+
+INTEGRATIONS
+------------
+* **Default**: ``[]``
+* **Type**: ``list``
+
+Whether to enable any custom or shipped integrations with :code:`django_guid`.
+As an example, using :code:`SentryIntegration()` as an integration would set Sentry's :code:`transaction_id` to
+match the GUID used by the middleware.
