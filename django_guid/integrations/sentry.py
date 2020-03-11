@@ -14,7 +14,7 @@ class SentryIntegration(Integration):
 
     identifier = 'SentryIntegration'
 
-    def validate(self) -> None:
+    def setup(self) -> None:
         """
         Verifies that the sentry_sdk dependency is installed.
         """

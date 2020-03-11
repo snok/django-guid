@@ -12,15 +12,9 @@ class Integration(object):
         if self.identifier is None:
             raise ImproperlyConfigured('`identifier` cannot be None')
 
-    def validate(self) -> None:
-        """
-        Holds validation logic to be run when Django starts.
-        """
-        pass
-
     def setup(self) -> None:
         """
-        Holds setup logic to be run once when the middleware is initialized.
+        Holds validation and setup logic to be run when Django starts.
         """
         pass
 
