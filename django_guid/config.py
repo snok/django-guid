@@ -2,6 +2,7 @@ from warnings import warn
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.inspect import func_accepts_kwargs
 
 
 class Settings(object):
@@ -14,9 +15,10 @@ class Settings(object):
     def __init__(self) -> None:
         self.GUID_HEADER_NAME = 'Correlation-ID'
         self.VALIDATE_GUID = True
-        self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
         self.RETURN_HEADER = True
         self.EXPOSE_HEADER = True
+        self.INTEGRATIONS = []
+        self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
 
         if hasattr(django_settings, 'DJANGO_GUID'):
             _settings = django_settings.DJANGO_GUID
@@ -36,6 +38,32 @@ class Settings(object):
                 raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
             if not isinstance(self.EXPOSE_HEADER, bool):
                 raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
+            if not isinstance(self.INTEGRATIONS, list):
+                raise ImproperlyConfigured('INTEGRATIONS must be an array')
+
+            for integration in self.INTEGRATIONS:
+
+                # Make sure all integration methods are callable
+                for method, name in [
+                    (integration.setup, 'setup'),
+                    (integration.run, 'run'),
+                    (integration.cleanup, 'cleanup'),
+                ]:
+                    # Make sure the methods are callable
+                    if not callable(method):
+                        raise ImproperlyConfigured(
+                            f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
+                        )
+
+                    # Make sure the method takes kwargs
+                    if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
+                        raise ImproperlyConfigured(
+                            f'Integration method `{name}` must '
+                            f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                        )
+
+                # Run validate method
+                integration.setup()
 
             if 'SKIP_CLEANUP' in _settings:
                 warn(
@@ -43,9 +71,6 @@ class Settings(object):
                     'Please remove it from your DJANGO_GUID settings.',
                     DeprecationWarning,
                 )
-
-        else:
-            pass  # Do nothing if DJANGO_GUID not found in settings
 
 
 settings = Settings()

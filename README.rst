@@ -80,6 +80,7 @@ Package settings are added in your ``settings.py``:
         VALIDATE_GUID = True,
         RETURN_HEADER = True,
         EXPOSE_HEADER = True,
+        INTEGRATIONS = [],
     }
 
 
@@ -110,6 +111,12 @@ Package settings are added in your ``settings.py``:
 
     Default: True
 
+* :code:`INTEGRATIONS`
+        Whether to enable any custom or available integrations with :code:`django_guid`.
+        As an example, using :code:`SentryIntegration()` as an integration would set Sentry's :code:`transaction_id` to
+        match the GUID used by the middleware.
+
+    Default: []
 
 *************
 Configuration
