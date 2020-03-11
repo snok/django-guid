@@ -65,15 +65,9 @@ The class is quite simple and only contains four methods and a class attribute:
             if self.identifier is None:
                 raise ImproperlyConfigured('`identifier` cannot be None')
 
-        def validate(self) -> None:
-            """
-            Holds validation logic to be run when Django starts.
-            """
-            pass
-
         def setup(self) -> None:
             """
-            Holds setup logic to be run once when the middleware is initialized.
+            Holds validation and setup logic to be run when Django starts.
             """
             pass
 
@@ -116,31 +110,10 @@ integration.
 Method descriptions
 --------------------
 
-Validate
-^^^^^^^^^
-
-The ``validate`` method is run when Django starts, and is a good place to keep your integration-specific validation logic, like, e.g., making sure all dependencies are installed:
-
-.. code-block:: python
-
-    class CustomIntegration(Integration):
-
-        identifier = 'CustomIntegration'
-
-        def validate(self):
-            try:
-                import third_party_sdk
-            except ModuleNotFoundError:
-                raise ImproperlyConfigured(
-                    'Package third_party_sdk must be installed'
-                )
-
-
 Setup
 ^^^^^
-
-The ``setup`` method is run *once* when the middleware is first initialized. The difference between this and the validate method is
-primarily that Django and the Django GUID middleware have been initialized.
+The ``setup`` method is run when Django starts, and is a good place to keep your integration-specific validation logic,
+like, e.g., making sure all dependencies are installed:
 
 .. code-block:: python
 
@@ -150,13 +123,13 @@ primarily that Django and the Django GUID middleware have been initialized.
 
         identifier = 'CustomIntegration'
 
-        def validate(self):
-            ...
-
         def setup(self):
-            start_service()
-
-
+            try:
+                import third_party_sdk
+            except ModuleNotFoundError:
+                raise ImproperlyConfigured(
+                    'Package third_party_sdk must be installed'
+                )
 Run
 ^^^
 
@@ -173,9 +146,6 @@ in the future, and so the function must be able to handle those new arguments.
     class CustomIntegration(Integration):
 
         identifier = 'CustomIntegration'
-
-        def validate(self):
-            ...
 
         def setup(self):
             ...
@@ -201,9 +171,6 @@ in the future, and so the function must be able to handle those new arguments.
     class CustomIntegration(Integration):
 
         identifier = 'CustomIntegration'
-
-        def validate(self):
-            ...
 
         def setup(self):
             ...
