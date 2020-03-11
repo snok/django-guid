@@ -43,6 +43,23 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
         Settings()
 
 
+def test_tear_down_method_not_accepting_kwargs(monkeypatch, client):
+    """
+    Tests that an exception is raised when the run method doesn't accept kwargs.
+    """
+    from django_guid.integrations import SentryIntegration
+    from django.conf import settings
+    from django_guid.config import Settings
+
+    class BadIntegration(SentryIntegration):
+        def tear_down(self, guid):
+            pass
+
+    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [BadIntegration()]})
+    with pytest.raises(ImproperlyConfigured, match='Integration method `tear_down` must accept keyword arguments '):
+        Settings()
+
+
 def test_non_callable_methods(monkeypatch, subtests):
     """
     Tests that an exception is raised when any of the integration base methods are non-callable.
@@ -92,7 +109,11 @@ def test_base_class():
         def run(self, guid, **kwargs):
             pass
 
+        def tear_down(self, **kwargs):
+            pass
+
     stub_integration = MyCustomIntegration()
     assert stub_integration.validate() is None
     assert stub_integration.setup() is None
     assert stub_integration.run('test') is None
+    assert stub_integration.tear_down() is None

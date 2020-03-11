@@ -56,9 +56,9 @@ class Settings(object):
                         )
 
                 # Make sure the method takes kwargs
-                if not func_accepts_kwargs(integration.run):
+                if not func_accepts_kwargs(integration.run) or not func_accepts_kwargs(integration.tear_down):
                     raise ImproperlyConfigured(
-                        f'Integration method `run` must '
+                        f'Integration method `{name}` must '
                         f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
                     )
                 integration.validate()
