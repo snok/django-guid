@@ -24,8 +24,14 @@ class Integration(object):
         """
         pass
 
-    def run(self, **kwargs) -> None:
+    def run(self, guid: str, **kwargs) -> None:
         """
-        Code here is executed in the middleware.
+        Code here is executed in the middleware, before the view is called.
         """
         raise ImproperlyConfigured(f'The integration `{self.identifier}` is missing a `run` method')
+
+    def tear_down(self, **kwargs) -> None:
+        """
+        Code here is executed in the middleware, after the view is called.
+        """
+        pass

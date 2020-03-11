@@ -48,6 +48,7 @@ class Settings(object):
                     (integration.setup, 'setup'),
                     (integration.validate, 'validate'),
                     (integration.run, 'run'),
+                    (integration.tear_down, 'tear_down'),
                 ]:
                     if not callable(method):
                         raise ImproperlyConfigured(

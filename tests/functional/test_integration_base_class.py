@@ -6,7 +6,7 @@ def test_missing_identifier(monkeypatch):
     """
     Tests that an exception is raised when identifier is missing.
     """
-    from django_guid.integrations.sentry import SentryIntegration
+    from django_guid.integrations import SentryIntegration
 
     monkeypatch.setattr(SentryIntegration, 'identifier', None)
     with pytest.raises(ImproperlyConfigured, match='`identifier` cannot be None'):
@@ -18,7 +18,7 @@ def test_missing_run_method(monkeypatch, client):
     Tests that an exception is raised when the run method has not been defined.
     """
     from django_guid.config import settings as guid_settings
-    from django_guid.integrations.sentry import SentryIntegration
+    from django_guid.integrations import SentryIntegration
 
     monkeypatch.delattr(SentryIntegration, 'run')
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
@@ -30,7 +30,7 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
-    from django_guid.integrations.sentry import SentryIntegration
+    from django_guid.integrations import SentryIntegration
     from django.conf import settings
     from django_guid.config import Settings
 
@@ -47,13 +47,17 @@ def test_non_callable_methods(monkeypatch, subtests):
     """
     Tests that an exception is raised when any of the integration base methods are non-callable.
     """
-    from django_guid.integrations.sentry import SentryIntegration
+    from django_guid.integrations import SentryIntegration
     from django.conf import settings
     from django_guid.config import Settings
 
     mock_integration = SentryIntegration()
 
     to_test = [
+        {
+            'function_name': 'tear_down',
+            'error': 'Integration method `tear_down` needs to be made callable for `SentryIntegration`.',
+        },
         {
             'function_name': 'run',
             'error': 'Integration method `run` needs to be made callable for `SentryIntegration`.',
@@ -80,7 +84,7 @@ def test_base_class():
     """
     Test that a basic implementation of an integration works as expected.
     """
-    from django_guid.integrations.base import Integration
+    from django_guid.integrations import Integration
 
     class MyCustomIntegration(Integration):
         identifier = 'My custom integration'

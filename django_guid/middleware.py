@@ -55,10 +55,17 @@ class GuidMiddleware(object):
 
         # ^ Code above this line is executed before the view and later middleware
         response = self.get_response(request)
+
         if settings.RETURN_HEADER:
             response[settings.GUID_HEADER_NAME] = self.get_guid()  # Adds the GUID to the response header
             if settings.EXPOSE_HEADER:
                 response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
+
+        # Run tear down for all the integrations
+        for integration in settings.INTEGRATIONS:
+            logger.debug('Running tear down for integration: `%s`', integration.identifier)
+            integration.tear_down()
+
         return response
 
     @classmethod
