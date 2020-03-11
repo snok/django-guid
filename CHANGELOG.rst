@@ -1,6 +1,18 @@
 Changelog
 =========
 
+`2.1.0`_ - 2020-11-03
+---------------------
+**Features**
+
+* Integration module, which enables the users of ``django_guid`` to extend functionality.
+* Added a integration for Sentry, tagging the Sentry issue with the GUID used for the request.
+
+**Other**
+
+* Added docs for integrations
+
+
 `2.0.0`_ - 2020-03-02
 ---------------------
 **This version contains backwards incompatible changes. Read the entire changelog before upgrading**
@@ -164,3 +176,4 @@ Changelog
 .. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
 .. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
 .. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0
+.. _2.1.0: https://github.com/jonasks/django-guid/compare/2.0.0...2.1.0
