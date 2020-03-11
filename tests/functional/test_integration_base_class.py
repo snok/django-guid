@@ -80,10 +80,6 @@ def test_non_callable_methods(monkeypatch, subtests):
             'error': 'Integration method `run` needs to be made callable for `SentryIntegration`.',
         },
         {
-            'function_name': 'validate',
-            'error': 'Integration method `validate` needs to be made callable for `SentryIntegration`.',
-        },
-        {
             'function_name': 'setup',
             'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`.',
         },
@@ -113,7 +109,6 @@ def test_base_class():
             pass
 
     stub_integration = MyCustomIntegration()
-    assert stub_integration.validate() is None
     assert stub_integration.setup() is None
     assert stub_integration.run('test') is None
     assert stub_integration.cleanup() is None

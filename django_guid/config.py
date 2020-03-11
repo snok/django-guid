@@ -46,7 +46,6 @@ class Settings(object):
                 # Make sure all integration methods are callable
                 for method, name in [
                     (integration.setup, 'setup'),
-                    (integration.validate, 'validate'),
                     (integration.run, 'run'),
                     (integration.cleanup, 'cleanup'),
                 ]:
@@ -64,7 +63,7 @@ class Settings(object):
                         )
 
                 # Run validate method
-                integration.validate()
+                integration.setup()
 
             if 'SKIP_CLEANUP' in _settings:
                 warn(

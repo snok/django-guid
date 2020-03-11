@@ -15,7 +15,6 @@ def test_sentry_integration(client, monkeypatch, caplog, mocker):
 
     client.get('/api', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565842'})
     expected = [
-        (None, 'Running setup for integration: `SentryIntegration`'),
         (None, 'Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565842'),
         (None, '97c304252fd14b25b72d6aee31565842 is a valid GUID'),
         ('97c304252fd14b25b72d6aee31565842', 'Running integration: `SentryIntegration`'),
