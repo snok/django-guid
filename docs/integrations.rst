@@ -4,14 +4,99 @@
 Integrations
 ************
 
-Integrations can be used to add extra steps into the middleware.
-To enable an integration, populate the ``INTEGRATIONS`` field in ``settings.py``.
+Integrations are optional add-ins used to extend the functionality of the Django GUID middleware.
+
+To enable an integration, simply add an integration instance to the ``INTEGRATIONS`` field in ``settings.py``,
+and the relevant integration logic will be executed in the middleware:
+
+.. code-block:: python
+
+    from django_guid.integrations import SentryIntegration
+
+    DJANGO_GUID = {
+        ...
+        'INTEGRATIONS': [SentryIntegration()],
+    }
+
+
+Integrations are a new addition to Django GUID, and we plan to expand selection in the future. If you are looking for specific functionality that is not yet available, consider creating an issue, making a pull request, or writing your own private integration. Custom integrations classes are simple to write and can be implemented just like package integrations.
+
+Available integrations
+======================
+
+Sentry
+------
+
+Integrating with Sentry, lets you tag Sentry-issues with a ``transaction_id``. This lets you easily connect an event in Sentry to your logs.
+
+.. image:: img/sentry.png
+  :width: 1600
+  :alt: Alternative text
+
+The integration can be imported from the integrations folder as ``SentryIntegration``:
+
+.. code-block:: python
+
+    from django_guid.integrations import SentryIntegration
+
+    DJANGO_GUID = {
+        ...
+        'INTEGRATIONS': [SentryIntegration()],
+    }
 
 
 Writing your own integration
 ============================
 
-First, create a class that inherits the ``Integration`` base class and set the ``identifier`` variable:
+Creating your own custom integration requires you to inherit the ``Integration`` base class (which is found `here <https://github.com/JonasKs/django-guid/tree/master/django_guid/integrations/base>`_).
+
+The class is quite simple and only contains four methods and a class attribute:
+
+.. code-block:: python
+
+    class Integration(object):
+        """
+        Integration base class.
+        """
+
+        identifier = None  # The name of your integration
+
+        def __init__(self) -> None:
+            if self.identifier is None:
+                raise ImproperlyConfigured('`identifier` cannot be None')
+
+        def validate(self) -> None:
+            """
+            Holds validation logic to be run when Django starts.
+            """
+            pass
+
+        def setup(self) -> None:
+            """
+            Holds setup logic to be run once when the middleware is initialized.
+            """
+            pass
+
+        def run(self, guid: str, **kwargs) -> None:
+            """
+            Code here is executed in the middleware, before the view is called.
+            """
+            raise ImproperlyConfigured(f'The integration `{self.identifier}` is missing a `run` method')
+
+        def cleanup(self, **kwargs) -> None:
+            """
+            Code here is executed in the middleware, after the view is called.
+            """
+            pass
+
+To extend this into a fully functioning integration, all you need to do is
+
+1. Create a new class that inherits the base class
+2. Set the identifier to a string, naming your integration
+3. Add the logic you wish to be executed to the ``run`` method
+4. Add logic to each of the remaining methods as required
+
+A fully functioning integration can be as simple as this:
 
 .. code-block:: python
 
@@ -21,22 +106,27 @@ First, create a class that inherits the ``Integration`` base class and set the `
 
         identifier = 'CustomIntegration'  # Should be a string
 
+        def run(self, guid, **kwargs):
+            print('This is a functioning Django GUID integration')
+
 
 There are four built in methods which are always called. You can chose to override these in your custom
 integration.
 
+Method descriptions
+--------------------
 
-validate(self)
---------------
+Validate
+^^^^^^^^^
 
-The ``validate`` function will be run when Django starts, and should only handle validation logic,
-such as checking if a third party package is installed.
-
-Example:
+The ``validate`` method is run when Django starts, and is a good place to keep your integration-specific validation logic, like, e.g., making sure all dependencies are installed:
 
 .. code-block:: python
 
     class CustomIntegration(Integration):
+
+        identifier = 'CustomIntegration'
+
         def validate(self):
             try:
                 import third_party_sdk
@@ -46,76 +136,80 @@ Example:
                 )
 
 
+Setup
+^^^^^
 
-setup(self)
------------
-
-The ``setup`` function hold logic to be run once the middleware is initialized. This will only happen once.
-
-Example:
+The ``setup`` method is run *once* when the middleware is first initialized. The difference between this and the validate method is
+primarily that Django and the Django GUID middleware have been initialized.
 
 .. code-block:: python
 
     from third_party_sdk import start_service
 
     class CustomIntegration(Integration):
+
+        identifier = 'CustomIntegration'
+
+        def validate(self):
+            ...
+
         def setup(self):
             start_service()
 
 
+Run
+^^^
 
-def run(self, guid, \*\*kwargs)
--------------------------------
+The ``run`` method is required, and is designed to hold code that should be executed each time the middleware is run
+(for each request made to the server), before the view is called.
 
-Code to be executed for each time the middleware is run, before the view is called.
-This function **must** accept both ``guid`` and ``**kwargs``. Like Django signals there may be added additional arguments
-at a later point in time, so the function must be able to handle those new arguments.
-
-Example:
+This function **must** accept both ``guid`` and ``**kwargs``. Additional arguments are likely be added
+in the future, and so the function must be able to handle those new arguments.
 
 .. code-block:: python
 
     from third_party_sdk import send_guid_to_system
 
     class CustomIntegration(Integration):
+
+        identifier = 'CustomIntegration'
+
+        def validate(self):
+            ...
+
+        def setup(self):
+            ...
+
         def run(self, guid, **kwargs):
             send_guid_to_system(guid=guid)
 
 
 
-def tear_down(self, \*\*kwargs):
---------------------------------
+Cleanup
+^^^^^^^
 
-Code to be executed each time the middleware is run, after a view has been called.
-This function **must** accept ``**kwargs``. Like Django signals there may be added additional arguments
-at a later point in time, so the function must be able to handle those new arguments.
+The ``cleanup`` method is the final method called in the middleware, each time the middleware, each time the middleware is run,
+after a view has been called.
 
-Example:
+This function **must** accept ``**kwargs``. Additional arguments are likely be added
+in the future, and so the function must be able to handle those new arguments.
 
 .. code-block:: python
 
     from third_party_sdk import clean_up_guid
 
     class CustomIntegration(Integration):
-        def tear_down(self, **kwargs):
+
+        identifier = 'CustomIntegration'
+
+        def validate(self):
+            ...
+
+        def setup(self):
+            ...
+
+        def run(self, guid, **kwargs):
+            ...
+
+        def cleanup(self, **kwargs):
             clean_up_guid()
-
-
-Shipped integrations
-====================
-Django GUID ships with the following integrations, and pull requests for more are welcome:
-
-SentryIntegration
------------------
-
-The ``SentryIntegration`` sets the ``transaction_id`` of ``Sentry`` to match the GUID used in the middleware.
-
-Implement by adding the integrations to your ``DJANGO_GUID`` settings:
-
-.. code-block:: python
-
-    from django_guid.integrations import SentryIntegration
-    DJANGO_GUID = {
-        GUID_HEADER_NAME = 'Correlation-ID',
-        INTEGRATIONS = [SentryIntegration()],
-    }

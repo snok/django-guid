@@ -48,19 +48,22 @@ class Settings(object):
                     (integration.setup, 'setup'),
                     (integration.validate, 'validate'),
                     (integration.run, 'run'),
-                    (integration.tear_down, 'tear_down'),
+                    (integration.cleanup, 'cleanup'),
                 ]:
+                    # Make sure the methods are callable
                     if not callable(method):
                         raise ImproperlyConfigured(
                             f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
                         )
 
-                # Make sure the method takes kwargs
-                if not func_accepts_kwargs(integration.run) or not func_accepts_kwargs(integration.tear_down):
-                    raise ImproperlyConfigured(
-                        f'Integration method `{name}` must '
-                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
-                    )
+                    # Make sure the method takes kwargs
+                    if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
+                        raise ImproperlyConfigured(
+                            f'Integration method `{name}` must '
+                            f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                        )
+
+                # Run validate method
                 integration.validate()
 
             if 'SKIP_CLEANUP' in _settings:

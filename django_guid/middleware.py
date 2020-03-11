@@ -64,7 +64,7 @@ class GuidMiddleware(object):
         # Run tear down for all the integrations
         for integration in settings.INTEGRATIONS:
             logger.debug('Running tear down for integration: `%s`', integration.identifier)
-            integration.tear_down()
+            integration.cleanup()
 
         return response
 

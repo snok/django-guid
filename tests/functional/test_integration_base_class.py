@@ -43,7 +43,7 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
         Settings()
 
 
-def test_tear_down_method_not_accepting_kwargs(monkeypatch, client):
+def test_cleanup_method_not_accepting_kwargs(monkeypatch, client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
@@ -52,11 +52,11 @@ def test_tear_down_method_not_accepting_kwargs(monkeypatch, client):
     from django_guid.config import Settings
 
     class BadIntegration(SentryIntegration):
-        def tear_down(self, guid):
+        def cleanup(self, guid):
             pass
 
     monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [BadIntegration()]})
-    with pytest.raises(ImproperlyConfigured, match='Integration method `tear_down` must accept keyword arguments '):
+    with pytest.raises(ImproperlyConfigured, match='Integration method `cleanup` must accept keyword arguments '):
         Settings()
 
 
@@ -72,8 +72,8 @@ def test_non_callable_methods(monkeypatch, subtests):
 
     to_test = [
         {
-            'function_name': 'tear_down',
-            'error': 'Integration method `tear_down` needs to be made callable for `SentryIntegration`.',
+            'function_name': 'cleanup',
+            'error': 'Integration method `cleanup` needs to be made callable for `SentryIntegration`.',
         },
         {
             'function_name': 'run',
@@ -109,11 +109,11 @@ def test_base_class():
         def run(self, guid, **kwargs):
             pass
 
-        def tear_down(self, **kwargs):
+        def cleanup(self, **kwargs):
             pass
 
     stub_integration = MyCustomIntegration()
     assert stub_integration.validate() is None
     assert stub_integration.setup() is None
     assert stub_integration.run('test') is None
-    assert stub_integration.tear_down() is None
+    assert stub_integration.cleanup() is None
