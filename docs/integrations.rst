@@ -33,7 +33,14 @@ Integrating with Sentry, lets you tag Sentry-issues with a ``transaction_id``. T
   :width: 1600
   :alt: Alternative text
 
-The integration can be imported from the integrations folder as ``SentryIntegration``:
+Rather than changing how Sentry works, this is just an additional piece of metadata that you can use to link sources of information
+about an exception. If you know the GUID of an exception, you can find the relevant Sentry issue by searching for the tag:
+
+.. image:: img/sentry_search.png
+  :width: 1600
+  :alt: Alternative text
+
+To add the integration, simply import ``SentryIntegration`` from the integrations folder and add it to your settings:
 
 .. code-block:: python
 
