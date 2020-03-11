@@ -2,14 +2,17 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 
 
-def test_sentry_integration(client, monkeypatch, caplog):
+def test_sentry_integration(client, monkeypatch, caplog, mocker):
     """
-    Tests that the package handles multiple header values by defaulting to one and logging a warning.
+    Tests the sentry integration
     """
+    from sentry_sdk.scope import Scope
     from django_guid.integrations.sentry import SentryIntegration
     from django_guid.config import settings as guid_settings
 
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
+    mock_scope = mocker.patch.object(Scope, 'set_tag')
+
     client.get('/api', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565842'})
     expected = [
         (None, 'Running setup for integration: `SentryIntegration`'),
@@ -22,6 +25,7 @@ def test_sentry_integration(client, monkeypatch, caplog):
         ('97c304252fd14b25b72d6aee31565842', 'Received signal `request_finished`'),
         ('97c304252fd14b25b72d6aee31565842', 'Deleting 97c304252fd14b25b72d6aee31565842 from _guid'),
     ]
+    mock_scope.assert_called_with('transaction_id', '97c304252fd14b25b72d6aee31565842')
     assert [(x.correlation_id, x.message) for x in caplog.records] == expected
 
 
