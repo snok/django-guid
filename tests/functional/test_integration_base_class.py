@@ -43,7 +43,7 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
         Settings()
 
 
-def test_non_callable_methods(monkeypatch, client):
+def test_non_callable_methods(monkeypatch, subtests):
     """
     Tests that an exception is raised when any of the integration base methods are non-callable.
     """
@@ -51,34 +51,34 @@ def test_non_callable_methods(monkeypatch, client):
     from django.conf import settings
     from django_guid.config import Settings
 
-    x = SentryIntegration()
+    mock_integration = SentryIntegration()
 
-    # Non-callable run method
-    x.run = 'test'
-    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
-    with pytest.raises(ImproperlyConfigured, match='Integration method `run` needs to be made callable for `SentryIntegration`.'):
-        Settings()
+    to_test = [
+        {
+            'function_name': 'run',
+            'error': 'Integration method `run` needs to be made callable for `SentryIntegration`.',
+        },
+        {
+            'function_name': 'validate',
+            'error': 'Integration method `validate` needs to be made callable for `SentryIntegration`.',
+        },
+        {
+            'function_name': 'setup',
+            'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`.',
+        },
+    ]
 
-    # # Non-callable validate method
-    x.validate = 'test'
-    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
-    with pytest.raises(
-        ImproperlyConfigured, match='Integration method `validate` needs to be made callable for `SentryIntegration`.'
-    ):
-        Settings()
-
-    # # Non-callable setup method
-    x.setup = 'test'
-    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [x]})
-    with pytest.raises(
-        ImproperlyConfigured, match='Integration method `setup` needs to be made callable for `SentryIntegration`.'
-    ):
-        Settings()
+    for test in to_test:
+        setattr(mock_integration, test.get('function_name'), 'test')
+        monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [mock_integration]})
+        with subtests.test(msg=f'Testing function {test.get("function_name")}'):
+            with pytest.raises(ImproperlyConfigured, match=test.get('error')):
+                Settings()
 
 
-def test_base():
+def test_base_class():
     """
-    MVP integration test.
+    Test that a basic implementation of an integration works as expected.
     """
     from django_guid.integrations.base import Integration
 
@@ -88,7 +88,7 @@ def test_base():
         def run(self, guid, **kwargs):
             pass
 
-    x = MyCustomIntegration()
-    x.validate()
-    x.setup()
-    x.run('test')
+    stub_integration = MyCustomIntegration()
+    assert stub_integration.validate() is None
+    assert stub_integration.setup() is None
+    assert stub_integration.run('test') is None
