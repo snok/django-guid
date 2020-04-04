@@ -40,6 +40,9 @@ class GuidMiddleware(object):
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
+        if request.get_full_path().strip('/') in settings.IGNORE_URLS:
+            return self.get_response(request)
+
         # Process request and store the GUID on the thread
         self.set_guid(self._get_id_from_header(request))
 

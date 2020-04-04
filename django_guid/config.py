@@ -18,6 +18,7 @@ class Settings(object):
         self.RETURN_HEADER = True
         self.EXPOSE_HEADER = True
         self.INTEGRATIONS = []
+        self.IGNORE_URLS = []
         self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
 
         if hasattr(django_settings, 'DJANGO_GUID'):
@@ -38,32 +39,18 @@ class Settings(object):
                 raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
             if not isinstance(self.EXPOSE_HEADER, bool):
                 raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
-            if not isinstance(self.INTEGRATIONS, list):
+            if not isinstance(self.INTEGRATIONS, (list, tuple)):
                 raise ImproperlyConfigured('INTEGRATIONS must be an array')
+            if not isinstance(self.IGNORE_URLS, (list, tuple)):
+                raise ImproperlyConfigured('IGNORE_URLS must be an array')
 
-            for integration in self.INTEGRATIONS:
+            if not all(isinstance(url, str) for url in self.IGNORE_URLS):
+                raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
+            # Note: stripping the '/' from the beginning and end of the path of the URLS,
+            # this is since some people would write a path as "/path/one/two/" while others would write "path/one/two"
+            self.IGNORE_URLS = {url.strip('/') for url in self.IGNORE_URLS}
 
-                # Make sure all integration methods are callable
-                for method, name in [
-                    (integration.setup, 'setup'),
-                    (integration.run, 'run'),
-                    (integration.cleanup, 'cleanup'),
-                ]:
-                    # Make sure the methods are callable
-                    if not callable(method):
-                        raise ImproperlyConfigured(
-                            f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
-                        )
-
-                    # Make sure the method takes kwargs
-                    if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
-                        raise ImproperlyConfigured(
-                            f'Integration method `{name}` must '
-                            f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
-                        )
-
-                # Run validate method
-                integration.setup()
+            self._validate_and_setup_integrations()
 
             if 'SKIP_CLEANUP' in _settings:
                 warn(
@@ -71,6 +58,34 @@ class Settings(object):
                     'Please remove it from your DJANGO_GUID settings.',
                     DeprecationWarning,
                 )
+
+    def _validate_and_setup_integrations(self) -> None:
+        """
+        Validate the INTEGRATIONS settings and verify each integration
+        """
+        for integration in self.INTEGRATIONS:
+
+            # Make sure all integration methods are callable
+            for method, name in [
+                (integration.setup, 'setup'),
+                (integration.run, 'run'),
+                (integration.cleanup, 'cleanup'),
+            ]:
+                # Make sure the methods are callable
+                if not callable(method):
+                    raise ImproperlyConfigured(
+                        f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
+                    )
+
+                # Make sure the method takes kwargs
+                if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
+                    raise ImproperlyConfigured(
+                        f'Integration method `{name}` must '
+                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                    )
+
+            # Run validate method
+            integration.setup()
 
 
 settings = Settings()

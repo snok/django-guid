@@ -22,6 +22,15 @@ def index_view(request: HttpRequest) -> JsonResponse:
     return JsonResponse({'detail': f'It worked! Useless function response is {useless_response}'})
 
 
+def no_guid(request: HttpRequest) -> JsonResponse:
+    """
+    Example view with a URL in the IGNORE_URLs list - no GUID will be in these logs
+    """
+    logger.info('This log message should NOT have a GUID - the URL is in IGNORE_URLS')
+    useless_response = useless_function()
+    return JsonResponse({'detail': f'It worked also! Useless function response is {useless_response}'})
+
+
 @api_view(('GET',))
 def rest_view(request: Request) -> Response:
     """

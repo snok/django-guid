@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.urls import path
 
-from demoproj.views import index_view, rest_view
+from demoproj.views import index_view, rest_view, no_guid
 
 urlpatterns = [
     path('', index_view, name='index'),
     path('api', rest_view, name='drf'),
+    path('no_guid', no_guid, name='no_guid'),
 ]

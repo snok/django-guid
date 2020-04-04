@@ -88,7 +88,8 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': []
+    'INTEGRATIONS': [],
+    'IGNORE_URLS': ['no_guid'],
 }
 
 # Set up logging for the project
