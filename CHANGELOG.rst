@@ -1,7 +1,19 @@
 Changelog
 =========
 
-`2.1.0`_ - 2020-03-11
+
+`2.1.0`_ - 2020-08-04
+---------------------
+**Features**
+
+* ``IGNORE_URLS`` setting which disables the middleware on a list of URLs.
+
+**Other**
+
+* Added docs for the new setting
+
+
+`2.1.0`_ - 2020-11-03
 ---------------------
 **Features**
 
@@ -177,3 +189,4 @@ Changelog
 .. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
 .. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0
 .. _2.1.0: https://github.com/jonasks/django-guid/compare/2.0.0...2.1.0
+.. _2.2.0: https://github.com/jonasks/django-guid/compare/2.1.0...2.2.0

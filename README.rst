@@ -81,6 +81,7 @@ Package settings are added in your ``settings.py``:
         RETURN_HEADER = True,
         EXPOSE_HEADER = True,
         INTEGRATIONS = [],
+        IGNORE_URLS = [],
     }
 
 
@@ -115,6 +116,11 @@ Package settings are added in your ``settings.py``:
         Whether to enable any custom or available integrations with :code:`django_guid`.
         As an example, using :code:`SentryIntegration()` as an integration would set Sentry's :code:`transaction_id` to
         match the GUID used by the middleware.
+
+    Default: []
+
+* :code:`IGNORE_URLS`
+        URL endpoints where the middleware will be disabled. You can put your health check endpoints here.
 
     Default: []
 
