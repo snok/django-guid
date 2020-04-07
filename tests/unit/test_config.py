@@ -61,7 +61,26 @@ def test_valid_settings(monkeypatch):
 
 
 def test_bad_integrations_type(monkeypatch):
-    for item in [{}, '', 2, None, -2]:
-        monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'INTEGRATIONS': item})
+    for setting in [{}, '', 2, None, -2]:
+        monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'INTEGRATIONS': setting})
         with pytest.raises(ImproperlyConfigured, match='INTEGRATIONS must be an array'):
             Settings()
+
+
+def test_not_array_ignore_urls(monkeypatch):
+    for setting in [{}, '', 2, None, -2]:
+        monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': setting})
+        with pytest.raises(ImproperlyConfigured, match='IGNORE_URLS must be an array'):
+            Settings()
+
+
+def test_not_string_in_igore_urls(monkeypatch):
+    for setting in (['api/v1/test', 'api/v1/othertest', True], [1, 2, 'yup']):
+        monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': setting})
+        with pytest.raises(ImproperlyConfigured, match='IGNORE_URLS must be an array of strings'):
+            Settings()
+
+
+def test_converts_correctly(monkeypatch):
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': ['/no_guid', '/my/api/path/']})
+    assert {'no_guid', 'my/api/path'} == Settings().IGNORE_URLS

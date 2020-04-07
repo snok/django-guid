@@ -169,7 +169,7 @@ def test_expose_header_return_header_false(client, monkeypatch, mock_uuid):
     assert not response.get('Access-Control-Expose-Headers')
 
 
-def test_cleanup_signal(client, caplog, monkeypatch, mock_uuid):
+def test_cleanup_signal(client, caplog, monkeypatch):
     """
     Tests that a request cleans up a request after finishing.
     :param client: Django client
@@ -208,3 +208,23 @@ def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
     monkeypatch.setattr('django_guid.middleware.apps.is_installed', lambda x: False)
     with pytest.raises(ImproperlyConfigured, match='django_guid must be in installed apps'):
         client.get('/')
+
+
+def test_url_ignored(client, caplog, monkeypatch):
+    """
+    Test that a URL specified in IGNORE_URLS is ignored.
+    :param client: Django client
+    :param caplog: Caplog fixture
+    :param monkeypatch: Monkeypatch for django settings
+    """
+    from django_guid.config import settings as guid_settings
+
+    monkeypatch.setattr(guid_settings, 'IGNORE_URLS', {'no_guid'})  # Same as it would be after config conversion
+    client.get('/no_guid', **{'HTTP_Correlation-ID': 'bad-guid'})
+    # No log message should have a GUID, aka `None` on index 1.
+    expected = [
+        ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
+        ('Some warning in a function', None),
+        ('Received signal `request_finished`', None),
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
