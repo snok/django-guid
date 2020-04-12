@@ -64,3 +64,10 @@ INTEGRATIONS
 Whether to enable any custom or available integrations with :code:`django_guid`.
 As an example, using :code:`SentryIntegration()` as an integration would set Sentry's :code:`transaction_id` to
 match the GUID used by the middleware.
+
+IGNORE_URLS
+-----------
+* **Default**: ``[]``
+* **Type**: ``list``
+
+URL endpoints where the middleware will be disabled. You can put your health check endpoints here.
