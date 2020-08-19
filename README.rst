@@ -10,8 +10,8 @@ Django GUID
     :target: https://pypi.python.org/pypi/django-guid
 .. image:: https://readthedocs.org/projects/django-guid/badge/?version=latest
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
-.. image:: https://codecov.io/gh/jonasks/django-guid/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/jonasks/django-guid
+.. image:: https://codecov.io/gh/snok/django-guid/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/snok/django-guid
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://django-guid.readthedocs.io/en/latest/?badge=latest
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
