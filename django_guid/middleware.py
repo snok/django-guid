@@ -1,15 +1,99 @@
+import asyncio
 import logging
 import threading
-import uuid
+from contextvars import ContextVar
 from typing import Callable, Union
 
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse
 
+from django_guid.utils import generate_guid, validate_guid
+
+try:
+    from django.utils.decorators import sync_and_async_middleware
+except ImportError:
+    raise ImproperlyConfigured('Please use Django GUID 2.x for Django>=3.1. (`pip install django-guid>3`).')
+
+
 from django_guid.config import settings
+import random
 
 logger = logging.getLogger('django_guid')
+
+context = ContextVar('guid', default=None)
+
+
+def get_correlation_id_from_header(request: HttpRequest) -> str:
+    """
+    Returns either the provided GUID or a new one depending on if the provided GUID is valid or not.
+    :param request: HttpRequest object
+    :return: GUID
+    """
+    given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
+    if not settings.VALIDATE_GUID:
+        logger.debug('Returning ID from header without validating it as a GUID')
+        return given_guid
+    elif settings.VALIDATE_GUID and validate_guid(given_guid):
+        logger.debug('%s is a valid GUID', given_guid)
+        return given_guid
+    else:
+        new_guid = generate_guid()
+        logger.info('%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
+        return new_guid
+
+
+def get_id_from_header(request: HttpRequest) -> str:
+    """
+    Checks if the request contains the header specified in the Django settings.
+    If it does, we fetch the header and attempt to validate the contents as GUID.
+    If no header is found, we generate a GUID to be injected instead.
+    :param request: HttpRequest object
+    :return: GUID
+    """
+    header = request.headers.get(settings.GUID_HEADER_NAME)  # Case insensitive headers.get added in Django2.2
+    if header:
+        logger.info('%s found in the header: %s', settings.GUID_HEADER_NAME, header)
+        request.correlation_id = get_correlation_id_from_header(request)
+    else:
+        request.correlation_id = generate_guid()
+        logger.info(
+            'Header `%s` was not found in the incoming request. Generated new GUID: %s',
+            settings.GUID_HEADER_NAME,
+            request.correlation_id,
+        )
+    return request.correlation_id
+
+
+@sync_and_async_middleware
+def guid_middleware(get_response: Callable) -> Callable:
+    # One-time configuration and initialization goes here.
+    if not apps.is_installed('django_guid'):
+        raise ImproperlyConfigured('django_guid must be in installed apps')
+
+    if asyncio.iscoroutinefunction(get_response):
+
+        async def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
+            if request.get_full_path().strip('/') in settings.IGNORE_URLS:
+                return await get_response(request)
+            # Process request and store the GUID on the thread
+            context.set(generate_guid())
+            print(f'<<Middleware print : {context.get("guid")=}')
+            logger.info('async middleware')
+            # ^ Code above this line is executed before the view and later middleware
+            response = await get_response(request)
+            return response
+
+    else:
+
+        def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
+            # Do something here!
+            logger.info('sync middleware')
+            context.set(random.randint(0, 100))
+            response = get_response(request)
+            return response
+
+    return middleware
 
 
 class GuidMiddleware(object):
@@ -34,9 +118,7 @@ class GuidMiddleware(object):
         """
         Fetches the current thread ID from the pool and stores the GUID in the _guid class variable,
         with the thread ID as the key.
-
         Deletes the GUID from the object unless settings are overwritten.
-
         :param request: HttpRequest from Django
         :return: Passes on the request or response to the next middleware
         """
@@ -71,7 +153,6 @@ class GuidMiddleware(object):
         """
         Fetches the GUID of the current thread from _guid.
         If no value has been set for the current thread yet, a default value is returned.
-
         :param default: Optional value to return if no GUID has been set on the current thread.
         :return: GUID or default.
         """
@@ -81,7 +162,6 @@ class GuidMiddleware(object):
     def set_guid(cls, guid: str) -> None:
         """
         Assigns a GUID to the thread.
-
         :param guid: The GUID being assigned
         :return: None
         """
@@ -91,7 +171,6 @@ class GuidMiddleware(object):
     def delete_guid(cls) -> None:
         """
         Delete the thread's GUID.
-
         :return: None
         """
         guid = cls.get_guid()
@@ -103,7 +182,6 @@ class GuidMiddleware(object):
     def _generate_guid() -> str:
         """
         Generates an UUIDv4/GUID as a string.
-
         :return: GUID
         """
         return uuid.uuid4().hex
@@ -112,7 +190,6 @@ class GuidMiddleware(object):
     def _validate_guid(original_guid: str) -> bool:
         """
         Validates a GUID.
-
         :param original_guid: string to validate
         :return: bool
         """
@@ -125,7 +202,6 @@ class GuidMiddleware(object):
     def _get_correlation_id_from_header(self, request: HttpRequest) -> str:
         """
         Returns either the provided GUID or a new one depending on if the provided GUID is valid or not.
-
         :param request: HttpRequest object
         :return: GUID
         """
@@ -146,7 +222,6 @@ class GuidMiddleware(object):
         Checks if the request contains the header specified in the Django settings.
         If it does, we fetch the header and attempt to validate the contents as GUID.
         If no header is found, we generate a GUID to be injected instead.
-
         :param request: HttpRequest object
         :return: GUID
         """

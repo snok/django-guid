@@ -34,7 +34,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django_guid.middleware.GuidMiddleware',  # <-- Add middleware here
+    # 'django_guid.middleware.GuidMiddleware',  # <-- Add middleware here
+    'django_guid.middleware.guid_middleware',  # <-- Add middleware at the top of your middlewares
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
