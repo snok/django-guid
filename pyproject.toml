@@ -44,6 +44,10 @@ sphinx_rtd_theme = "^0.4.3"
 pytest = "^5.4"
 pytest-cov = "^2.8.1"
 pytest-django = "^3.8.0"
+pytest-mock = "^3"
+pytest-subtests = "^0.3"
+djangorestframework = "^3.11.0"
+sentry-sdk = "^0.14.3"
 
 [tool.black]
 line-length = 126

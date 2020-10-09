@@ -9,24 +9,21 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.8
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements-publish-pypi.txt
-    - name: Build
+        pip install poetry
+    - name: Configure private repository
       run: |
-        python setup.py sdist bdist_wheel
-    - name: Publish distribution of django-guid to Test PyPI 📦
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && contains(github.ref, '-rc')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.test_pypi_password }}
-        repository_url: https://test.pypi.org/legacy/
-    - name: Publish distribution of django-guid to PyPI 📦
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && !contains(github.ref, '-rc')
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        password: ${{ secrets.pypi_password }}
+        poetry config repositories.test https://test.pypi.org/legacy/
+    - name: Build and publish test-pypi
+      run: |
+        poetry config pypi-token.test ${{ secrets.test_pypi_password }}
+        poetry publish --build --no-interaction --repository test
+    - name: Build and publish
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.pypi_password }}
+        poetry publish --build --no-interaction
