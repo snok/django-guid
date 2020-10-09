@@ -35,7 +35,7 @@ include = ["CHANGELOG.rst"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-django = "^2.2 || ^3.0"
+django = "^2.2.13 || ^3.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^1.21.0"
