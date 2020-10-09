@@ -14,5 +14,5 @@ class CorrelationId(Filter):
         :param record: Log record
         :return: True
         """
-        record.correlation_id = GuidMiddleware.get_guid()
+        record.__setattr__('correlation_id', GuidMiddleware.get_guid())
         return True

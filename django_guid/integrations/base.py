@@ -1,12 +1,14 @@
+from typing import Optional
+
 from django.core.exceptions import ImproperlyConfigured
 
 
-class Integration(object):
+class Integration:
     """
     Integration base class.
     """
 
-    identifier = None  # The name of your integration
+    identifier: Optional[str] = None  # The name of your integration
 
     def __init__(self) -> None:
         if self.identifier is None:

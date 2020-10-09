@@ -1,11 +1,14 @@
+from typing import List
 from warnings import warn
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.inspect import func_accepts_kwargs
 
+from django_guid.integrations import Integration
 
-class Settings(object):
+
+class Settings:
     """
     Settings for django_guid read from the Django settings in `settings.py`.
 
@@ -17,8 +20,8 @@ class Settings(object):
         self.VALIDATE_GUID = True
         self.RETURN_HEADER = True
         self.EXPOSE_HEADER = True
-        self.INTEGRATIONS = []
-        self.IGNORE_URLS = []
+        self.INTEGRATIONS: List[Integration] = []
+        self.IGNORE_URLS: List[str] = []
         self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
 
         if hasattr(django_settings, 'DJANGO_GUID'):
@@ -48,7 +51,7 @@ class Settings(object):
                 raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
             # Note: stripping the '/' from the beginning and end of the path of the URLS,
             # this is since some people would write a path as "/path/one/two/" while others would write "path/one/two"
-            self.IGNORE_URLS = {url.strip('/') for url in self.IGNORE_URLS}
+            self.IGNORE_URLS = list({url.strip('/') for url in self.IGNORE_URLS})
 
             self._validate_and_setup_integrations()
 

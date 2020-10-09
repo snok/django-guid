@@ -1,7 +1,7 @@
 import logging
 import threading
 import uuid
-from typing import Callable, Union
+from typing import Callable, Dict, Optional, Union
 
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
@@ -12,13 +12,13 @@ from django_guid.config import settings
 logger = logging.getLogger('django_guid')
 
 
-class GuidMiddleware(object):
+class GuidMiddleware:
     """
     Gets a GUID from a request header, or generates a GUID if none is found, for each incoming request.
     Stored GUIDs are accessible from anywhere in the Django app.
     """
 
-    _guid = {}
+    _guid: Dict[threading.Thread, str] = {}
 
     def __init__(self, get_response: Callable) -> None:
         """
@@ -67,7 +67,7 @@ class GuidMiddleware(object):
         return response
 
     @classmethod
-    def get_guid(cls, default: str = None) -> str:
+    def get_guid(cls, default: Optional[str] = None) -> str:
         """
         Fetches the GUID of the current thread from _guid.
         If no value has been set for the current thread yet, a default value is returned.

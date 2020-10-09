@@ -2,7 +2,7 @@
 name = "django-guid"
 version = "2.2.0"  # Remember to also change __init__.py version
 description = "Middleware that enables single request-response cycle tracing by injecting a unique ID into project logs"
-authors = ["Jonas Krüger Svensson <jonas-ks@hotmail.com>", "Sondre Lillebø Gundersen <sondrelg@live.no>"]
+authors = ["Jonas Krüger Svensson <jonas-ks@hotmail.com>"]
 license = "BSD-4-Clause"
 readme = "README.rst"
 homepage = "https://github.com/snok/django-guid"
