@@ -1,6 +1,8 @@
 name: Publish django-guid to PyPI and TestPyPI 📦
 
-on: push
+on:
+  release:
+    types: [published]
 
 jobs:
   build-and-publish:
