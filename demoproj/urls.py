@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from demoproj.views import index_view, rest_view, no_guid
+from demoproj.views import index_view, no_guid, rest_view
 
 urlpatterns = [
     path('', index_view, name='index'),

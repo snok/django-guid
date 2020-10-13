@@ -2,8 +2,8 @@ import logging
 
 from django.http import HttpRequest, JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from demoproj.services.useless_file import useless_function
 
