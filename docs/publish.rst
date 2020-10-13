@@ -3,17 +3,25 @@ Publish django-guid
 
 This site is intended for the contributors of ``django-guid``.
 
-PyPi
-----
+Publishing to test-PyPi
+-----------------------
 
-Publishing ``django-guid`` can be done through tagging git commits. Any commits tagged with ``-rc`` will be published
-to ``TestPyPi``, while any other tag will be released to ``PyPi``. It is important that the version we actually push
-is defined in ``django_guid/__init__.py``, and the tag created to git is simply for git history.
+Before publishing a new version of the package, it is advisable that you publish a test-package. Among other things, this will flag any possible issues the current interation of the package might have.
 
-.. code-block:: bash
+Please note, to publish a test-package, you need to have a test-pypi API token.
 
-    git tag 1.0.0-rc1  # Publishes to TestPyPi
-    git tag 1.0.0      # Publishes to PyPi
+Using the API token, you can publish a test-package by running:
+
+.. code::
+
+    poetry config repositories.test https://test.pypi.org/legacy/
+    poetry config pypi-token.test <api-token>
+    poetry publish --build --no-interaction --repository test
+
+Publishing to PyPi
+------------------
+
+Publishing ``django-guid`` can be done by creating a github release in the ``django-guid`` repository. Before publishing a release, make sure that the version is consistent in ``django_guid/__init__.py``, ``pyproject.toml`` and in the title of the actual publication. The title of the release should simply be the version number and the release body should contain the changelog for the patch.
 
 Read the docs
 -------------

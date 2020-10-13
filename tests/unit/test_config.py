@@ -83,4 +83,5 @@ def test_not_string_in_igore_urls(monkeypatch):
 
 def test_converts_correctly(monkeypatch):
     monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': ['/no_guid', '/my/api/path/']})
-    assert {'no_guid', 'my/api/path'} == Settings().IGNORE_URLS
+    assert 'my/api/path' in Settings().IGNORE_URLS
+    assert 'no_guid' in Settings().IGNORE_URLS
