@@ -35,7 +35,7 @@ def get_id_from_header(request: HttpRequest) -> str:
     :param request: HttpRequest object
     :return: GUID
     """
-    header = request.headers.get(settings.GUID_HEADER_NAME)  # Case insensitive headers.get added in Django2.2
+    header: str = request.headers.get(settings.GUID_HEADER_NAME)  # Case insensitive headers.get added in Django2.2
     if header:
         logger.info('%s found in the header: %s', settings.GUID_HEADER_NAME, header)
         request.correlation_id = get_correlation_id_from_header(request)

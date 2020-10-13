@@ -1,0 +1,66 @@
+[tool.poetry]
+name = "django-guid"
+version = "2.2.0"  # Remember to also change __init__.py version
+description = "Middleware that enables single request-response cycle tracing by injecting a unique ID into project logs"
+authors = ["Jonas Krüger Svensson <jonas-ks@hotmail.com>"]
+license = "BSD-4-Clause"
+readme = "README.rst"
+homepage = "https://github.com/snok/django-guid"
+repository = "https://github.com/snok/django-guid"
+documentation = "https://django-guid.readthedocs.io/en/latest"
+keywords = ['django', 'logging', 'request', 'web', 'uuid', 'guid', 'correlation', 'correlation-id']
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Web Environment',
+    'Framework :: Django',
+    'Framework :: Django :: 2.2',
+    'Framework :: Django :: 3.0',
+    'Intended Audience :: Developers',
+    'License :: OSI Approved :: BSD License',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Topic :: Internet :: WWW/HTTP',
+    'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+    'Topic :: Internet :: WWW/HTTP :: WSGI',
+    'Topic :: Software Development',
+    'Topic :: Software Development :: Libraries',
+    'Topic :: Software Development :: Libraries :: Application Frameworks',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+include = ["CHANGELOG.rst"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+django = "^2.2.13 || ^3.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^1.21.0"
+sphinx = "^2.4.4"
+sphinx_rtd_theme = "^0.4.3"
+pytest = "^5.4"
+pytest-cov = "^2.8.1"
+pytest-django = "^3.8.0"
+pytest-mock = "^3"
+pytest-subtests = "^0.3"
+djangorestframework = "^3.11.0"
+sentry-sdk = "^0.14.3"
+mypy = "^0.790"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ['py37']
+include = '\.pyi?$'
+exclude = '''
+(
+    (\.eggs|\.git|\.hg|\.mypy_cache|\.tox|\.venv|\venv|\.github|\docs|\tests|\__pycache__)
+)
+'''
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

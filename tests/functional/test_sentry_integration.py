@@ -7,8 +7,9 @@ def test_sentry_integration(client, monkeypatch, caplog, mocker):
     Tests the sentry integration
     """
     from sentry_sdk.scope import Scope
-    from django_guid.integrations import SentryIntegration
+
     from django_guid.config import settings as guid_settings
+    from django_guid.integrations import SentryIntegration
 
     monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
     mock_scope = mocker.patch.object(Scope, 'set_tag')
@@ -34,9 +35,11 @@ def test_sentry_validation(client, monkeypatch):
     Tests that the package handles multiple header values by defaulting to one and logging a warning.
     """
     import sys
-    from django_guid.integrations import SentryIntegration
-    from django_guid.config import Settings
+
     from django.conf import settings
+
+    from django_guid.config import Settings
+    from django_guid.integrations import SentryIntegration
 
     # Mock away the sentry_sdk dependency
     sys.modules['sentry_sdk'] = None

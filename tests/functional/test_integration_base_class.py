@@ -30,9 +30,10 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
-    from django_guid.integrations import SentryIntegration
     from django.conf import settings
+
     from django_guid.config import Settings
+    from django_guid.integrations import SentryIntegration
 
     class BadIntegration(SentryIntegration):
         def run(self, guid):
@@ -47,9 +48,10 @@ def test_cleanup_method_not_accepting_kwargs(monkeypatch, client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
-    from django_guid.integrations import SentryIntegration
     from django.conf import settings
+
     from django_guid.config import Settings
+    from django_guid.integrations import SentryIntegration
 
     class BadIntegration(SentryIntegration):
         def cleanup(self, guid):
@@ -64,9 +66,10 @@ def test_non_callable_methods(monkeypatch, subtests):
     """
     Tests that an exception is raised when any of the integration base methods are non-callable.
     """
-    from django_guid.integrations import SentryIntegration
     from django.conf import settings
+
     from django_guid.config import Settings
+    from django_guid.integrations import SentryIntegration
 
     mock_integration = SentryIntegration()
 

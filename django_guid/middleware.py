@@ -13,15 +13,12 @@ try:
     from django.utils.decorators import sync_and_async_middleware
 except ImportError:
     raise ImproperlyConfigured('Please use Django GUID 2.x for Django>=3.1. (`pip install django-guid>3`).')
-from pympler.tracker import SummaryTracker
-
 
 from django_guid.config import settings
 
 logger = logging.getLogger('django_guid')
 
-guid = ContextVar('guid', default=None)
-tracker = SummaryTracker()
+guid: ContextVar = ContextVar('guid', default=None)
 
 
 def process_incoming_request(request: HttpRequest) -> None:
@@ -79,7 +76,7 @@ def guid_middleware(get_response: Callable) -> Callable:
 
     else:
 
-        def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
+        def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:  # type: ignore
             logger.debug('sync middleware called')
             if not ignored_url(request=request):
                 process_incoming_request(request=request)
