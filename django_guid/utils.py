@@ -18,7 +18,7 @@ def get_correlation_id_from_header(request: HttpRequest) -> str:
     if not settings.VALIDATE_GUID:
         logger.debug('Returning ID from header without validating it as a GUID')
         return given_guid
-    elif settings.VALIDATE_GUID and validate_guid(given_guid):
+    elif validate_guid(given_guid):
         logger.debug('%s is a valid GUID', given_guid)
         return given_guid
     else:
@@ -41,7 +41,7 @@ def get_id_from_header(request: HttpRequest) -> str:
         request.correlation_id = get_correlation_id_from_header(request)
     else:
         request.correlation_id = generate_guid()
-        logger.debug(
+        logger.info(
             'Header `%s` was not found in the incoming request. Generated new GUID: %s',
             settings.GUID_HEADER_NAME,
             request.correlation_id,
@@ -55,9 +55,7 @@ def ignored_url(request: HttpRequest) -> bool:
 
     :return: Boolean
     """
-    if request.get_full_path().strip('/') in settings.IGNORE_URLS:
-        return True
-    return False
+    return request.get_full_path().strip('/') in settings.IGNORE_URLS
 
 
 def generate_guid() -> str:

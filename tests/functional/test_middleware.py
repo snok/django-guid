@@ -7,7 +7,7 @@ def mock_uuid(monkeypatch):
     class MockUUid:
         hex = '704ae5472cae4f8daa8f2cc5a5a8mock'
 
-    monkeypatch.setattr('django_guid.middleware.uuid.uuid4', MockUUid)
+    monkeypatch.setattr('django_guid.utils.uuid.uuid4', MockUUid)
 
 
 def test_request_with_no_correlation_id(client, caplog, mock_uuid):
@@ -21,14 +21,14 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     """
     response = client.get('/')
     expected = [
+        ('sync middleware called', None),
         (
             'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
             None,
         ),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`, deleting guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
@@ -42,12 +42,12 @@ def test_request_with_correlation_id(client, caplog):
     """
     response = client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
     expected = [
+        ('sync middleware called', None),
         ('Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565843', None),
         ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
         ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
         ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
-        ('Received signal `request_finished`', '97c304252fd14b25b72d6aee31565843'),
-        ('Deleting 97c304252fd14b25b72d6aee31565843 from _guid', '97c304252fd14b25b72d6aee31565843'),
+        ('Received signal `request_finished`, deleting guid', '97c304252fd14b25b72d6aee31565843'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '97c304252fd14b25b72d6aee31565843'
@@ -62,13 +62,13 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     """
     response = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
+        ('sync middleware called', None),
         ('Correlation-ID found in the header: bad-guid', None),
         ('Failed to validate GUID bad-guid', None),
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`, deleting guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
@@ -86,12 +86,12 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
     client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
+        ('sync middleware called', None),
         ('Correlation-ID found in the header: bad-guid', None),
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
-        ('Received signal `request_finished`', 'bad-guid'),
-        ('Deleting bad-guid from _guid', 'bad-guid'),
+        ('Received signal `request_finished`, deleting guid', 'bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
@@ -106,14 +106,14 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
     response = client.get('/api')
     expected = [
+        ('sync middleware called', None),
         (
             'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
             None,
         ),
         ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Deleting 704ae5472cae4f8daa8f2cc5a5a8mock from _guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`, deleting guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert not response.get('Correlation-ID')
@@ -184,19 +184,19 @@ def test_cleanup_signal(client, caplog, monkeypatch):
 
     expected = [
         # First request
+        ('sync middleware called', None),
         ('Correlation-ID found in the header: bad-guid', None),
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'bad-guid'),
         ('Some warning in a function', 'bad-guid'),
-        ('Received signal `request_finished`', 'bad-guid'),
-        ('Deleting bad-guid from _guid', 'bad-guid'),
+        ('Received signal `request_finished`, deleting guid', 'bad-guid'),
         # Second request
+        ('sync middleware called', None),
         ('Correlation-ID found in the header: another-bad-guid', None),
         ('Returning ID from header without validating it as a GUID', None),
         ('This log message should have a GUID', 'another-bad-guid'),
         ('Some warning in a function', 'another-bad-guid'),
-        ('Received signal `request_finished`', 'another-bad-guid'),
-        ('Deleting another-bad-guid from _guid', 'another-bad-guid'),
+        ('Received signal `request_finished`, deleting guid', 'another-bad-guid'),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
@@ -223,8 +223,9 @@ def test_url_ignored(client, caplog, monkeypatch):
     client.get('/no_guid', **{'HTTP_Correlation-ID': 'bad-guid'})
     # No log message should have a GUID, aka `None` on index 1.
     expected = [
+        ('sync middleware called', None),
         ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
         ('Some warning in a function', None),
-        ('Received signal `request_finished`', None),
+        ('Received signal `request_finished`, deleting guid', None),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected

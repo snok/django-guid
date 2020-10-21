@@ -1,5 +1,5 @@
-import logging
 import asyncio
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ async def useless_function() -> bool:
     :return: True
     """
     logger.info('Going to sleep for a sec')
-    await asyncio.sleep(10)
+    await asyncio.sleep(1)
 
     logger.warning('Warning, I am awake!')
     return True

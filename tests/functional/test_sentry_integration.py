@@ -16,6 +16,7 @@ def test_sentry_integration(client, monkeypatch, caplog, mocker):
 
     client.get('/api', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565842'})
     expected = [
+        (None, 'sync middleware called'),
         (None, 'Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565842'),
         (None, '97c304252fd14b25b72d6aee31565842 is a valid GUID'),
         ('97c304252fd14b25b72d6aee31565842', 'Running integration: `SentryIntegration`'),
@@ -23,8 +24,7 @@ def test_sentry_integration(client, monkeypatch, caplog, mocker):
         ('97c304252fd14b25b72d6aee31565842', 'This is a DRF view log, and should have a GUID.'),
         ('97c304252fd14b25b72d6aee31565842', 'Some warning in a function'),
         ('97c304252fd14b25b72d6aee31565842', 'Running tear down for integration: `SentryIntegration`'),
-        ('97c304252fd14b25b72d6aee31565842', 'Received signal `request_finished`'),
-        ('97c304252fd14b25b72d6aee31565842', 'Deleting 97c304252fd14b25b72d6aee31565842 from _guid'),
+        ('97c304252fd14b25b72d6aee31565842', 'Received signal `request_finished`, deleting guid'),
     ]
     mock_scope.assert_called_with('transaction_id', '97c304252fd14b25b72d6aee31565842')
     assert [(x.correlation_id, x.message) for x in caplog.records] == expected

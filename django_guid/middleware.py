@@ -62,9 +62,8 @@ def guid_middleware(get_response: Callable) -> Callable:
     # One-time configuration and initialization.
     if not apps.is_installed('django_guid'):
         raise ImproperlyConfigured('django_guid must be in installed apps')
-
+    # fmt: off
     if asyncio.iscoroutinefunction(get_response):
-
         async def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
             logger.debug('async middleware called')
             if not ignored_url(request=request):
@@ -73,9 +72,7 @@ def guid_middleware(get_response: Callable) -> Callable:
             response = await get_response(request)
             process_outgoing_request(response=response)
             return response
-
     else:
-
         def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:  # type: ignore
             logger.debug('sync middleware called')
             if not ignored_url(request=request):
@@ -84,5 +81,5 @@ def guid_middleware(get_response: Callable) -> Callable:
             response = get_response(request)
             process_outgoing_request(response=response)
             return response
-
+    # fmt: on
     return middleware

@@ -4,6 +4,8 @@ from typing import Optional
 from django.core.signals import request_finished
 from django.dispatch import receiver
 
+from django_guid.middleware import guid
+
 logger = logging.getLogger('django_guid')
 
 
@@ -20,4 +22,6 @@ def delete_guid(sender: Optional[dict], **kwargs: dict) -> None:
         must be able to handle those new arguments.
     :return: None
     """
-    logger.debug('Received signal `request_finished`')
+    logger.debug('Received signal `request_finished`, deleting guid')
+    guid.set(None)
+    return
