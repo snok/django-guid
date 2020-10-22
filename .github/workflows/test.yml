@@ -42,9 +42,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       # install poetry
-      - uses: dschep/install-poetry-action@v1.3
-        with:
-          create_virtualenvs: true
+      - uses: Gr1N/setup-poetry@v4
       # config poetry to create venv in project
       - run: poetry config virtualenvs.in-project true
       # cache whole venv, not wheels - this way we can skip installs next time
@@ -59,6 +57,10 @@ jobs:
         run: |
           source $HOME/.poetry/env
           poetry install
+        env:
+          POETRY_VIRTUALENVS_CREATE: true
+          POETRY_VIRTUALENVS_PATH: .venv
+          POETRY_VIRTUALENVS_IN_PROJECT: .true
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       # install specific matrix version of django - will otherwise default to 3+
       - name: Install django ${{ matrix.django-version }}
