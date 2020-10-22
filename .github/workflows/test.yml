@@ -1,0 +1,74 @@
+name: test
+
+on: push
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      # checks out the repo
+      - uses: actions/checkout@v2
+      # sets up python - version doesn't matter (just 3.6+ for black)
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3"
+      # cache wheels to speed up pip installs
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      # install linters
+      - run: python -m pip install black flake8 isort
+      # run linters
+      - run: |
+          flake8 .
+          black . --check
+          isort .
+  test:
+    needs: linting
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.6", "3.7", "3.8", "3.9"]
+        django-version: [ "2.2", "3.0", "3.1" ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      # install poetry
+      - uses: dschep/install-poetry-action@v1.3
+        with:
+          create_virtualenvs: true
+      # config poetry to create venv in project
+      - run: poetry config virtualenvs.in-project true
+      # cache whole venv, not wheels - this way we can skip installs next time
+      - name: Set up cache
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      # install dependencies with poetry *if* cache was invalidated
+      - name: Install dependencies
+        run: |
+          source $HOME/.poetry/env
+          poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      # install specific matrix version of django - will otherwise default to 3+
+      - name: Install django ${{ matrix.django-version }}
+        run: |
+          source $HOME/.poetry/env
+          python -m pip install "Django==${{ matrix.django-version }}" --upgrade --force-reinstall
+      - name: Run tests
+        run: |
+          source $HOME/.poetry/env
+          poetry run pytest --cov=django_guid tests/
+          poetry run coverage report
+
+

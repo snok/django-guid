@@ -60,6 +60,21 @@ exclude = '''
 )
 '''
 
+[tool.isort]
+profile = "black"
+src_paths = ["django_guid"]
+combine_as_imports = true
+line_length = 120
+sections = [
+    'FUTURE',
+    'STDLIB',
+    'DJANGO',
+    'THIRDPARTY',
+    'FIRSTPARTY',
+    'LOCALFOLDER'
+]
+known_django = ['django']
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
