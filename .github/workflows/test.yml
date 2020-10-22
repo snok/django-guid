@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3"
-      - name: Load wheel cache
+      - name: Load cached wheels
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
