@@ -1,6 +1,6 @@
 name: test
 
-on: [push, pull_request]
+on: pull_request
 
 jobs:
   linting:
@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-2
       # install dependencies with poetry *if* cache was invalidated
       - name: Install dependencies
         run: |
