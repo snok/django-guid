@@ -20,8 +20,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
-      # install linters
-      - run: python -m pip install black flake8 isort
+      # install dependencies
+      - run: |
+        python -m pip install pip -U
+        python -m pip install black flake8 isort
       # run linters
       - run: |
           flake8 .
