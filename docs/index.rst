@@ -18,10 +18,26 @@ Django GUID
     :target: https://github.com/pre-commit/pre-commit
 
 
-Django GUID attaches a unique correlation ID to all your log outputs for every requests you handle. In other words, every error, and really every log now has an ID connecting it to all other relevant logs, making
-debugging simple.
+Django GUID attaches a unique correlation ID/request ID to all your log outputs for every request.
+In other words, all logs connected to a request now has a unique ID attached to it, making debugging simple.
 
-The package stores a GUID to an object, making it accessible by using the ID of the current thread. This makes integrations possible, as the ID can be returned as a header (built in setting) or forwarded manually to other systems (built in API), making it possible to extend the reach of correlation IDs to whole systems.
+To determine which Django-GUID version you should use, please see the table below.
+
++---------------------+--------------------------+
+|   Django version    |   Django-GUID version    |
++=====================+==========================+
+| 3.1.1 or above      |  3.x.x - ASGI and WSGI   |
++---------------------+--------------------------+
+| 3.1.0               |  2.x.x - Only WSGI       |
++---------------------+--------------------------+
+| 3.0.0               |  2.x.x - Only WSGI       |
++---------------------+--------------------------+
+| 2.2.x               |  2.x.x - Only WSGI       |
++---------------------+--------------------------+
+
+Django GUID >= 3.0.0 uses ``contextvars`` to store and access a stored GUID. Previous versions stored the GUID to an object,
+making it accessible by using the ID of the current thread.
+
 
 **Resources**:
 
@@ -33,7 +49,7 @@ The package stores a GUID to an object, making it accessible by using the ID of 
 
 Log output with a GUID:
 
-.. code-block:: none
+.. code-block:: bbcode
 
     INFO ... [773fa6885e03493498077a273d1b7f2d] project.views This is a DRF view log, and should have a GUID.
     WARNING ... [773fa6885e03493498077a273d1b7f2d] project.services.file Some warning in a function
@@ -45,7 +61,7 @@ Log output with a GUID:
 
 Log output without a GUID:
 
-.. code-block:: none
+.. code-block:: text
 
     INFO ... project.views This is a DRF view log, and should have a GUID.
     WARNING ... project.services.file Some warning in a function

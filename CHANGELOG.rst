@@ -2,6 +2,17 @@ Changelog
 =========
 
 
+`3.0.0`_ - 2020-11-04 - Full async support!
+-------------------------------------------
+**Breaking changes**
+
+This version requires ``Django>=3.1.1``. For previous versions of Django,
+please use ``django-guid<3.0.0`` (Such as ``django-guid==2.2.0``).
+
+If you've already implemented ``django-guid`` in your project and are currently upgrading to ``Django>=3.1.1``, please
+see the <upgrading Django GUID docs link here>
+
+
 `2.2.0`_ - 2020-11-04
 ---------------------
 **Features**
@@ -190,3 +201,4 @@ Changelog
 .. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0
 .. _2.1.0: https://github.com/jonasks/django-guid/compare/2.0.0...2.1.0
 .. _2.2.0: https://github.com/jonasks/django-guid/compare/2.1.0...2.2.0
+.. _3.0.0: https://github.com/jonasks/django-guid/compare/2.2.0...3.0.0

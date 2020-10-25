@@ -3,43 +3,32 @@ API
 
 Getting started
 ---------------
-To use the API import the GuidMiddleware:
+To use the API import the ``guid``:
 
 .. code-block:: python
 
-    from django_guid.middleware import GuidMiddleware
+    from django_guid.middleware import guid
 
 
-get_guid()
+get()
 ----------
-* **Parameters**: ``default`` = ``None`` - What to return if no ``GUID`` is found.
-
-* **Returns**: ``str`` or ``default``
+* **Returns**: ``str`` or ``None``
 
 Fetches the GUID.
 
 .. code-block:: python
 
-    guid = GuidMiddleware.get_guid(default=None)
+    guid = guid.get()
 
-set_guid()
+set()
 ----------
 * **Parameters**: ``guid``: ``str``
 
-Sets the GUID to the given input
+Sets the GUID to the given input. If you want to delete the current GUID, set it to ``None``.
 
 .. code-block:: python
 
-    GuidMiddleware.set_guid('My GUID')
-
-
-delete_guid()
--------------
-Deletes the stored GUID
-
-.. code-block:: python
-
-    GuidMiddleware.delete_guid()
+    guid.set('My GUID')
 
 
 Example usage
@@ -50,12 +39,12 @@ Example usage
     import requests
     from django.conf import settings
 
-    from django_guid.middleware import GuidMiddleware
+    from django_guid.middleware import guid
 
     requests.get(
         url='http://localhost/api',
         headers={
             'Accept': 'application/json',
-            settings.DJANGO_GUID['GUID_HEADER_NAME']: GuidMiddleware.get_guid(),
+            settings.DJANGO_GUID['GUID_HEADER_NAME']: guid.get(),
         }
     )

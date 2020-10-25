@@ -46,7 +46,7 @@ repos:
       - id: rst
         name: rst
         entry: rst-lint --encoding utf-8
-        files: ^(CHANGELOG.rst|README.rst|CONTRIBUTING.rst|CONTRIBUTORS.rst|docs/api.rst|docs/extended_example.rst|docs/index.rst|docs/install.rst/index.rst|docs/integration.rst/index.rst|docs/publish.rst/index.rst|docs/settings.rst/index.rst|docs/troubleshooting.rst)$
+        files: ^(CHANGELOG.rst|README.rst|CONTRIBUTING.rst|CONTRIBUTORS.rst|docs/api.rst|docs/extended_example.rst|docs/install.rst|docs/integration.rst|docs/publish.rst|docs/settings.rst|docs/troubleshooting.rst)$
         language: python
         additional_dependencies: [pygments, restructuredtext_lint]
   - repo: https://github.com/pre-commit/mirrors-mypy

@@ -8,7 +8,8 @@ readme = "README.rst"
 homepage = "https://github.com/snok/django-guid"
 repository = "https://github.com/snok/django-guid"
 documentation = "https://django-guid.readthedocs.io/en/latest"
-keywords = ['django', 'logging', 'request', 'web', 'uuid', 'guid', 'correlation', 'correlation-id']
+keywords = ['django', 'async', 'async support', 'logging', 'request', 'web', 'uuid', 'guid', 'correlation',
+    'correlation-id', 'request-id', 'request id', 'log id', 'logging id', 'middleware']
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Development Status :: 5 - Production/Stable',

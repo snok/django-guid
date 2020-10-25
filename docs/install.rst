@@ -33,12 +33,12 @@ Add :code:`django_guid` to your :code:`INSTALLED_APPS`:
 2. Middleware
 -------------
 
-Add the :code:`django_guid.middleware.GuidMiddleware` to your ``MIDDLEWARE``:
+Add the :code:`django_guid.middleware.guid_middleware` to your ``MIDDLEWARE``:
 
 .. code-block:: python
 
     MIDDLEWARE = [
-        'django_guid.middleware.GuidMiddleware',
+        'django_guid.middleware.guid_middleware',
         ...
      ]
 
