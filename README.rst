@@ -68,12 +68,17 @@ To determine which Django-GUID version you should use, please see the table belo
 Django GUID >= 3.0.0 uses ``contextvars`` to store and access the GUID. Previous versions stored the GUID to an object,
 making it accessible by using the ID of the current thread.
 
+--------------
+
 
 **Resources**:
 
 * Free software: BSD License
 * Documentation: https://django-guid.readthedocs.io
 * Homepage: https://github.com/JonasKs/django-guid
+
+--------------
+
 
 **Examples**
 
