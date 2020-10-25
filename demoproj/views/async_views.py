@@ -2,7 +2,7 @@ import logging
 import asyncio
 from django.http import HttpRequest, JsonResponse
 
-from demoproj_asgi.services.useless_file import useless_function
+from demoproj.services.async_services import useless_function
 
 logger = logging.getLogger(__name__)
 

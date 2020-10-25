@@ -1,7 +1,8 @@
 import logging
 import uuid
+from typing import Union
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 
 from django_guid.config import settings
 
@@ -49,7 +50,7 @@ def get_id_from_header(request: HttpRequest) -> str:
     return request.correlation_id
 
 
-def ignored_url(request: HttpRequest) -> bool:
+def ignored_url(request: Union[HttpRequest, HttpResponse]) -> bool:
     """
     Checks if the current URL is defined in the `IGNORE_URLS` setting.
 

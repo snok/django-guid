@@ -2,14 +2,6 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured
 
 
-@pytest.fixture
-def mock_uuid(monkeypatch):
-    class MockUUid:
-        hex = '704ae5472cae4f8daa8f2cc5a5a8mock'
-
-    monkeypatch.setattr('django_guid.utils.uuid.uuid4', MockUUid)
-
-
 def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     """
     Tests a request without any correlation-ID in it logs the correct things.
@@ -23,7 +15,8 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     expected = [
         ('sync middleware called', None),
         (
-            'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+            'Header `Correlation-ID` was not found in the incoming request. '
+            'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
             None,
         ),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -108,7 +101,8 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     expected = [
         ('sync middleware called', None),
         (
-            'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+            'Header `Correlation-ID` was not found in the incoming request. '
+            'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
             None,
         ),
         ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),

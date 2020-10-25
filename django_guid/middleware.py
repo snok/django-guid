@@ -11,7 +11,7 @@ from django_guid.utils import get_id_from_header, ignored_url
 
 try:
     from django.utils.decorators import sync_and_async_middleware
-except ImportError:
+except ImportError:  # pragma: no cover
     raise ImproperlyConfigured('Please use Django GUID 2.x for Django>=3.1. (`pip install django-guid>3`).')
 
 from django_guid.config import settings
@@ -26,31 +26,31 @@ def process_incoming_request(request: HttpRequest) -> None:
     Processes an incoming request. This function is called before the view and later middleware.
     Same logic for both async and sync views.
     """
-    # Process request and store the GUID in a contextvar
-    guid.set(get_id_from_header(request))
+    if not ignored_url(request=request):
+        # Process request and store the GUID in a contextvar
+        guid.set(get_id_from_header(request))
 
-    # Run all integrations
-    for integration in settings.INTEGRATIONS:
-        logger.debug('Running integration: `%s`', integration.identifier)
-        integration.run(guid=guid.get())
-
+        # Run all integrations
+        for integration in settings.INTEGRATIONS:
+            logger.debug('Running integration: `%s`', integration.identifier)
+            integration.run(guid=guid.get())
     return
 
 
-def process_outgoing_request(response: HttpResponse) -> None:
+def process_outgoing_request(response: HttpResponse, request: HttpRequest) -> None:
     """
     Process an outgoing request. This function is called after the view and before later middleware.
     """
-    if settings.RETURN_HEADER:
-        response[settings.GUID_HEADER_NAME] = guid.get()  # Adds the GUID to the response header
-        if settings.EXPOSE_HEADER:
-            response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
+    if not ignored_url(request=request):
+        if settings.RETURN_HEADER:
+            response[settings.GUID_HEADER_NAME] = guid.get()  # Adds the GUID to the response header
+            if settings.EXPOSE_HEADER:
+                response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
 
-    # Run tear down for all the integrations
-    for integration in settings.INTEGRATIONS:
-        logger.debug('Running tear down for integration: `%s`', integration.identifier)
-        integration.cleanup()
-
+        # Run tear down for all the integrations
+        for integration in settings.INTEGRATIONS:
+            logger.debug('Running tear down for integration: `%s`', integration.identifier)
+            integration.cleanup()
     return
 
 
@@ -66,20 +66,18 @@ def guid_middleware(get_response: Callable) -> Callable:
     if asyncio.iscoroutinefunction(get_response):
         async def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
             logger.debug('async middleware called')
-            if not ignored_url(request=request):
-                process_incoming_request(request=request)
+            process_incoming_request(request=request)
             # ^ Code above this line is executed before the view and later middleware
             response = await get_response(request)
-            process_outgoing_request(response=response)
+            process_outgoing_request(response=response, request=request)
             return response
     else:
         def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:  # type: ignore
             logger.debug('sync middleware called')
-            if not ignored_url(request=request):
-                process_incoming_request(request=request)
+            process_incoming_request(request=request)
             # ^ Code above this line is executed before the view and later middleware
             response = get_response(request)
-            process_outgoing_request(response=response)
+            process_outgoing_request(response=response, request=request)
             return response
     # fmt: on
     return middleware

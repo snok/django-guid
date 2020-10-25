@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.urls import path
 
-from demoproj.views import index_view, no_guid, rest_view
+from demoproj.views.sync_views import index_view, no_guid, rest_view
+from demoproj.views.async_views import index_view as asgi_index_view
 
 urlpatterns = [
     path('', index_view, name='index'),
     path('api', rest_view, name='drf'),
     path('no_guid', no_guid, name='no_guid'),
+    path('asgi', asgi_index_view, name='asgi_index'),
 ]
