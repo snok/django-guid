@@ -90,7 +90,7 @@ DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
     'INTEGRATIONS': [],
-    'IGNORE_URLS': ['no_guid'],
+    'IGNORE_URLS': ['no-guid'],
 }
 
 # Set up logging for the project

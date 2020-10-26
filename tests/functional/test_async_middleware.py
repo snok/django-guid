@@ -15,7 +15,7 @@ async def test_one_request(async_client, caplog, mock_uuid):
         ('Going to sleep for a sec', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Warning, I am awake!', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Warning, I am awake!', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`, deleting guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
     ]
 
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
@@ -42,7 +42,7 @@ async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_uni
             ('Going to sleep for a sec', guid),
             ('Warning, I am awake!', guid),
             ('Warning, I am awake!', guid),
-            ('Received signal `request_finished`, deleting guid', guid),
+            ('Received signal `request_finished`, clearing guid', guid),
         ]
     ]
     # Sort both lists and compare - order will vary between runs
@@ -58,13 +58,13 @@ async def test_ignored_url(async_client, caplog, monkeypatch):
     """
     from django_guid.config import settings as guid_settings
 
-    monkeypatch.setattr(guid_settings, 'IGNORE_URLS', {'no_guid'})  # Same as it would be after config conversion
-    await async_client.get('/no_guid')
+    monkeypatch.setattr(guid_settings, 'IGNORE_URLS', {'no-guid'})  # Same as it would be after config conversion
+    await async_client.get('/no-guid')
     # No log message should have a GUID, aka `None` on index 1.
     expected = [
         ('async middleware called', None),
         ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
         ('Some warning in a function', None),
-        ('Received signal `request_finished`, deleting guid', None),
+        ('Received signal `request_finished`, clearing guid', None),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected

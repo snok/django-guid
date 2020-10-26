@@ -9,6 +9,7 @@ dist/
 notes
 .pytest_cache
 .coverage
+htmlcov/
 
 # Sphinx documentation
 docs/_build/
