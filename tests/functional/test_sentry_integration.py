@@ -1,5 +1,6 @@
-import pytest
 from django.core.exceptions import ImproperlyConfigured
+
+import pytest
 
 
 def test_sentry_integration(client, monkeypatch, caplog, mocker):

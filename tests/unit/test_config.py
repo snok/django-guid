@@ -1,6 +1,7 @@
-import pytest
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+
+import pytest
 
 from django_guid.config import Settings
 

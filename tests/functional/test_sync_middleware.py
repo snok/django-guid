@@ -1,5 +1,6 @@
-import pytest
 from django.core.exceptions import ImproperlyConfigured
+
+import pytest
 
 
 def test_request_with_no_correlation_id(client, caplog, mock_uuid):
