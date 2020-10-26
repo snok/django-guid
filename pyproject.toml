@@ -16,6 +16,7 @@ classifiers = [
     'Framework :: Django',
     'Framework :: Django :: 2.2',
     'Framework :: Django :: 3.0',
+    'Framework :: Django :: 3.1',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
@@ -23,6 +24,7 @@ classifiers = [
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     'Topic :: Internet :: WWW/HTTP :: WSGI',
@@ -59,6 +61,21 @@ exclude = '''
     (\.eggs|\.git|\.hg|\.mypy_cache|\.tox|\.venv|\venv|\.github|\docs|\tests|\__pycache__)
 )
 '''
+
+[tool.isort]
+profile = "black"
+src_paths = ["django_guid"]
+combine_as_imports = true
+line_length = 120
+sections = [
+    'FUTURE',
+    'STDLIB',
+    'DJANGO',
+    'THIRDPARTY',
+    'FIRSTPARTY',
+    'LOCALFOLDER'
+]
+known_django = ['django']
 
 [build-system]
 requires = ["poetry>=0.12"]
