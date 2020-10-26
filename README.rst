@@ -106,10 +106,6 @@ Log output without a GUID:
     WARNING ... project.services.file Some warning in a function
 
 
-.. image:: .. image:: https://raw.githubusercontent.com/snok/django-guid/master/docs/img/guid.gif
-  :alt: GUID Gif
-
-
 See the `documentation <https://django-guid.readthedocs.io>`_ for more examples.
 
 ************

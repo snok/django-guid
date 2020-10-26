@@ -104,8 +104,6 @@ Log output without a GUID:
     WARNING ... project.services.file Some warning in a function
     WARNING ... project.services.file Some warning in a function
 
-.. image:: img/guid.gif
-  :alt: GUID Gif
 
 --------------
 
