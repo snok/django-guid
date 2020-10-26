@@ -8,8 +8,10 @@ readme = "docs/README_PYPI.rst"
 homepage = "https://github.com/snok/django-guid"
 repository = "https://github.com/snok/django-guid"
 documentation = "https://django-guid.readthedocs.io/en/latest"
-keywords = ['django', 'async', 'async support', 'logging', 'request', 'web', 'uuid', 'guid', 'correlation',
-    'correlation-id', 'request-id', 'request id', 'log id', 'logging id', 'middleware']
+keywords = [
+    'asgi', 'async', 'async support', 'correlation', 'correlation-id', 'django', 'guid', 'log id', 'logging',
+    'logging id', 'middleware', 'request', 'request id', 'request-id', 'uuid', 'web'
+]
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Development Status :: 5 - Production/Stable',
@@ -21,9 +23,9 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
-    'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
     'Topic :: Internet :: WWW/HTTP',
     'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     'Topic :: Internet :: WWW/HTTP :: WSGI',
@@ -35,7 +37,7 @@ classifiers = [
 include = ["CHANGELOG.rst"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^1.21.0"
