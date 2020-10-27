@@ -1,5 +1,4 @@
 from typing import List
-from warnings import warn
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
@@ -22,7 +21,6 @@ class Settings:
         self.EXPOSE_HEADER = True
         self.INTEGRATIONS: List[Integration] = []
         self.IGNORE_URLS: List[str] = []
-        self.SKIP_CLEANUP = None  # Deprecated - to be removed in the next major version
 
         if hasattr(django_settings, 'DJANGO_GUID'):
             _settings = django_settings.DJANGO_GUID
@@ -54,13 +52,6 @@ class Settings:
             self.IGNORE_URLS = list({url.strip('/') for url in self.IGNORE_URLS})
 
             self._validate_and_setup_integrations()
-
-            if 'SKIP_CLEANUP' in _settings:
-                warn(
-                    'SKIP_CLEANUP was deprecated in v1.2.0, and no longer impacts package behaviour. '
-                    'Please remove it from your DJANGO_GUID settings.',
-                    DeprecationWarning,
-                )
 
     def _validate_and_setup_integrations(self) -> None:
         """

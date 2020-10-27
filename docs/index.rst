@@ -59,14 +59,12 @@ To determine which Django-GUID version you should use, please see the table belo
 +=====================+==========================+
 | 3.1.1 or above      |  3.x.x - ASGI and WSGI   |
 +---------------------+--------------------------+
-| 3.1.0               |  2.x.x - Only WSGI       |
-+---------------------+--------------------------+
-| 3.0.0               |  2.x.x - Only WSGI       |
+| 3.0.0 - 3.1.0       |  2.x.x - Only WSGI       |
 +---------------------+--------------------------+
 | 2.2.x               |  2.x.x - Only WSGI       |
 +---------------------+--------------------------+
 
-Django GUID >= 3.0.0 uses ``contextvars`` to store and access the GUID. Previous versions stored the GUID to an object,
+Django GUID >= 3.0.0 uses ``ContextVar`` to store and access the GUID. Previous versions stored the GUID to an object,
 making it accessible by using the ID of the current thread.
 
 --------------
@@ -116,6 +114,7 @@ Contents
     :maxdepth: 3
 
     install
+    upgrading
     settings
     api
     integrations
@@ -124,4 +123,3 @@ Contents
     contributing
     publish
     changelog
-    upgrading

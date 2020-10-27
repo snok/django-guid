@@ -18,7 +18,7 @@ def set_guid(new_guid: str) -> str:
     """
     old_guid = guid.get()
     if old_guid:
-        logger.info('Changing guid %s to %s', old_guid, new_guid)
+        logger.info('Changing the guid ContextVar from %s to %s', old_guid, new_guid)
     guid.set(new_guid)
     return new_guid
 
@@ -29,6 +29,6 @@ def clear_guid() -> None:
     """
     old_guid = guid.get()
     if old_guid:
-        logger.info('Clearing %s from guid', old_guid)
+        logger.info('Clearing %s from the guid ContextVar', old_guid)
     guid.set(None)
     return
