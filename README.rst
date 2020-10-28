@@ -14,7 +14,7 @@
           <img src="https://img.shields.io/pypi/v/django-guid.svg" alt="Package version">
       </a>
       <a href="https://pypi.python.org/pypi/django-guid#downloads">
-          <img src="https://img.shields.io/badge/python-3.6+-blue.svg" alt="Downloads">
+          <img src="https://img.shields.io/badge/python-3.7+-blue.svg" alt="Downloads">
       </a>
       <a href="https://pypi.python.org/pypi/django-guid">
           <img src="https://img.shields.io/badge/django-2.2%20|%203.0%20|%203.1%20-blue.svg" alt="Django versions">
