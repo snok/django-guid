@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: 20.8b1
+    rev: '20.8b1'
     hooks:
       - id: black
         args: ['--quiet']
@@ -29,6 +29,7 @@ repos:
           'flake8-type-annotations==0.1.0',  # Looks for misconfigured type annotations
           'flake8-annotations==2.4.0',  # Enforces type annotation
         ]
+        args: ['--enable-extensions=G']
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.7.2
     hooks:

@@ -35,8 +35,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.6", "3.7", "3.8", "3.9" ]
-        django-version: [ "2.2", "3.0", "3.1" ]
+        python-version: [ "3.7", "3.8", "3.9" ]
+        django-version: [ "3.1.1", "3.1.2" ]
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -48,13 +48,12 @@ jobs:
         uses: sondrelg/install-poetry@v0.2.0
         with:
           virtualenvs-create: true
-          virtualenvs-in-project: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v2
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-4
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-5
       - name: Install dependencies
         run: |
           source $HOME/.poetry/env
@@ -63,11 +62,9 @@ jobs:
       - name: Install django ${{ matrix.django-version }}
         run: |
           source $HOME/.poetry/env
-          python -m pip install "Django==${{ matrix.django-version }}" --upgrade --force-reinstall
+          poetry run pip install "Django==${{ matrix.django-version }}"
       - name: Run tests
         run: |
           source $HOME/.poetry/env
           poetry run pytest --cov=django_guid tests/
           poetry run coverage report
-
-

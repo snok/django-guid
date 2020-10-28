@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from demoproj.services.useless_file import useless_function
+from demoproj.services.sync_services import useless_function
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
-import pytest
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+
+import pytest
 
 from django_guid.config import Settings
 
@@ -20,15 +21,6 @@ def test_invalid_guid(monkeypatch):
 def test_invalid_header_name(monkeypatch):
     monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'GUID_HEADER_NAME': True})
     with pytest.raises(ImproperlyConfigured, match='GUID_HEADER_NAME must be a string'):
-        Settings()
-
-
-def test_invalid_skip_guid_setting(monkeypatch):
-    """
-    Assert that a deprecation warning is called when settings are instantiated with SKIP_CLEANUP == True or False
-    """
-    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'SKIP_CLEANUP': True})
-    with pytest.deprecated_call():
         Settings()
 
 
@@ -82,6 +74,6 @@ def test_not_string_in_igore_urls(monkeypatch):
 
 
 def test_converts_correctly(monkeypatch):
-    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': ['/no_guid', '/my/api/path/']})
+    monkeypatch.setattr(django_settings, 'DJANGO_GUID', {'IGNORE_URLS': ['/no-guid', '/my/api/path/']})
     assert 'my/api/path' in Settings().IGNORE_URLS
-    assert 'no_guid' in Settings().IGNORE_URLS
+    assert 'no-guid' in Settings().IGNORE_URLS

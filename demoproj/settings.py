@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django_guid.middleware.GuidMiddleware',  # <-- Add middleware here
+    'django_guid.middleware.guid_middleware',  # <-- Add middleware at the top of your middlewares
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -90,7 +90,7 @@ DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
     'INTEGRATIONS': [],
-    'IGNORE_URLS': ['no_guid'],
+    'IGNORE_URLS': ['no-guid'],
 }
 
 # Set up logging for the project

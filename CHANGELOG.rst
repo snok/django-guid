@@ -2,6 +2,19 @@ Changelog
 =========
 
 
+`3.0.0`_ - 2020-11-04 - Full Django3.1+(ASGI/async) support!
+------------------------------------------------------------
+Brings full async/ASGI (as well as the old WSGI) support to Django GUID using ContextVars instead of thread locals.
+
+**Breaking changes**
+
+This version requires ``Django>=3.1.1``. For previous versions of Django,
+please use ``django-guid<3.0.0`` (Such as ``django-guid==2.2.0``).
+
+If you've already implemented ``django-guid`` in your project and are currently upgrading to ``Django>=3.1.1``, please
+see the `upgrading docs`_.
+
+
 `2.2.0`_ - 2020-11-04
 ---------------------
 **Features**
@@ -177,16 +190,18 @@ Changelog
 * Initial release
 
 
-.. _0.2.0: https://github.com/jonasks/django-guid/compare/0.1.2...0.2.0
-.. _0.2.1: https://github.com/jonasks/django-guid/compare/0.2.0...0.2.1
-.. _0.2.2: https://github.com/jonasks/django-guid/compare/0.2.1...0.2.2
-.. _0.2.3: https://github.com/jonasks/django-guid/compare/0.2.2...0.2.3
-.. _0.3.0: https://github.com/jonasks/django-guid/compare/0.2.3...0.3.0
-.. _0.3.1: https://github.com/jonasks/django-guid/compare/0.3.0...0.3.1
-.. _1.0.0: https://github.com/jonasks/django-guid/compare/0.3.0...1.0.0
-.. _1.0.1: https://github.com/jonasks/django-guid/compare/1.0.0...1.0.1
-.. _1.1.0: https://github.com/jonasks/django-guid/compare/1.0.1...1.1.0
-.. _1.1.1: https://github.com/jonasks/django-guid/compare/1.1.0...1.1.1
-.. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0
-.. _2.1.0: https://github.com/jonasks/django-guid/compare/2.0.0...2.1.0
-.. _2.2.0: https://github.com/jonasks/django-guid/compare/2.1.0...2.2.0
+.. _0.2.0: https://github.com/snok/django-guid/compare/0.1.2...0.2.0
+.. _0.2.1: https://github.com/snok/django-guid/compare/0.2.0...0.2.1
+.. _0.2.2: https://github.com/snok/django-guid/compare/0.2.1...0.2.2
+.. _0.2.3: https://github.com/snok/django-guid/compare/0.2.2...0.2.3
+.. _0.3.0: https://github.com/snok/django-guid/compare/0.2.3...0.3.0
+.. _0.3.1: https://github.com/snok/django-guid/compare/0.3.0...0.3.1
+.. _1.0.0: https://github.com/snok/django-guid/compare/0.3.0...1.0.0
+.. _1.0.1: https://github.com/snok/django-guid/compare/1.0.0...1.0.1
+.. _1.1.0: https://github.com/snok/django-guid/compare/1.0.1...1.1.0
+.. _1.1.1: https://github.com/snok/django-guid/compare/1.1.0...1.1.1
+.. _2.0.0: https://github.com/snok/django-guid/compare/1.1.1...2.0.0
+.. _2.1.0: https://github.com/snok/django-guid/compare/2.0.0...2.1.0
+.. _2.2.0: https://github.com/snok/django-guid/compare/2.1.0...2.2.0
+.. _3.0.0: https://github.com/snok/django-guid/compare/2.2.0...3.0.0
+.. _upgrading docs: https://django-guid.readthedocs.io/en/latest/upgrading.html

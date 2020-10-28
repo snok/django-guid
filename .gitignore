@@ -2,12 +2,14 @@
 .idea/*
 env/
 venv/
+.venv/
 build/
 dist/
 *.egg-info/
 notes
 .pytest_cache
 .coverage
+htmlcov/
 
 # Sphinx documentation
 docs/_build/
