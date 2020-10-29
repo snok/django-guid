@@ -113,12 +113,12 @@ Package settings are added in your ``settings.py``:
 .. code-block:: python
 
     DJANGO_GUID = {
-        GUID_HEADER_NAME = 'Correlation-ID',
-        VALIDATE_GUID = True,
-        RETURN_HEADER = True,
-        EXPOSE_HEADER = True,
-        INTEGRATIONS = [],
-        IGNORE_URLS = [],
+        'GUID_HEADER_NAME': 'Correlation-ID',
+        'VALIDATE_GUID': True,
+        'RETURN_HEADER': True,
+        'EXPOSE_HEADER': True,
+        'INTEGRATIONS': [],
+        'IGNORE_URLS': [],
     }
 
 
