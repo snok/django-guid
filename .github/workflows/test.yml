@@ -30,6 +30,10 @@ jobs:
           black . --check
           isort .
   test:
+    # ---------------------------------------------------
+    #    Documentation and examples can be found at
+    #      https://github.com/snok/install-poetry
+    # ---------------------------------------------------
     needs: linting
     runs-on: ubuntu-latest
     strategy:
@@ -45,7 +49,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Use Poetry
-        uses: sondrelg/install-poetry@v0.2.0
+        uses: snok/install-poetry@v1.0.0
         with:
           virtualenvs-create: true
       - name: Load cached venv
