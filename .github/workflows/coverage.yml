@@ -1,9 +1,6 @@
 name: coverage
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   codecov:
@@ -35,12 +32,8 @@ jobs:
       run: |
         poetry run pytest --cov=django_guid tests/ --verbose --color=yes --assert=plain --cov-report=xml
         poetry run coverage report
-    - name: Upload coverage to Codecov
+    - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        yml: ./codecov.yml
         fail_ci_if_error: true
