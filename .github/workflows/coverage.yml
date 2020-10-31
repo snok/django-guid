@@ -1,6 +1,9 @@
 name: coverage
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   codecov:
@@ -29,9 +32,7 @@ jobs:
       run: poetry install
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
     - name: Test with pytest
-      run: |
-        poetry run pytest --cov=django_guid tests/ --verbose --color=yes --assert=plain --cov-report=xml
-        poetry run coverage report
+      run: poetry run pytest --cov=django_guid tests/ --verbose --assert=plain --cov-report=xml
     - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
