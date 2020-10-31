@@ -1,4 +1,4 @@
-name: Codecov
+name: coverage
 
 on:
   push:
@@ -7,29 +7,34 @@ on:
 
 jobs:
   codecov:
-    name: Code coverage
+    # ---------------------------------------------------
+    #    Documentation and examples can be found at
+    #      https://github.com/snok/install-poetry
+    # ---------------------------------------------------
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    - uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.9
+    - name: Install poetry
+      uses: snok/install-poetry@v1.0.0
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
+      run: poetry install
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
     - name: Test with pytest
-      run: |
-        poetry run pytest --cov=django_guid tests/ --verbose --color=yes --assert=plain --cov-report=xml
-        poetry run coverage report
-    - name: Upload coverage to Codecov
+      run: poetry run pytest --cov=django_guid tests/ --verbose --assert=plain --cov-report=xml
+    - name: Upload coverage
       uses: codecov/codecov-action@v1
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
-        yml: ./codecov.yml
         fail_ci_if_error: true

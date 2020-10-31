@@ -11,7 +11,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: "3"
+          python-version: 3
       - name: Load cached wheels
         uses: actions/cache@v2
         with:
@@ -48,10 +48,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Use Poetry
+      - name: Install poetry
         uses: snok/install-poetry@v1.0.0
         with:
           virtualenvs-create: true
+          virtualenvs-in-project: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v2
@@ -59,16 +60,12 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}-5
       - name: Install dependencies
-        run: |
-          source $HOME/.poetry/env
-          poetry install
+        run: poetry install
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       - name: Install django ${{ matrix.django-version }}
         run: |
-          source $HOME/.poetry/env
           poetry run pip install "Django==${{ matrix.django-version }}"
       - name: Run tests
         run: |
-          source $HOME/.poetry/env
           poetry run pytest --cov=django_guid tests/
           poetry run coverage report
