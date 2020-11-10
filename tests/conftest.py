@@ -1,6 +1,9 @@
 import uuid
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
+
+from django_guid.integrations import Integration
 
 
 @pytest.fixture
@@ -13,14 +16,33 @@ def mock_uuid(monkeypatch):
 
 @pytest.fixture
 def two_unique_uuid4():
-    return ['704ae5472cae4f8daa8f2cc5a5a8mock', 'c494886651cd4baaa8654e4d24a8mock']
+    return ['704ae5472cae4f8daa8f2cc5a5a8mock',
+            'c494886651cd4baaa8654e4d24a8mock']
 
 
 @pytest.fixture
-def mock_uuid_two_unique(monkeypatch, mocker, two_unique_uuid4):
+def mock_uuid_two_unique(mocker, two_unique_uuid4):
     mocker.patch.object(
         uuid.UUID,
         'hex',
         new_callable=mocker.PropertyMock,
         side_effect=two_unique_uuid4,
     )
+
+
+class MockIntegration(Integration):
+    def run(self, *args, **kwargs):
+        pass
+
+
+@pytest.fixture(scope="session")
+def monkeysession():
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def mock_sentry_integration(monkeysession):
+    # TODO: Mock sentry interation here
+    pass
