@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-guid"
-version = "3.0.0"  # Remember to also change __init__.py version
+version = "3.0.1"  # Remember to also change __init__.py version
 description = "Middleware that enables single request-response cycle tracing by injecting a unique ID into project logs"
 authors = ["Jonas Krüger Svensson <jonas-ks@hotmail.com>"]
 license = "BSD-4-Clause"
