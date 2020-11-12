@@ -114,12 +114,13 @@ Contents
     :maxdepth: 3
 
     install
-    upgrading
+    configuration
     settings
     api
     integrations
     extended_example
     troubleshooting
     contributing
+    upgrading
     publish
     changelog
