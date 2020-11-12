@@ -1,12 +1,12 @@
 import asyncio
 import logging
-from contextvars import ContextVar
 from typing import Callable, Union
 
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpRequest, HttpResponse
 
+from django_guid.context import guid
 from django_guid.utils import get_id_from_header, ignored_url
 
 try:
@@ -17,8 +17,6 @@ except ImportError:  # pragma: no cover
 from django_guid.config import settings
 
 logger = logging.getLogger('django_guid')
-
-guid: ContextVar = ContextVar('guid', default=None)
 
 
 def process_incoming_request(request: HttpRequest) -> None:

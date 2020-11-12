@@ -1,6 +1,6 @@
 import logging
 
-from django_guid.middleware import guid
+from django_guid.context import guid
 
 logger = logging.getLogger('django_guid')
 
