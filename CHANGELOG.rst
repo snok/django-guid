@@ -1,8 +1,15 @@
 Changelog
 =========
 
+`3.0.1`_ - 12.11.2020
+---------------------
 
-`3.0.0`_ - 2020-11-04 - Full Django3.1+(ASGI/async) support!
+**Bugfix**
+
+* Importing an integration before a `SECRET_KEY` was set would cause a circular import.
+
+
+`3.0.0`_ - 28.10.2020 - Full Django3.1+(ASGI/async) support!
 ------------------------------------------------------------
 Brings full async/ASGI (as well as the old WSGI) support to Django GUID using ContextVars instead of thread locals.
 
@@ -15,7 +22,7 @@ If you've already implemented ``django-guid`` in your project and are currently 
 see the `upgrading docs`_.
 
 
-`2.2.0`_ - 2020-11-04
+`2.2.0`_ - 04.11.2020
 ---------------------
 **Features**
 
@@ -26,7 +33,7 @@ see the `upgrading docs`_.
 * Added docs for the new setting
 
 
-`2.1.0`_ - 2020-11-03
+`2.1.0`_ - 03.11.2020
 ---------------------
 **Features**
 
@@ -38,7 +45,7 @@ see the `upgrading docs`_.
 * Added docs for integrations
 
 
-`2.0.0`_ - 2020-03-02
+`2.0.0`_ - 02.03.2020
 ---------------------
 **This version contains backwards incompatible changes. Read the entire changelog before upgrading**
 
@@ -58,7 +65,7 @@ see the `upgrading docs`_.
 * Restructured README and docs.
 
 
-`1.1.1`_ - 2020-02-12
+`1.1.1`_ - 12.02.2020
 ---------------------
 
 **Improvements**
@@ -66,7 +73,7 @@ see the `upgrading docs`_.
 * Fixed ``EXPOSE_HEADER`` documentation issue. New release has to be pushed to fix PyPi docs.
 
 
-`1.1.0`_ - 2020-02-10
+`1.1.0`_ - 10.02.2020
 ---------------------
 
 **Features**
@@ -75,7 +82,7 @@ see the `upgrading docs`_.
 
 
 
-`1.0.1`_ - 2020-02-08
+`1.0.1`_ - 08.02.2020
 ---------------------
 
 **Bugfix**
@@ -96,7 +103,7 @@ see the `upgrading docs`_.
 
 
 
-`1.0.0`_ - 2020-01-14
+`1.0.0`_ - 14.01.2020
 ---------------------
 
 **Features**
@@ -120,7 +127,7 @@ see the `upgrading docs`_.
 
 
 
-`0.3.1`_ - 2020-01-13
+`0.3.1`_ - 13.01.2020
 ---------------------
 
 **Improvements**
@@ -135,7 +142,7 @@ see the `upgrading docs`_.
 
 
 
-`0.3.0`_ - 2020-01-10
+`0.3.0`_ - 10.01.2020
 ---------------------
 
 **Features**
@@ -149,7 +156,7 @@ see the `upgrading docs`_.
 * Improved the README with more information and a list of all the available settings
 
 
-`0.2.3`_ - 2020-01-09
+`0.2.3`_ - 09.01.2020
 ---------------------
 
 **Improvements**
@@ -161,7 +168,7 @@ see the `upgrading docs`_.
 * Improved logging
 
 
-`0.2.2`_ - 2019-12-21
+`0.2.2`_ - 21.12.2019
 ---------------------
 
 **Improvements**
@@ -169,7 +176,7 @@ see the `upgrading docs`_.
 * Removed the mandatory DJANGO_GUID settings in settings.py. Added an example project to demonstrate how to set the project up
 
 
-`0.2.1`_ - 2019-12-21
+`0.2.1`_ - 21.12.2019
 ---------------------
 
 **Improvements**
@@ -177,15 +184,15 @@ see the `upgrading docs`_.
 * Workflow added, better docstrings, easier to read flow
 
 
-`0.2.0`_ - 2019-12-21
+`0.2.0`_ - 21.12.2019
 ---------------------
 
 **Features**
 
 * Header name and header GUID validation can be specified through Django settings
 
-2019-12-20
-------------------
+20.10.2019
+----------
 
 * Initial release
 
@@ -205,3 +212,4 @@ see the `upgrading docs`_.
 .. _2.2.0: https://github.com/snok/django-guid/compare/2.1.0...2.2.0
 .. _3.0.0: https://github.com/snok/django-guid/compare/2.2.0...3.0.0
 .. _upgrading docs: https://django-guid.readthedocs.io/en/latest/upgrading.html
+.. _3.0.1: https://github.com/snok/django-guid/compare/3.0.0...3.0.1
