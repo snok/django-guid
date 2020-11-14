@@ -16,6 +16,7 @@ from typing import List
 from celery.schedules import crontab
 
 from django_guid.integrations import SentryIntegration  # noqa
+from django_guid.integrations.celery import CeleryIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -93,7 +94,7 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': [],
+    'INTEGRATIONS': [CeleryIntegration()],
     'IGNORE_URLS': ['no-guid'],
 }
 
@@ -108,7 +109,7 @@ LOGGING = {
     },
     'formatters': {
         'medium': {
-            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s %(message)s'  # <-- Format the log string
+            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s -- %(message)s'  # <-- Format the log string
         },
     },
     'handlers': {

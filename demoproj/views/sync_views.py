@@ -48,12 +48,12 @@ def rest_view(request: Request) -> Response:
     return Response(data={
         'detail': f'It worked! Useless function response is {useless_response}'})
 
-@api_view(('GET',))
+
 def celery_view(request: Request) -> Response:
     """
     Example view that triggers a Celery task.
 
-    :param request: Req uest
+    :param request: Request
     :return: Response
     """
     from demoproj.celery import debug_task
