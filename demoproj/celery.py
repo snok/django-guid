@@ -1,14 +1,7 @@
-from __future__ import absolute_import, unicode_literals
-
 import logging
 import os
-import uuid
 
 from celery import Celery
-from celery.signals import setup_logging, before_task_publish, task_prerun, \
-    task_postrun
-
-from django_guid import set_guid
 
 logger = logging.getLogger('django_guid')
 
@@ -23,23 +16,13 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 
-@setup_logging.connect
-def config_loggers(*args, **kwargs):
-    """
-    Configures celery to use the Django settings.py logging configuration.
-    """
-    from logging.config import dictConfig
-    from django.conf import settings
-    dictConfig(settings.LOGGING)
-
-# -----------------------------------------
-
 @app.task(bind=True)
 def debug_task(self):
     """
     This is just an example task.
     """
     logger.info('Debug task 1')
+    second_debug_task.delay()
     second_debug_task.delay()
 
 
@@ -50,6 +33,7 @@ def second_debug_task(self):
     """
     logger.info('Debug task 2')
     third_debug_task.delay()
+    fourth_debug_task.delay()
 
 
 @app.task(bind=True)
@@ -57,5 +41,14 @@ def third_debug_task(self):
     """
     This is just an example task.
     """
-    logger.info('Debug task 2')
-    raise Exception('test')
+    logger.info('Debug task 3')
+    fourth_debug_task.delay()
+    fourth_debug_task.delay()
+
+
+@app.task(bind=True)
+def fourth_debug_task(self):
+    """
+    This is just an example task.
+    """
+    logger.info('Debug task 4')

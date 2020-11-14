@@ -15,8 +15,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from demoproj.views.sync_views import index_view, no_guid, rest_view, \
-    celery_view
+from demoproj.views.sync_views import index_view, no_guid, rest_view, celery_view
 from demoproj.views.async_views import index_view as asgi_index_view
 from demoproj.views.async_views import django_guid_api_usage
 

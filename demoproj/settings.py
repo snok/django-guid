@@ -94,7 +94,7 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': [CeleryIntegration()],
+    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True)],
     'IGNORE_URLS': ['no-guid'],
 }
 
@@ -104,19 +104,22 @@ LOGGING = {
     'disable_existing_loggers': False,
     'filters': {
         'correlation_id': {
-            '()': 'django_guid.log_filters.CorrelationId'  # <-- Add correlation ID to the filters
+            '()': 'django_guid.log_filters.CorrelationId',  # <-- Add correlation ID to the filters
+        },
+        'celery_referrer': {
+            '()':'django_guid.celery.log_filters.CeleryReferrer'  # <-- Add depth to celery logs'
         }
     },
     'formatters': {
         'medium': {
-            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s -- %(message)s'  # <-- Format the log string
+            'format': '[%(correlation_id)s] [%(celery_referrer)s] %(name)s -- %(message)s'  # <-- Format the log string
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'medium',
-            'filters': ['correlation_id'],  # <-- Add filters to the handler
+            'filters': ['correlation_id', 'celery_referrer'],  # <-- Add filters to the handler
         },
     },
     'loggers': {
@@ -142,6 +145,6 @@ CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULE = {
     'test': {
         'task': 'demoproj.celery.debug_task',
-        'schedule': crontab(minute="*/1"),
+        'schedule': crontab(minute='*/1'),
     },
 }

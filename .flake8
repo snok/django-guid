@@ -39,7 +39,8 @@ exclude =
     __pycache__,
     tests/*,
     venv,
-    manage.py
+    manage.py,
+    demoproj/*
 
 
 max-complexity = 15

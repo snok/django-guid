@@ -1,5 +1,3 @@
-from __future__ import absolute_import, unicode_literals
-
 import logging
 
 from django_guid.integrations import Integration
@@ -15,11 +13,18 @@ class CeleryIntegration(Integration):
 
     identifier = 'CeleryIntegration'
 
+    def __init__(self, use_django_logging: bool=False):
+        super().__init__()
+        self.use_django_logging = use_django_logging
+
     def setup(self) -> None:
         """
         Loads Celery signals.
         """
-        from django_guid.celery.signals import task_prerun, task_postrun, before_task_publish  # noqa
+        from django_guid.celery.signals import before_task_publish, task_postrun, task_prerun  # noqa
+
+        if self.use_django_logging:
+            from django_guid.celery.logging import config_loggers  # noqa
 
     def run(self, guid: str, **kwargs) -> None:
         pass
