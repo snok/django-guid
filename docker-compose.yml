@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+
+  redis:
+    image: redis:latest
+    ports:
+    # default port is 6379, but I've a Redis instance running locally already
+     - '127.0.0.1:6378:6378'

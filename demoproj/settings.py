@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from typing import List
 
+from celery.schedules import crontab
+
 from django_guid.integrations import SentryIntegration  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -133,3 +135,12 @@ LOGGING = {
 }
 
 # fmt: on
+
+CELERY_BROKER_URL = 'redis://:@localhost:6379'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_BEAT_SCHEDULE = {
+    'test': {
+        'task': 'demoproj.celery.debug_task',
+        'schedule': crontab(minute="*/1"),
+    },
+}
