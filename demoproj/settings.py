@@ -94,7 +94,7 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True, log_origin=True)],
+    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True, log_parent=True)],
     'IGNORE_URLS': ['no-guid'],
 }
 
@@ -106,8 +106,8 @@ LOGGING = {
         'correlation_id': {
             '()': 'django_guid.log_filters.CorrelationId',  # <-- Adds correlation ID
         },
-        'celery_referrer': {
-            '()' : 'django_guid.celery.log_filters.CeleryReferralId'  # <-- Adds depth to celery logs
+        'celery_parent': {
+            '()' : 'django_guid.integrations.celery.log_filters.CeleryParentId'  # <-- Adds depth to celery logs
         }
     },
     'formatters': {
@@ -124,7 +124,7 @@ LOGGING = {
         # Example log:
         # [cc9889f83f66433fa021f253a9d3537b] [928f9 -> 91328] django_guid.celery - Clearing GUID for celery worker
         'cid_with_depth': {
-            'format': '%(levelname)s [%(correlation_id)s] [%(celery_referrer)s] %(name)s - %(message)s'
+            'format': '%(levelname)s [%(correlation_id)s] [%(celery_parent_id)s-%(celery_current_id)s] %(name)s - %(message)s'
         },
     },
     'handlers': {
@@ -142,13 +142,13 @@ LOGGING = {
         'correlation_id_with_depth': {
             'class': 'logging.StreamHandler',
             'formatter': 'cid_with_depth',
-            'filters': ['correlation_id', 'celery_referrer'],
+            'filters': ['correlation_id', 'celery_parent'],
         },
         # Only Correlation ID is shown in the console output, but both are added to log.extra
         'correlation_id_with_depth_but_not_shown_in_formatter': {
             'class': 'logging.StreamHandler',
             'formatter': 'cid',
-            'filters': ['correlation_id', 'celery_referrer'],
+            'filters': ['correlation_id', 'celery_parent'],
         },
     },
     'loggers': {
@@ -179,7 +179,7 @@ LOGGING = {
 
 # fmt: on
 
-CELERY_BROKER_URL = 'redis://:@localhost:6379'
+CELERY_BROKER_URL = 'redis://:@localhost:6378'
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_BEAT_SCHEDULE = {
     'test': {

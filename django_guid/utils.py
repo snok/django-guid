@@ -15,8 +15,8 @@ def get_correlation_id_from_header(request: HttpRequest) -> str:
     :param request: HttpRequest object
     :return: GUID
     """
-    given_guid = str(request.headers.get(settings.GUID_HEADER_NAME))
-    if not settings.VALIDATE_GUID:
+    given_guid = str(request.headers.get(settings.guid_header_name))
+    if not settings.validate_guid:
         logger.debug('Returning ID from header without validating it as a GUID')
         return given_guid
     elif validate_guid(given_guid):
@@ -36,15 +36,15 @@ def get_id_from_header(request: HttpRequest) -> str:
     :param request: HttpRequest object
     :return: GUID
     """
-    header: str = request.headers.get(settings.GUID_HEADER_NAME)  # Case insensitive headers.get added in Django2.2
+    header: str = request.headers.get(settings.guid_header_name)  # Case insensitive headers.get added in Django2.2
     if header:
-        logger.info('%s found in the header: %s', settings.GUID_HEADER_NAME, header)
+        logger.info('%s found in the header: %s', settings.guid_header_name, header)
         request.correlation_id = get_correlation_id_from_header(request)
     else:
         request.correlation_id = generate_guid()
         logger.info(
             'Header `%s` was not found in the incoming request. Generated new GUID: %s',
-            settings.GUID_HEADER_NAME,
+            settings.guid_header_name,
             request.correlation_id,
         )
     return request.correlation_id
@@ -56,7 +56,7 @@ def ignored_url(request: Union[HttpRequest, HttpResponse]) -> bool:
 
     :return: Boolean
     """
-    return request.get_full_path().strip('/') in settings.IGNORE_URLS
+    return request.get_full_path().strip('/') in settings.ignore_urls
 
 
 def generate_guid() -> str:

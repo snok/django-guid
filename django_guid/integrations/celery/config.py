@@ -17,11 +17,11 @@ class CeleryIntegrationSettings:
         return self.integration.use_django_logging
 
     @property
-    def log_origin(self) -> bool:
-        return self.integration.log_origin
+    def log_parent(self) -> bool:
+        return self.integration.log_parent
 
     def validate(self) -> None:
         if not isinstance(self.use_django_logging, bool):
             raise ImproperlyConfigured('The CeleryIntegration use_django_logging setting must be a boolean.')
-        if not isinstance(self.log_origin, bool):
-            raise ImproperlyConfigured('The CeleryIntegration log_origin setting must be a boolean.')
+        if not isinstance(self.log_parent, bool):
+            raise ImproperlyConfigured('The CeleryIntegration log_parent setting must be a boolean.')
