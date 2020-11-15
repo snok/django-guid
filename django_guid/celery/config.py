@@ -22,6 +22,6 @@ class CeleryIntegrationSettings:
 
     def validate(self) -> None:
         if not isinstance(self.use_django_logging, bool):
-            raise ImproperlyConfigured('USE_DJANGO_LOGGING must be a boolean.')
+            raise ImproperlyConfigured('The CeleryIntegration use_django_logging setting must be a boolean.')
         if not isinstance(self.log_origin, bool):
-            raise ImproperlyConfigured('LOG_ORIGIN must be a boolean.')
+            raise ImproperlyConfigured('The CeleryIntegration log_origin setting must be a boolean.')

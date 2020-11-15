@@ -62,14 +62,18 @@ class Settings:
     @property
     def INTEGRATION_SETTINGS(self):
         """
-        Implementing integration settings we had one challenge: some settings were needed in the integration.setup()
-        while others were needed in code imported in integration.setup(). That creates a circularity challenge
-        in terms of how we initialize settings. If we loaded everything into the integration instance,
-        the imported code cannot access it, and if we asked users to add settings to the `DJANGO_GUID` dict
-        in settings.py we wouldn't be able to access them in integration.setup().
+        When implementing integration settings we had one challenge: some settings were needed in the integration
+        instance's setup method while others were needed in code imported in integration.setup().
+        This creates a circularity challenge in terms of how we initialize settings.
+        If we:
+         1. Loaded everything into the integration instance, the imported code would not be able to access it,
+            without importing the integration, which is not possible.
+         2. Used the `DJANGO_GUID` dict in settings.py and loaded settings here, we wouldn't be able
+            to access them in the integration instace without breaking backwards compatibility and
+            getting a lot of integration-specific logic in the package-level config file which we don't want.
 
-        The solution was to load everything into to integration instance *and* loading the integration instance
-        into these settings, plus making this setting lazy, so it won't be accessed until the app is fully loaded.
+        What we ended up with is loading everything into to integration instance *and* saving the instance here
+        while changing the settings from eager to lazy, so they're not accessed before they've initialized.
         """
         return IntegrationSettings({integration.identifier: integration for integration in self.INTEGRATIONS})
 
@@ -86,7 +90,6 @@ class Settings:
             raise ImproperlyConfigured('INTEGRATIONS must be an array')
         if not isinstance(self.IGNORE_URLS, (list, tuple)):
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
-
         if not all(isinstance(url, str) for url in self.IGNORE_URLS):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
 
