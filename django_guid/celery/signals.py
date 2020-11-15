@@ -6,7 +6,7 @@ from django_guid.celery.context import celery
 from django_guid.config import settings
 from django_guid.utils import generate_guid
 
-logger = logging.getLogger('django_guid')
+logger = logging.getLogger('django_guid.celery')
 
 
 @before_task_publish.connect

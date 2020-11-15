@@ -104,37 +104,74 @@ LOGGING = {
     'disable_existing_loggers': False,
     'filters': {
         'correlation_id': {
-            '()': 'django_guid.log_filters.CorrelationId',  # <-- Add correlation ID to the filters
+            '()': 'django_guid.log_filters.CorrelationId',  # <-- adds correlation ID
         },
         'celery_referrer': {
-            '()':'django_guid.celery.log_filters.CeleryReferralId'  # <-- Add depth to celery logs'
+            '()':'django_guid.celery.log_filters.CeleryReferralId'  # <-- adds depth to celery logs
         }
     },
     'formatters': {
-        'medium': {
-            'format': '[%(correlation_id)s] [%(celery_referrer)s] %(name)s -- %(message)s'  # <-- Format the log string
+        'basic': {
+            'format': '%(levelname)s %(asctime)s %(name)s -- %(message)s'
+        },
+        # An example of a format including the correlation ID in the output
+        # Example log: INFO 2020-11-15 11:42:41,543 [9afef4a3eb8e4df2b0eac380dcc9d0e9] demoproj.views.sync_views - This log message should have a GUID
+        'cid': {
+            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s - %(message)s'  # <-- Format the log string
+        },
+        # An example of a format including the correlation ID and a Celery referral ID
+        # Example log: [cc9889f83f66433fa021f253a9d3537b] [928f9 -> 91328] django_guid.celery - Clearing GUID for celery worker
+        'cid_with_depth': {
+            'format': '%(levelname)s [%(correlation_id)s] [%(celery_referrer)s] %(name)s - %(message)s'
         },
     },
     'handlers': {
-        'console': {
+        'basic': {
             'class': 'logging.StreamHandler',
-            'formatter': 'medium',
-            'filters': ['correlation_id', 'celery_referrer'],  # <-- Add filters to the handler
+            'formatter': 'basic',
+        },
+        # Correlation ID is included in log.extra and shown in the console output
+        'correlation_id': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'cid',
+            'filters': ['correlation_id'],  # <-- adds filters to the handler
+        },
+        # Correlation ID and Celery origin is included in log.extra and shown in the console output
+        'correlation_id_with_depth': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'cid_with_depth',
+            'filters': ['correlation_id', 'celery_referrer'],
+        },
+        # Only Correlation ID is shown in the console output, but both are added to log.extra
+        'correlation_id_with_depth_but_not_shown_in_formatter': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'cid',
+            'filters': ['correlation_id', 'celery_referrer'],
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],  # <-- Specify handlers
+            'handlers': ['correlation_id'],
             'level': 'INFO'
         },
         'demoproj': {
-            'handlers': ['console'],  # <-- Specify handlers
-            'level': 'DEBUG'
+            'handlers': ['correlation_id'],
+            'level': 'INFO'
         },
         'django_guid': {
-            'handlers': ['console'],
-            'level': 'DEBUG'  # <-- Set to DEBUG to show log messages from DJANGO_GUID
-        }
+            'handlers': ['correlation_id'],
+            'level': 'INFO',  # <-- Set to DEBUG to show log messages from DJANGO_GUID
+            'propagate': False,
+        },
+        'django_guid.celery': {
+            'handlers': ['correlation_id_with_depth'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'celery': {
+            'handlers': ['correlation_id_with_depth'],
+            'level': 'INFO',
+        },
     }
 }
 
