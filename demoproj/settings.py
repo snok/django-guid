@@ -94,7 +94,7 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True, log_parent=True)],
+    'INTEGRATIONS': [],
     'IGNORE_URLS': ['no-guid'],
 }
 
@@ -158,12 +158,12 @@ LOGGING = {
         },
         'demoproj': {
             'handlers': ['correlation_id'],
-            'level': 'INFO'
+            'level': 'DEBUG'
         },
         'django_guid': {
             'handlers': ['correlation_id'],
-            'level': 'INFO',  # Set to DEBUG to show log messages from DJANGO_GUID
-            'propagate': False,
+            'level': 'DEBUG',  # Set to DEBUG to show log messages from DJANGO_GUID
+            'propagate': True,
         },
         'django_guid.celery': {
             'handlers': ['correlation_id_with_depth'],

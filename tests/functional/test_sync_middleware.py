@@ -1,6 +1,10 @@
 from django.core.exceptions import ImproperlyConfigured
+from django.test import override_settings
 
 import pytest
+from tests.conftest import override
+
+from django_guid.config import Settings
 
 
 def test_request_with_no_correlation_id(client, caplog, mock_uuid):
@@ -75,19 +79,17 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
     :param caplog: Caplog fixture
     :param monkeypatch: Monkeypatch for django settings
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
-    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    expected = [
-        ('sync middleware called', None),
-        ('Correlation-ID found in the header: bad-guid', None),
-        ('Returning ID from header without validating it as a GUID', None),
-        ('This log message should have a GUID', 'bad-guid'),
-        ('Some warning in a function', 'bad-guid'),
-        ('Received signal `request_finished`, clearing guid', 'bad-guid'),
-    ]
-    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    with override_settings(**override('VALIDATE_GUID', False)):
+        client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+        expected = [
+            ('sync middleware called', None),
+            ('Correlation-ID found in the header: bad-guid', None),
+            ('Returning ID from header without validating it as a GUID', None),
+            ('This log message should have a GUID', 'bad-guid'),
+            ('Some warning in a function', 'bad-guid'),
+            ('Received signal `request_finished`, clearing guid', 'bad-guid'),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
 def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
@@ -95,23 +97,21 @@ def test_no_return_header_and_drf_url(client, caplog, monkeypatch, mock_uuid):
     Tests that it does not return the GUID if RETURN_HEADER is false.
     This test also tests a DRF response, just to confirm everything works in both worlds.
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
-    response = client.get('/api')
-    expected = [
-        ('sync middleware called', None),
-        (
-            'Header `Correlation-ID` was not found in the incoming request. '
-            'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
-            None,
-        ),
-        ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-    ]
-    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
-    assert not response.get('Correlation-ID')
+    with override_settings(**override('RETURN_HEADER', False)):
+        response = client.get('/api')
+        expected = [
+            ('sync middleware called', None),
+            (
+                'Header `Correlation-ID` was not found in the incoming request. '
+                'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+                None,
+            ),
+            ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+            ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+            ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+        assert not response.get('Correlation-ID')
 
 
 def test_no_expose_header_return_header_true(client, monkeypatch, mock_uuid):
@@ -119,11 +119,9 @@ def test_no_expose_header_return_header_true(client, monkeypatch, mock_uuid):
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
     and RETURN_HEADER is True
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', False)
-    response = client.get('/api')
-    assert not response.get('Access-Control-Expose-Headers')
+    with override_settings(**override('EXPOSE_HEADER', False)):
+        response = client.get('/api')
+        assert not response.get('Access-Control-Expose-Headers')
 
 
 def test_expose_header_return_header_true(client, monkeypatch, mock_uuid):
@@ -131,11 +129,9 @@ def test_expose_header_return_header_true(client, monkeypatch, mock_uuid):
     Tests that it does return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
     and RETURN_HEADER is True
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', True)
-    response = client.get('/api')
-    assert response.get('Access-Control-Expose-Headers')
+    with override_settings(**override('EXPOSE_HEADER', True)):
+        response = client.get('/api')
+        assert response.get('Access-Control-Expose-Headers')
 
 
 def test_no_expose_header_return_header_false(client, monkeypatch, mock_uuid):
@@ -143,12 +139,14 @@ def test_no_expose_header_return_header_false(client, monkeypatch, mock_uuid):
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
     and RETURN_HEADER is False
     """
-    from django_guid.config import settings as guid_settings
+    from django.conf import settings as django_settings
 
-    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', False)
-    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
-    response = client.get('/api')
-    assert not response.get('Access-Control-Expose-Headers')
+    settings = django_settings.DJANGO_GUID
+    settings['EXPOSE_HEADER'] = False
+    settings['RETURN_HEADER'] = False
+    with override_settings(**settings):
+        response = client.get('/api')
+        assert not response.get('Access-Control-Expose-Headers')
 
 
 def test_expose_header_return_header_false(client, monkeypatch, mock_uuid):
@@ -156,12 +154,14 @@ def test_expose_header_return_header_false(client, monkeypatch, mock_uuid):
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
     and RETURN_HEADER is False
     """
-    from django_guid.config import settings as guid_settings
+    from django.conf import settings as django_settings
 
-    monkeypatch.setattr(guid_settings, 'EXPOSE_HEADER', True)
-    monkeypatch.setattr(guid_settings, 'RETURN_HEADER', False)
-    response = client.get('/api')
-    assert not response.get('Access-Control-Expose-Headers')
+    settings = django_settings.DJANGO_GUID
+    settings['EXPOSE_HEADER'] = True
+    settings['RETURN_HEADER'] = False
+    with override_settings(**settings):
+        response = client.get('/api')
+        assert not response.get('Access-Control-Expose-Headers')
 
 
 def test_cleanup_signal(client, caplog, monkeypatch):
@@ -171,29 +171,27 @@ def test_cleanup_signal(client, caplog, monkeypatch):
     :param caplog: Caplog fixture
     :param monkeypatch: Monkeypatch for django settings
     """
-    from django_guid.config import settings as guid_settings
+    with override_settings(**override('VALIDATE_GUID', False)):
+        client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
+        client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
 
-    monkeypatch.setattr(guid_settings, 'VALIDATE_GUID', False)
-    client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
-    client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
-
-    expected = [
-        # First request
-        ('sync middleware called', None),
-        ('Correlation-ID found in the header: bad-guid', None),
-        ('Returning ID from header without validating it as a GUID', None),
-        ('This log message should have a GUID', 'bad-guid'),
-        ('Some warning in a function', 'bad-guid'),
-        ('Received signal `request_finished`, clearing guid', 'bad-guid'),
-        # Second request
-        ('sync middleware called', None),
-        ('Correlation-ID found in the header: another-bad-guid', None),
-        ('Returning ID from header without validating it as a GUID', None),
-        ('This log message should have a GUID', 'another-bad-guid'),
-        ('Some warning in a function', 'another-bad-guid'),
-        ('Received signal `request_finished`, clearing guid', 'another-bad-guid'),
-    ]
-    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+        expected = [
+            # First request
+            ('sync middleware called', None),
+            ('Correlation-ID found in the header: bad-guid', None),
+            ('Returning ID from header without validating it as a GUID', None),
+            ('This log message should have a GUID', 'bad-guid'),
+            ('Some warning in a function', 'bad-guid'),
+            ('Received signal `request_finished`, clearing guid', 'bad-guid'),
+            # Second request
+            ('sync middleware called', None),
+            ('Correlation-ID found in the header: another-bad-guid', None),
+            ('Returning ID from header without validating it as a GUID', None),
+            ('This log message should have a GUID', 'another-bad-guid'),
+            ('Some warning in a function', 'another-bad-guid'),
+            ('Received signal `request_finished`, clearing guid', 'another-bad-guid'),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
 def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
@@ -212,15 +210,13 @@ def test_url_ignored(client, caplog, monkeypatch):
     :param caplog: Caplog fixture
     :param monkeypatch: Monkeypatch for django settings
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'IGNORE_URLS', {'no-guid'})  # Same as it would be after config conversion
-    client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
-    # No log message should have a GUID, aka `None` on index 1.
-    expected = [
-        ('sync middleware called', None),
-        ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
-        ('Some warning in a function', None),
-        ('Received signal `request_finished`, clearing guid', None),
-    ]
-    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    with override_settings(**override('IGNORE_URLS', {'no-guid'})):  # Same as it would be after config conversion
+        client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
+        # No log message should have a GUID, aka `None` on index 1.
+        expected = [
+            ('sync middleware called', None),
+            ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
+            ('Some warning in a function', None),
+            ('Received signal `request_finished`, clearing guid', None),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected

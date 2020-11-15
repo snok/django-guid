@@ -16,10 +16,11 @@ class IntegrationSettings:
 
     @property
     def celery(self) -> CeleryIntegrationSettings:
-        return CeleryIntegrationSettings(self.settings.get('CeleryIntegration', {}))
+        return CeleryIntegrationSettings(self.settings['CeleryIntegration'])
 
     def validate(self):
-        self.celery.validate()
+        if 'CeleryIntegration' in self.settings:
+            self.celery.validate()
 
 
 class Settings:
@@ -78,9 +79,9 @@ class Settings:
             raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
         if not isinstance(self.integrations, (list, tuple)):
             raise ImproperlyConfigured('INTEGRATIONS must be an array')
-        if not isinstance(self.ignore_urls, (list, tuple)):
+        if not isinstance(self.settings.get('IGNORE_URLS', []), (list, tuple)):
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
-        if not all(isinstance(url, str) for url in self.ignore_urls):
+        if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
         if not isinstance(self.uuid_length, int):
             raise ImproperlyConfigured('UUID_LENGTH must be an integer.')
@@ -92,6 +93,7 @@ class Settings:
         Validate the INTEGRATIONS settings and verify each integration
         """
         self.integration_settings.validate()
+        print(self.integrations)
         for integration in self.integrations:
 
             # Make sure all integration methods are callable
@@ -101,6 +103,7 @@ class Settings:
                 (integration.cleanup, 'cleanup'),
             ]:
                 # Make sure the methods are callable
+                print('---', method)
                 if not callable(method):
                     raise ImproperlyConfigured(
                         f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'

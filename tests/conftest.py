@@ -1,4 +1,7 @@
 import uuid
+from copy import deepcopy
+
+from django.conf import settings as django_settings
 
 import pytest
 
@@ -24,3 +27,9 @@ def mock_uuid_two_unique(monkeypatch, mocker, two_unique_uuid4):
         new_callable=mocker.PropertyMock,
         side_effect=two_unique_uuid4,
     )
+
+
+def override(name, value):
+    s = django_settings.DJANGO_GUID
+    s[name] = value
+    return s
