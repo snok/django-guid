@@ -1,6 +1,6 @@
 from logging import Filter, LogRecord
 
-from django_guid.celery.context import celery
+from django_guid.integrations.celery.context import celery
 
 
 class CeleryReferralId(Filter):

@@ -5,7 +5,7 @@ from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.inspect import func_accepts_kwargs
 
-from django_guid.celery.config import CeleryIntegrationSettings
+from django_guid.integrations.celery import CeleryIntegrationSettings
 
 
 class IntegrationSettings:

@@ -26,10 +26,10 @@ class CeleryIntegration(Integration):
         """
         Loads Celery signals.
         """
-        from django_guid.celery.signals import before_task_publish, task_postrun, task_prerun  # noqa
+        from django_guid.integrations.celery import before_task_publish, task_postrun, task_prerun  # noqa
 
         if self.use_django_logging:
-            from django_guid.celery.logging import config_loggers  # noqa
+            from django_guid.integrations.celery.logging import config_loggers  # noqa
 
     def run(self, guid: str, **kwargs) -> None:  # noqa: D102
         pass

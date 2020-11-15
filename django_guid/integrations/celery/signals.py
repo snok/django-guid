@@ -1,9 +1,10 @@
 import logging
 
 from celery.signals import before_task_publish, task_postrun, task_prerun
+
 from django_guid import clear_guid, get_guid, set_guid
-from django_guid.celery.context import celery
 from django_guid.config import settings
+from django_guid.integrations.celery.context import celery
 from django_guid.utils import generate_guid
 
 logger = logging.getLogger('django_guid.celery')
@@ -12,21 +13,15 @@ logger = logging.getLogger('django_guid.celery')
 @before_task_publish.connect
 def _before_task_publish(headers: dict, **kwargs) -> None:
     """
-    Called when a task is published using task.delay()
+    Called when a task is published using task.delay(), task.apply_async() or similar.
 
     Setting the correct header here means we can correctly trace a request
     that spawns background workers.
     """
-    if guid := get_guid():
-        # A GUID will exist when the current thread was spawned for a request
-        # or by another task.
-        logger.info('Setting task request header using existing GUID (%s)', guid)
-    else:
-        # No GUID will exist when a task is published by Celery beat.
-        guid = generate_guid()
-        set_guid(guid)
-        logger.info('Setting task request header using generated GUID (%s)', guid)
-
+    guid = get_guid()
+    # A GUID will exist when the current thread was spawned for a request
+    # or by another task.
+    logger.info('Setting task request header using existing GUID (%s)', guid)
     # Set correlation ID in the task header for the worker to read.
     headers[settings.GUID_HEADER_NAME] = guid
 
@@ -80,7 +75,7 @@ def _before_task_publish(headers: dict, **kwargs) -> None:
     We therefore double down on uuids and create this format: [cdfba -> e65de]
     """
     if settings.INTEGRATION_SETTINGS.celery.log_origin:
-        short_guid = generate_guid()[:5]
+        short_guid = generate_guid()[:settings.INTEGRATION_SETTINGS.celery.guid_len]
         # ^ decided to use a shortened uuid to represent origin
         # If string representations of uuids can be 0-9, a-f, A-F, then there
         # are 9 + 6 + 6 = 21 possible characters that could be generated.

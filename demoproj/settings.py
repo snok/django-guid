@@ -104,10 +104,10 @@ LOGGING = {
     'disable_existing_loggers': False,
     'filters': {
         'correlation_id': {
-            '()': 'django_guid.log_filters.CorrelationId',  # <-- adds correlation ID
+            '()': 'django_guid.log_filters.CorrelationId',  # <-- Adds correlation ID
         },
         'celery_referrer': {
-            '()':'django_guid.celery.log_filters.CeleryReferralId'  # <-- adds depth to celery logs
+            '()' : 'django_guid.celery.log_filters.CeleryReferralId'  # <-- Adds depth to celery logs
         }
     },
     'formatters': {
@@ -115,12 +115,14 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(name)s -- %(message)s'
         },
         # An example of a format including the correlation ID in the output
-        # Example log: INFO 2020-11-15 11:42:41,543 [9afef4a3eb8e4df2b0eac380dcc9d0e9] demoproj.views.sync_views - This log message should have a GUID
-        'cid': {
-            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s - %(message)s'  # <-- Format the log string
+        # Example log:
+        # INFO 2020-11-15 11:42:41,543 [9afef4a3eb8e4df2b0eac380dcc9d0e9] demoproj.views.sync_views - This log ...
+        'cid': {  # <-- Decide how log output in the console will be displayed
+            'format': '%(levelname)s %(asctime)s [%(correlation_id)s] %(name)s - %(message)s'
         },
         # An example of a format including the correlation ID and a Celery referral ID
-        # Example log: [cc9889f83f66433fa021f253a9d3537b] [928f9 -> 91328] django_guid.celery - Clearing GUID for celery worker
+        # Example log:
+        # [cc9889f83f66433fa021f253a9d3537b] [928f9 -> 91328] django_guid.celery - Clearing GUID for celery worker
         'cid_with_depth': {
             'format': '%(levelname)s [%(correlation_id)s] [%(celery_referrer)s] %(name)s - %(message)s'
         },
@@ -160,7 +162,7 @@ LOGGING = {
         },
         'django_guid': {
             'handlers': ['correlation_id'],
-            'level': 'INFO',  # <-- Set to DEBUG to show log messages from DJANGO_GUID
+            'level': 'INFO',  # Set to DEBUG to show log messages from DJANGO_GUID
             'propagate': False,
         },
         'django_guid.celery': {
