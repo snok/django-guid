@@ -10,5 +10,5 @@ class CeleryReferralId(Filter):
 
         The format of the filter is [{referrer} -> {current}] and looks like [5b883 -> 14c33]
         """
-        record.celery_referrer = celery.get()  # type: ignore
+        record.celery_referrer: str = celery.get()  # type: ignore
         return True

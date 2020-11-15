@@ -94,7 +94,7 @@ TEMPLATES = [
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,
-    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True)],
+    'INTEGRATIONS': [CeleryIntegration(use_django_logging=True, log_origin=True)],
     'IGNORE_URLS': ['no-guid'],
 }
 
@@ -107,7 +107,7 @@ LOGGING = {
             '()': 'django_guid.log_filters.CorrelationId',  # <-- Add correlation ID to the filters
         },
         'celery_referrer': {
-            '()':'django_guid.celery.log_filters.CeleryReferrer'  # <-- Add depth to celery logs'
+            '()':'django_guid.celery.log_filters.CeleryReferralId'  # <-- Add depth to celery logs'
         }
     },
     'formatters': {

@@ -1,8 +1,10 @@
 import logging
 
 from celery.signals import before_task_publish, task_postrun, task_prerun
-from django_guid import set_guid
+from django_guid import clear_guid, get_guid, set_guid
 from django_guid.celery.context import celery
+from django_guid.config import settings
+from django_guid.utils import generate_guid
 
 logger = logging.getLogger('django_guid')
 
@@ -15,10 +17,6 @@ def _before_task_publish(headers: dict, **kwargs) -> None:
     Setting the correct header here means we can correctly trace a request
     that spawns background workers.
     """
-    from django_guid import get_guid
-    from django_guid.config import settings
-    from django_guid.utils import generate_guid
-
     if guid := get_guid():
         # A GUID will exist when the current thread was spawned for a request
         # or by another task.
@@ -32,8 +30,6 @@ def _before_task_publish(headers: dict, **kwargs) -> None:
     # Set correlation ID in the task header for the worker to read.
     headers[settings.GUID_HEADER_NAME] = guid
 
-    # TODO: Separate the tracing logic from the depth logic, either by splitting it out completely
-    # TODO: or by adding a settings and putting in if-blocks.
     """
     Logic above this comment makes sure we're able to trace all logs generated from a request,
     even when the request spawns background workers.
@@ -83,26 +79,27 @@ def _before_task_publish(headers: dict, **kwargs) -> None:
     process to the next, that means sibling processes don't know they exists.
     We therefore double down on uuids and create this format: [cdfba -> e65de]
     """
-    short_guid = generate_guid()[:5]
-    # ^ decided to use a shortened uuid to represent origin
-    # If string representations of uuids can be 0-9, a-f, A-F, then there
-    # are 9 + 6 + 6 = 21 possible characters that could be generated.
-    # Unless I'm doing this wrong, that should mean the likelihood of a colliding 5-character uuid
-    # should be 1/21 ** 5 which is 0,0000244851927, or 1 in 4,084,101
-    # that seems fine for this use case - if you're reading this and find this
-    # unacceptably low, just submit a PR, and I'm sure we can revise it.
+    if settings.INTEGRATION_SETTINGS.celery.log_origin:
+        short_guid = generate_guid()[:5]
+        # ^ decided to use a shortened uuid to represent origin
+        # If string representations of uuids can be 0-9, a-f, A-F, then there
+        # are 9 + 6 + 6 = 21 possible characters that could be generated.
+        # Unless I'm doing this wrong, that should mean the likelihood of a colliding 5-character uuid
+        # should be 1/21 ** 5 which is 0,0000244851927, or 1 in 4,084,101
+        # that seems fine for this use case - if you're reading this and find this
+        # unacceptably low, just submit a PR, and I'm sure we can revise it.
 
-    if not (origin := celery.get()):
-        # This means we're a request sending a task to a worker
-        headers['CELERY_ORIGIN'] = f'{short_guid}'
-    else:
-        # If we're in this block, it means we're a worker
-        if ' -> ' not in origin:
-            # This means we're 1 step down
-            headers['CELERY_ORIGIN'] = f'{origin} -> {short_guid}'
+        if not (origin := celery.get()):
+            # This means we're a request sending a task to a worker
+            headers['CELERY_ORIGIN'] = f'{short_guid}'
         else:
-            # This means we're 2+ steps down the chain
-            headers['CELERY_ORIGIN'] = f'{origin.split(" -> ")[1]} -> {short_guid}'
+            # If we're in this block, it means we're a worker
+            if ' -> ' not in origin:
+                # This means we're 1 step down
+                headers['CELERY_ORIGIN'] = f'{origin} -> {short_guid}'
+            else:
+                # This means we're 2+ steps down the chain
+                headers['CELERY_ORIGIN'] = f'{origin.split(" -> ")[1]} -> {short_guid}'
 
 
 @task_prerun.connect
@@ -114,10 +111,6 @@ def _task_prerun(task, **kwargs) -> None:  # noqa: ANN001
     and generates a GUID if not. In that regard, this is
     the Celery equivalent of the django-guid middleware.
     """
-    from django_guid import set_guid
-    from django_guid.config import settings
-    from django_guid.utils import generate_guid
-
     if guid := task.request.get(settings.GUID_HEADER_NAME, None):
         logger.info('Setting GUID for celery worker from header')
         set_guid(guid)
@@ -125,8 +118,9 @@ def _task_prerun(task, **kwargs) -> None:  # noqa: ANN001
         logger.info('Generating GUID for celery worker')
         set_guid(generate_guid())
 
-    if origin := task.request.get('CELERY_ORIGIN'):
-        celery.set(origin)
+    if settings.INTEGRATION_SETTINGS.celery.log_origin:
+        if origin := task.request.get('CELERY_ORIGIN'):
+            celery.set(origin)
 
 
 @task_postrun.connect
@@ -136,9 +130,7 @@ def _task_postrun(task, **kwargs) -> None:  # noqa: ANN001
 
     Clears the GUID for the worker thread.
     """
-    from django_guid import clear_guid
-
     logger.debug('Clearing GUID for celery worker')
     clear_guid()
-
-    celery.set(None)
+    if settings.INTEGRATION_SETTINGS.celery.log_origin:
+        celery.set(None)

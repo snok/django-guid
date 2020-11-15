@@ -13,8 +13,9 @@ class CeleryIntegration(Integration):
 
     identifier = 'CeleryIntegration'
 
-    def __init__(self, use_django_logging: bool=False):
+    def __init__(self, use_django_logging: bool = False, log_origin: bool = False) -> None:
         super().__init__()
+        self.log_origin = log_origin
         self.use_django_logging = use_django_logging
 
     def setup(self) -> None:
@@ -27,4 +28,7 @@ class CeleryIntegration(Integration):
             from django_guid.celery.logging import config_loggers  # noqa
 
     def run(self, guid: str, **kwargs) -> None:
+        """
+        Does nothing.
+        """
         pass
