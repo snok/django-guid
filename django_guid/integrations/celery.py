@@ -7,13 +7,17 @@ logger = logging.getLogger('django_guid')
 
 class CeleryIntegration(Integration):
     """
-    Ensures that our correlation ID is transferred to Celery workers when
-    we publish tasks from a request, or generates an ID when published by Celery beat.
+    Forwards correlation IDs to Celery workers when a task is published from
+    a request, and generates unique correlation IDs for all other tasks.
     """
 
     identifier = 'CeleryIntegration'
 
     def __init__(self, use_django_logging: bool = False, log_origin: bool = False) -> None:
+        """
+        :param use_django_logging: If true, configures Celery to use the logging settings defined in settings.py
+        :param log_origin: If true, traces the origin of a task. Needs to be True to use the celery referral log filter.
+        """
         super().__init__()
         self.log_origin = log_origin
         self.use_django_logging = use_django_logging
@@ -27,8 +31,5 @@ class CeleryIntegration(Integration):
         if self.use_django_logging:
             from django_guid.celery.logging import config_loggers  # noqa
 
-    def run(self, guid: str, **kwargs) -> None:
-        """
-        Does nothing.
-        """
+    def run(self, guid: str, **kwargs) -> None:  # noqa: D102
         pass
