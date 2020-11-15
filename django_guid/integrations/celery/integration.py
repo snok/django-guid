@@ -7,20 +7,24 @@ logger = logging.getLogger('django_guid')
 
 class CeleryIntegration(Integration):
     """
-    Forwards correlation IDs to Celery workers when a task is published from
-    a request, and generates unique correlation IDs for all other tasks.
+    Passes correlation IDs from parent processes to child processes in a Celery context.
+
+    This means a correlation ID can be transferred from a request to a worker, or
+    from a worker to another worker. For workers executing scheduled tasks,
+    a correlation ID is set for each task.
     """
 
     identifier = 'CeleryIntegration'
 
-    def __init__(self, use_django_logging: bool = False, log_parent: bool = False) -> None:
+    def __init__(self, use_django_logging: bool = False, log_parent: bool = False, uuid_length: int = 32) -> None:
         """
         :param use_django_logging: If true, configures Celery to use the logging settings defined in settings.py
-        :param log_parent: If true, traces the origin of a task. Needs to be True to use the celery referral log filter.
+        :param log_parent: If true, traces the origin of a task. Should be True if you wish to use the CeleryParentId log filter.
         """
         super().__init__()
         self.log_parent = log_parent
         self.use_django_logging = use_django_logging
+        self.uuid_length = uuid_length
 
     def setup(self) -> None:
         """

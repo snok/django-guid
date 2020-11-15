@@ -59,13 +59,13 @@ def ignored_url(request: Union[HttpRequest, HttpResponse]) -> bool:
     return request.get_full_path().strip('/') in settings.ignore_urls
 
 
-def generate_guid() -> str:
+def generate_guid(uuid_length: int = settings.uuid_length) -> str:
     """
     Generates an UUIDv4/GUID as a string.
 
     :return: GUID
     """
-    return uuid.uuid4().hex
+    return uuid.uuid4().hex[:uuid_length]
 
 
 def validate_guid(original_guid: str) -> bool:

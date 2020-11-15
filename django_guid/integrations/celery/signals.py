@@ -8,10 +8,11 @@ from django_guid.integrations.celery.context import celery_current, celery_paren
 from django_guid.utils import generate_guid
 
 logger = logging.getLogger('django_guid.celery')
+parent_header = 'CELERY_PARENT_ID'
 
 
 @before_task_publish.connect
-def _before_task_publish(headers: dict, **kwargs) -> None:
+def publish_task_from_worker_or_request(headers: dict, **kwargs) -> None:
     """
     Called when a request or celery worker publishes a task to the worker pool
     by calling task.delay(), task.apply_async() or using another equivalent method.
@@ -19,17 +20,17 @@ def _before_task_publish(headers: dict, **kwargs) -> None:
     This is where we transfer state from a parent process to a child process.
     """
     guid = get_guid()
-    logger.info('Setting task request header', guid)
+    logger.info('Setting task request header as %s', guid)
     headers[settings.guid_header_name] = guid
 
     if settings.integration_settings.celery.log_parent:
         current = celery_current.get()
         if current:
-            headers['CELERY_PARENT_ID'] = current
+            headers[parent_header] = current
 
 
 @task_prerun.connect
-def _task_prerun(task, **kwargs) -> None:  # noqa: ANN001
+def worker_prerun(task, **kwargs) -> None:  # noqa: ANN001
     """
     Called before a worker starts executing a task.
 
@@ -37,27 +38,27 @@ def _task_prerun(task, **kwargs) -> None:  # noqa: ANN001
     during the tasks, and on the thread in general. In that regard, this does
     the Celery equivalent to what the django-guid middleware does for a request.
     """
-    guid = task.request.get(settings.guid_header_name, None)
+    guid = task.request.get(settings.guid_header_name)
     if guid:
         logger.info('Setting GUID %s', guid)
         set_guid(guid)
     else:
-        generated_guid = generate_guid()
+        generated_guid = generate_guid(uuid_length=settings.integration_settings.celery.uuid_length)
         logger.info('Generated GUID %s', generated_guid)
         set_guid(generated_guid)
 
     if settings.integration_settings.celery.log_parent:
-        origin = task.request.get('CELERY_PARENT_ID')
+        origin = task.request.get(parent_header)
         if origin:
             logger.info('Setting parent ID %s', origin)
             celery_parent.set(origin)
-            generated_current_guid = generate_guid()
-            logger.info('Generated current ID %s', generated_current_guid)
-            celery_current.set(generated_current_guid)
+        generated_current_guid = generate_guid(uuid_length=settings.integration_settings.celery.uuid_length)
+        logger.info('Generated current ID %s', generated_current_guid)
+        celery_current.set(generated_current_guid)
 
 
 @task_postrun.connect
-def _task_postrun(task, **kwargs) -> None:  # noqa: ANN001
+def clean_up(task, **kwargs) -> None:  # noqa: ANN001
     """
     Called after a task is finished.
 

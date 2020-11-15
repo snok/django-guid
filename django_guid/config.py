@@ -63,6 +63,10 @@ class Settings:
     def integration_settings(self):
         return IntegrationSettings({integration.identifier: integration for integration in self.integrations})
 
+    @property
+    def uuid_length(self):
+        return self.settings.get('UUID_LENGTH', 32)
+
     def validate(self):
         if not isinstance(self.validate_guid, bool):
             raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
@@ -78,6 +82,8 @@ class Settings:
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
         if not all(isinstance(url, str) for url in self.ignore_urls):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
+        if not isinstance(self.uuid_length, int):
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer.')
 
         self._validate_and_setup_integrations()
 
