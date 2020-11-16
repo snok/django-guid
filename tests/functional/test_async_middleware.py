@@ -1,4 +1,8 @@
 import asyncio
+from copy import deepcopy
+
+from django.conf import settings as django_settings
+from django.test import override_settings
 
 import pytest
 
@@ -61,15 +65,15 @@ async def test_ignored_url(async_client, caplog, monkeypatch):
     :param caplog: Caplog fixture
     :param monkeypatch: Monkeypatch for django settings
     """
-    from django_guid.config import settings as guid_settings
-
-    monkeypatch.setattr(guid_settings, 'IGNORE_URLS', {'no-guid'})  # Same as it would be after config conversion
-    await async_client.get('/no-guid')
-    # No log message should have a GUID, aka `None` on index 1.
-    expected = [
-        ('async middleware called', None),
-        ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
-        ('Some warning in a function', None),
-        ('Received signal `request_finished`, clearing guid', None),
-    ]
-    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['IGNORE_URLS'] = {'no-guid'}
+    with override_settings(**mocked_settings):
+        await async_client.get('/no-guid')
+        # No log message should have a GUID, aka `None` on index 1.
+        expected = [
+            ('async middleware called', None),
+            ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
+            ('Some warning in a function', None),
+            ('Received signal `request_finished`, clearing guid', None),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected

@@ -29,7 +29,7 @@ def process_incoming_request(request: HttpRequest) -> None:
         guid.set(get_id_from_header(request))
 
         # Run all integrations
-        for integration in settings.INTEGRATIONS:
+        for integration in settings.integrations:
             logger.debug('Running integration: `%s`', integration.identifier)
             integration.run(guid=guid.get())
     return
@@ -40,13 +40,13 @@ def process_outgoing_request(response: HttpResponse, request: HttpRequest) -> No
     Process an outgoing request. This function is called after the view and before later middleware.
     """
     if not ignored_url(request=request):
-        if settings.RETURN_HEADER:
-            response[settings.GUID_HEADER_NAME] = guid.get()  # Adds the GUID to the response header
-            if settings.EXPOSE_HEADER:
-                response['Access-Control-Expose-Headers'] = settings.GUID_HEADER_NAME
+        if settings.return_header:
+            response[settings.guid_header_name] = guid.get()  # Adds the GUID to the response header
+            if settings.expose_header:
+                response['Access-Control-Expose-Headers'] = settings.guid_header_name
 
         # Run tear down for all the integrations
-        for integration in settings.INTEGRATIONS:
+        for integration in settings.integrations:
             logger.debug('Running tear down for integration: `%s`', integration.identifier)
             integration.cleanup()
     return
