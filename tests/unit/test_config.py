@@ -71,7 +71,7 @@ def test_not_array_ignore_urls():
                 Settings().validate()
 
 
-def test_not_string_in_igore_urls(monkeypatch):
+def test_not_string_in_igore_urls():
     for setting in ['api/v1/test', 'api/v1/othertest', True], [1, 2, 'yup']:
         mocked_settings = deepcopy(django_settings.DJANGO_GUID)
         mocked_settings['IGNORE_URLS'] = setting
@@ -80,7 +80,7 @@ def test_not_string_in_igore_urls(monkeypatch):
                 Settings().validate()
 
 
-def test_converts_correctly(monkeypatch):
+def test_converts_correctly():
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['IGNORE_URLS'] = ['/no-guid', '/my/api/path/']
     with override_settings(DJANGO_GUID=mocked_settings):

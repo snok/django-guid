@@ -17,7 +17,7 @@ def two_unique_uuid4():
 
 
 @pytest.fixture
-def mock_uuid_two_unique(monkeypatch, mocker, two_unique_uuid4):
+def mock_uuid_two_unique(mocker, two_unique_uuid4):
     mocker.patch.object(
         uuid.UUID,
         'hex',

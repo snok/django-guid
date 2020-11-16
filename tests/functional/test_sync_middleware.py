@@ -1,10 +1,11 @@
 from copy import deepcopy
 
-from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 import pytest
+
+from django_guid.config import Settings
 
 
 def test_request_with_no_correlation_id(client, caplog, mock_uuid):
@@ -72,15 +73,22 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
 
 
-def test_request_with_invalid_correlation_id_without_validation(client, caplog):
+def test_request_with_invalid_correlation_id_without_validation(client, caplog, monkeypatch):
     """
     Tests that a request with an invalid GUID is replaced when VALIDATE_GUID is False.
     :param client: Django client
     :param caplog: Caplog fixture
     """
-    mocked_settings = django_settings.DJANGO_GUID
-    mocked_settings['VALIDATE_GUID'] = False
+    mocked_settings = {
+        'GUID_HEADER_NAME': 'Correlation-ID',
+        'VALIDATE_GUID': False,
+        'INTEGRATIONS': [],
+        'IGNORE_URLS': ['no-guid'],
+    }
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+
         client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
         expected = [
             ('sync middleware called', None),
@@ -93,20 +101,26 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog):
         assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
-def test_no_return_header_and_drf_url(client, caplog, mock_uuid):
+def test_no_return_header_and_drf_url(client, caplog, mock_uuid, monkeypatch):
     """
     Tests that it does not return the GUID if RETURN_HEADER is false.
     This test also tests a DRF response, just to confirm everything works in both worlds.
     """
-    mocked_settings = django_settings.DJANGO_GUID
-    mocked_settings['RETURN_HEADER'] = False
+    mocked_settings = {
+        'GUID_HEADER_NAME': 'Correlation-ID',
+        'VALIDATE_GUID': True,
+        'INTEGRATIONS': [],
+        'IGNORE_URLS': ['no-guid'],
+        'RETURN_HEADER': False,
+    }
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
         response = client.get('/api')
         expected = [
             ('sync middleware called', None),
             (
-                'Header `Correlation-ID` was not found in the incoming request. '
-                'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+                'Header `Correlation-ID` was not found in the incoming request. Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
                 None,
             ),
             ('This is a DRF view log, and should have a GUID.', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -117,67 +131,86 @@ def test_no_return_header_and_drf_url(client, caplog, mock_uuid):
         assert not response.get('Correlation-ID')
 
 
-def test_no_expose_header_return_header_true(client):
+def test_no_expose_header_return_header_true(client, monkeypatch):
     """
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
     and RETURN_HEADER is True
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['EXPOSE_HEADER'] = False
     mocked_settings['RETURN_HEADER'] = True
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
         response = client.get('/api')
         assert not response.get('Access-Control-Expose-Headers')
 
 
-def test_expose_header_return_header_true(client):
+def test_expose_header_return_header_true(client, monkeypatch):
     """
     Tests that it does return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
     and RETURN_HEADER is True
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['EXPOSE_HEADER'] = True
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
         response = client.get('/api')
         assert response.get('Access-Control-Expose-Headers')
 
 
-def test_no_expose_header_return_header_false(client):
+def test_no_expose_header_return_header_false(client, monkeypatch):
     """
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to False
     and RETURN_HEADER is False
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['EXPOSE_HEADER'] = False
     mocked_settings['RETURN_HEADER'] = False
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
         response = client.get('/api')
         assert not response.get('Access-Control-Expose-Headers')
 
 
-def test_expose_header_return_header_false(client):
+def test_expose_header_return_header_false(client, monkeypatch):
     """
     Tests that it does not return the Access-Control-Allow-Origin when EXPOSE_HEADER is set to True
     and RETURN_HEADER is False
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['EXPOSE_HEADER'] = True
     mocked_settings['RETURN_HEADER'] = False
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
         response = client.get('/api')
         assert not response.get('Access-Control-Expose-Headers')
 
 
-def test_cleanup_signal(client, caplog):
+def test_cleanup_signal(client, caplog, monkeypatch):
     """
     Tests that a request cleans up a request after finishing.
     :param client: Django client
     :param caplog: Caplog fixture
-    :param monkeypatch: Monkeypatch for django settings
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['VALIDATE_GUID'] = False
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
         client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
         client.get('/', **{'HTTP_Correlation-ID': 'another-bad-guid'})
 
@@ -215,7 +248,9 @@ def test_url_ignored(client, caplog):
     :param client: Django client
     :param caplog: Caplog fixture
     """
-    mocked_settings = django_settings.DJANGO_GUID
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['IGNORE_URLS'] = {'no-guid'}
     with override_settings(DJANGO_GUID=mocked_settings):
         client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})

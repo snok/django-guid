@@ -41,6 +41,7 @@ class Settings:
 
     @property
     def validate_guid(self) -> bool:
+        print('---', self.settings.get('VALIDATE_GUID'))
         return self.settings.get('VALIDATE_GUID', True)
 
     @property

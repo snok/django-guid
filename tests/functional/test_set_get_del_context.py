@@ -13,7 +13,7 @@ async def test_api(async_client, caplog, mock_uuid):
         ),
         ('Current GUID: 704ae5472cae4f8daa8f2cc5a5a8mock', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         (
-            'Changing the guid ContextVar from 704ae5472cae4f8daa8f2cc5a5a8mock to ' 'another guid',
+            'Changing the guid ContextVar from 704ae5472cae4f8daa8f2cc5a5a8mock to another guid',
             '704ae5472cae4f8daa8f2cc5a5a8mock',
         ),
         ('Current GUID: another guid', 'another guid'),
