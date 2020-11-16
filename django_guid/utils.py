@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Union
+from typing import Optional, Union
 
 from django.http import HttpRequest, HttpResponse
 
@@ -59,12 +59,14 @@ def ignored_url(request: Union[HttpRequest, HttpResponse]) -> bool:
     return request.get_full_path().strip('/') in settings.ignore_urls
 
 
-def generate_guid(uuid_length: int = settings.uuid_length) -> str:
+def generate_guid(uuid_length: Optional[int] = None) -> str:
     """
     Generates an UUIDv4/GUID as a string.
 
     :return: GUID
     """
+    if uuid_length is None:
+        return uuid.uuid4().hex[: settings.uuid_length]
     return uuid.uuid4().hex[:uuid_length]
 
 
