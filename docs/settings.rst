@@ -13,6 +13,7 @@ Default settings are shown below:
         'RETURN_HEADER': True,
         'EXPOSE_HEADER': True,
         'INTEGRATIONS': [],
+        'UUID_LENGTH': 32,
     }
 
 
@@ -71,3 +72,12 @@ IGNORE_URLS
 * **Type**: ``list``
 
 URL endpoints where the middleware will be disabled. You can put your health check endpoints here.
+
+UUID_LENGTH
+-----------
+* **Default**: ``32``
+* **Type**: ``int``
+
+If a full UUID hex is too long for you, this settings lets you specify the length you wish to use.
+The chance of collision in a UUID is so low, that most systems will get away with a lot
+fewer than 32 characters.
