@@ -9,3 +9,6 @@ class DjangoGuidConfig(AppConfig):
         In order to avoid circular imports we import signals here.
         """
         from django_guid import signals  # noqa F401
+        from django_guid.config import settings
+
+        settings.validate()

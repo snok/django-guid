@@ -87,7 +87,7 @@ TEMPLATES = [
 
 # fmt: off
 
-# Non required DJANGO_GUID settings (Set to default values here)
+# OBS: No setting in Django GUID is required. These are example settings.
 DJANGO_GUID = {
     'GUID_HEADER_NAME': 'Correlation-ID',
     'VALIDATE_GUID': True,

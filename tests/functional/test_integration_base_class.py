@@ -1,6 +1,12 @@
+from copy import deepcopy
+
+from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
+from django.test import override_settings
 
 import pytest
+
+from django_guid.config import Settings
 
 
 def test_missing_identifier(monkeypatch):
@@ -18,20 +24,23 @@ def test_missing_run_method(monkeypatch, client):
     """
     Tests that an exception is raised when the run method has not been defined.
     """
-    from django_guid.config import settings as guid_settings
     from django_guid.integrations import SentryIntegration
 
     monkeypatch.delattr(SentryIntegration, 'run')
-    monkeypatch.setattr(guid_settings, 'INTEGRATIONS', [SentryIntegration()])
-    with pytest.raises(ImproperlyConfigured, match='The integration `SentryIntegration` is missing a `run` method'):
-        client.get('/api')
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [SentryIntegration()]
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.middleware.settings', settings)
+        with pytest.raises(ImproperlyConfigured, match='The integration `SentryIntegration` is missing a `run` method'):
+            client.get('/api')
 
 
-def test_run_method_not_accepting_kwargs(monkeypatch, client):
+def test_run_method_not_accepting_kwargs(client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
-    from django.conf import settings
 
     from django_guid.config import Settings
     from django_guid.integrations import SentryIntegration
@@ -40,17 +49,18 @@ def test_run_method_not_accepting_kwargs(monkeypatch, client):
         def run(self, guid):
             pass
 
-    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [BadIntegration()]})
-    with pytest.raises(ImproperlyConfigured, match='Integration method `run` must accept keyword arguments '):
-        Settings()
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [BadIntegration()]
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        with pytest.raises(ImproperlyConfigured, match='Integration method `run` must accept keyword arguments '):
+            Settings().validate()
 
 
-def test_cleanup_method_not_accepting_kwargs(monkeypatch, client):
+def test_cleanup_method_not_accepting_kwargs(client):
     """
     Tests that an exception is raised when the run method doesn't accept kwargs.
     """
-    from django.conf import settings
-
     from django_guid.config import Settings
     from django_guid.integrations import SentryIntegration
 
@@ -58,16 +68,18 @@ def test_cleanup_method_not_accepting_kwargs(monkeypatch, client):
         def cleanup(self, guid):
             pass
 
-    monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [BadIntegration()]})
-    with pytest.raises(ImproperlyConfigured, match='Integration method `cleanup` must accept keyword arguments '):
-        Settings()
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [BadIntegration()]
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        with pytest.raises(ImproperlyConfigured, match='Integration method `cleanup` must accept keyword arguments '):
+            Settings().validate()
 
 
 def test_non_callable_methods(monkeypatch, subtests):
     """
     Tests that an exception is raised when any of the integration base methods are non-callable.
     """
-    from django.conf import settings
 
     from django_guid.config import Settings
     from django_guid.integrations import SentryIntegration
@@ -77,24 +89,26 @@ def test_non_callable_methods(monkeypatch, subtests):
     to_test = [
         {
             'function_name': 'cleanup',
-            'error': 'Integration method `cleanup` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `cleanup` needs to be made callable for `SentryIntegration`',
         },
         {
             'function_name': 'run',
-            'error': 'Integration method `run` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `run` needs to be made callable for `SentryIntegration`',
         },
         {
             'function_name': 'setup',
-            'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`',
         },
     ]
 
     for test in to_test:
         setattr(mock_integration, test.get('function_name'), 'test')
-        monkeypatch.setattr(settings, 'DJANGO_GUID', {'INTEGRATIONS': [mock_integration]})
-        with subtests.test(msg=f'Testing function {test.get("function_name")}'):
-            with pytest.raises(ImproperlyConfigured, match=test.get('error')):
-                Settings()
+        mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+        mocked_settings['INTEGRATIONS'] = [mock_integration]
+        with override_settings(DJANGO_GUID=mocked_settings):
+            with subtests.test(msg=f'Testing function {test.get("function_name")}'):
+                with pytest.raises(ImproperlyConfigured, match=test.get('error')):
+                    Settings().validate()
 
 
 def test_base_class():

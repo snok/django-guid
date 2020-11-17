@@ -1,63 +1,85 @@
-from typing import List
+# flake8: noqa: D102
+from typing import List, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.inspect import func_accepts_kwargs
 
-from django_guid.integrations import Integration
+
+class IntegrationSettings:
+    def __init__(self, integration_settings: dict) -> None:
+        self.settings = integration_settings
+
+    def validate(self):
+        pass
 
 
 class Settings:
-    """
-    Settings for django_guid read from the Django settings in `settings.py`.
-
-    Inspired by django-auth-adfs from @jobec
-    """
-
     def __init__(self) -> None:
-        self.GUID_HEADER_NAME = 'Correlation-ID'
-        self.VALIDATE_GUID = True
-        self.RETURN_HEADER = True
-        self.EXPOSE_HEADER = True
-        self.INTEGRATIONS: List[Integration] = []
-        self.IGNORE_URLS: List[str] = []
-
         if hasattr(django_settings, 'DJANGO_GUID'):
-            _settings = django_settings.DJANGO_GUID
+            self.settings = django_settings.DJANGO_GUID
+        else:
+            self.settings = {}
 
-            # Set user settings if provided
-            for setting, value in _settings.items():
-                if hasattr(self, setting):
-                    setattr(self, setting, value)
-                else:
-                    raise ImproperlyConfigured(f'{setting} is not a valid setting for django_guid')
+    @property
+    def guid_header_name(self) -> str:
+        return self.settings.get('GUID_HEADER_NAME', 'Correlation-ID')
 
-            if not isinstance(self.VALIDATE_GUID, bool):
-                raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
-            if not isinstance(self.GUID_HEADER_NAME, str):
-                raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
-            if not isinstance(self.RETURN_HEADER, bool):
-                raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
-            if not isinstance(self.EXPOSE_HEADER, bool):
-                raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
-            if not isinstance(self.INTEGRATIONS, (list, tuple)):
-                raise ImproperlyConfigured('INTEGRATIONS must be an array')
-            if not isinstance(self.IGNORE_URLS, (list, tuple)):
-                raise ImproperlyConfigured('IGNORE_URLS must be an array')
+    @property
+    def return_header(self) -> bool:
+        return self.settings.get('RETURN_HEADER', True)
 
-            if not all(isinstance(url, str) for url in self.IGNORE_URLS):
-                raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
-            # Note: stripping the '/' from the beginning and end of the path of the URLS,
-            # this is since some people would write a path as "/path/one/two/" while others would write "path/one/two"
-            self.IGNORE_URLS = list({url.strip('/') for url in self.IGNORE_URLS})
+    @property
+    def expose_header(self) -> bool:
+        return self.settings.get('EXPOSE_HEADER', True)
 
-            self._validate_and_setup_integrations()
+    @property
+    def ignore_urls(self) -> List[str]:
+        return list({url.strip('/') for url in self.settings.get('IGNORE_URLS', [])})
+
+    @property
+    def validate_guid(self) -> bool:
+        print('---', self.settings.get('VALIDATE_GUID'))
+        return self.settings.get('VALIDATE_GUID', True)
+
+    @property
+    def integrations(self) -> Union[list, tuple]:
+        return self.settings.get('INTEGRATIONS', [])
+
+    @property
+    def integration_settings(self):
+        return IntegrationSettings({integration.identifier: integration for integration in self.integrations})
+
+    @property
+    def uuid_length(self):
+        return self.settings.get('UUID_LENGTH', 32)
+
+    def validate(self):
+        if not isinstance(self.validate_guid, bool):
+            raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
+        if not isinstance(self.guid_header_name, str):
+            raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
+        if not isinstance(self.return_header, bool):
+            raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
+        if not isinstance(self.expose_header, bool):
+            raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
+        if not isinstance(self.integrations, (list, tuple)):
+            raise ImproperlyConfigured('INTEGRATIONS must be an array')
+        if not isinstance(self.settings.get('IGNORE_URLS', []), (list, tuple)):
+            raise ImproperlyConfigured('IGNORE_URLS must be an array')
+        if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
+            raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
+        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-32')
+
+        self._validate_and_setup_integrations()
 
     def _validate_and_setup_integrations(self) -> None:
         """
         Validate the INTEGRATIONS settings and verify each integration
         """
-        for integration in self.INTEGRATIONS:
+        self.integration_settings.validate()
+        for integration in self.integrations:
 
             # Make sure all integration methods are callable
             for method, name in [
@@ -68,14 +90,14 @@ class Settings:
                 # Make sure the methods are callable
                 if not callable(method):
                     raise ImproperlyConfigured(
-                        f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
+                        f'Integration method `{name}` needs to be made callable for `{integration.identifier}`'
                     )
 
                 # Make sure the method takes kwargs
                 if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
                     raise ImproperlyConfigured(
                         f'Integration method `{name}` must '
-                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`'
                     )
 
             # Run validate method

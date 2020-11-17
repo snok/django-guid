@@ -119,6 +119,7 @@ Package settings are added in your ``settings.py``:
         'EXPOSE_HEADER': True,
         'INTEGRATIONS': [],
         'IGNORE_URLS': [],
+        'UUID_LENGTH': 32,
     }
 
 
@@ -160,6 +161,11 @@ Package settings are added in your ``settings.py``:
         URL endpoints where the middleware will be disabled. You can put your health check endpoints here.
 
     Default: []
+
+* :code:`UUID_LENGTH`
+        Lets you optionally trim the length of the package generated UUIDs.
+
+    Default: 32
 
 *************
 Configuration
