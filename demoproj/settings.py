@@ -15,7 +15,7 @@ from typing import List
 
 from celery.schedules import crontab
 
-from django_guid.integrations import CeleryIntegration
+from django_guid.integrations import CeleryIntegration, SentryIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -98,7 +98,8 @@ DJANGO_GUID = {
             use_django_logging=True,
             log_parent=True,
             uuid_length=10
-        )
+        ),
+        SentryIntegration()
     ],
     'IGNORE_URLS': ['no-guid'],
 }
