@@ -41,7 +41,6 @@ include = ["CHANGELOG.rst"]
 python = "^3.7"
 django = "^3.1.1"
 
-
 [tool.poetry.dev-dependencies]
 pre-commit = "^1.21.0"
 sphinx = "^2.4.4"
@@ -60,6 +59,11 @@ pytest-asyncio = "^0.14.0"
 celery = "^5.0.2"
 redis = "^3.5.3"
 ipython = "^7.19.0"
+
+[tool.poetry.extras]
+celery = ["celery"]
+sentry = ["sentry-sdk"]
+all = ["celery,sentry-sdk"]
 
 [tool.black]
 line-length = 120
