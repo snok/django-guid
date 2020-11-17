@@ -8,8 +8,6 @@ from django.utils.inspect import func_accepts_kwargs
 
 class IntegrationSettings:
     def __init__(self, integration_settings: dict) -> None:
-        if integration_settings is None:
-            integration_settings = {}
         self.settings = integration_settings
 
     def validate(self):
@@ -71,8 +69,8 @@ class Settings:
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
         if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
-        if not isinstance(self.uuid_length, int):
-            raise ImproperlyConfigured('UUID_LENGTH must be an integer.')
+        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-32')
 
         self._validate_and_setup_integrations()
 
@@ -92,14 +90,14 @@ class Settings:
                 # Make sure the methods are callable
                 if not callable(method):
                     raise ImproperlyConfigured(
-                        f'Integration method `{name}` needs to be made callable for `{integration.identifier}`.'
+                        f'Integration method `{name}` needs to be made callable for `{integration.identifier}`'
                     )
 
                 # Make sure the method takes kwargs
                 if name in ['run', 'cleanup'] and not func_accepts_kwargs(method):
                     raise ImproperlyConfigured(
                         f'Integration method `{name}` must '
-                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`.'
+                        f'accept keyword arguments (**kwargs) for `{integration.identifier}`'
                     )
 
             # Run validate method

@@ -89,15 +89,15 @@ def test_non_callable_methods(monkeypatch, subtests):
     to_test = [
         {
             'function_name': 'cleanup',
-            'error': 'Integration method `cleanup` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `cleanup` needs to be made callable for `SentryIntegration`',
         },
         {
             'function_name': 'run',
-            'error': 'Integration method `run` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `run` needs to be made callable for `SentryIntegration`',
         },
         {
             'function_name': 'setup',
-            'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`.',
+            'error': 'Integration method `setup` needs to be made callable for `SentryIntegration`',
         },
     ]
 

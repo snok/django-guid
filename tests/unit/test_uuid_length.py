@@ -8,7 +8,7 @@ def test_uuid_length():
     """
     Make sure passing uuid_length works.
     """
-    for i in range(0, 33):
+    for i in range(33):
         guid = generate_guid(uuid_length=i)
         assert len(guid) == i
 
@@ -17,7 +17,7 @@ def test_uuid_length_setting():
     """
     Make sure that the settings value is used as a default.
     """
-    for i in range(0, 33):
+    for i in range(33):
         mocked_settings = django_settings.DJANGO_GUID
         mocked_settings['UUID_LENGTH'] = i
         with override_settings(DJANGO_GUID=mocked_settings):

@@ -9,6 +9,12 @@ import pytest
 from django_guid.config import Settings
 
 
+@override_settings()
+def test_no_config(settings):
+    del settings.DJANGO_GUID
+    Settings().validate()
+
+
 def test_invalid_guid():
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['VALIDATE_GUID'] = 'string'
@@ -77,6 +83,15 @@ def test_not_string_in_igore_urls():
         mocked_settings['IGNORE_URLS'] = setting
         with override_settings(DJANGO_GUID=mocked_settings):
             with pytest.raises(ImproperlyConfigured, match='IGNORE_URLS must be an array of strings'):
+                Settings().validate()
+
+
+def test_uuid_len_fail():
+    for setting in [True, False, {}, [], 'asd', -1, 0, 33]:
+        mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+        mocked_settings['UUID_LENGTH'] = setting
+        with override_settings(DJANGO_GUID=mocked_settings):
+            with pytest.raises(ImproperlyConfigured, match='UUID_LENGTH must be an integer and be between 1-32'):
                 Settings().validate()
 
 
