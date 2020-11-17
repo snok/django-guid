@@ -5,13 +5,20 @@ from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.inspect import func_accepts_kwargs
 
+from django_guid.integrations.celery.config import CeleryIntegrationSettings
+
 
 class IntegrationSettings:
     def __init__(self, integration_settings: dict) -> None:
         self.settings = integration_settings
 
+    @property
+    def celery(self) -> CeleryIntegrationSettings:
+        return CeleryIntegrationSettings(self.settings['CeleryIntegration'])
+
     def validate(self):
-        pass
+        if 'CeleryIntegration' in self.settings:
+            self.celery.validate()
 
 
 class Settings:
@@ -39,7 +46,6 @@ class Settings:
 
     @property
     def validate_guid(self) -> bool:
-        print('---', self.settings.get('VALIDATE_GUID'))
         return self.settings.get('VALIDATE_GUID', True)
 
     @property
