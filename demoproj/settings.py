@@ -15,7 +15,7 @@ from typing import List
 
 from celery.schedules import crontab
 
-from django_guid.integrations import SentryIntegration, CeleryIntegration  # noqa
+from django_guid.integrations import CeleryIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -152,12 +152,12 @@ LOGGING = {
         },
         'django_guid': {
             'handlers': ['correlation_id_handler'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django_guid.celery': {
             'handlers': ['celery_depth_handler'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
         'celery': {
