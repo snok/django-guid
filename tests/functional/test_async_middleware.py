@@ -31,11 +31,6 @@ async def test_one_request(async_client, caplog, mock_uuid):
 
 @pytest.mark.asyncio
 async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_unique, two_unique_uuid4):
-    """
-    Checks that a following request does not inherit a previous GUID
-    """
-    tasks = [asyncio.create_task(async_client.get('/asgi')), asyncio.create_task(async_client.get('/asgi'))]
-    await asyncio.gather(*tasks)
     expected = [
         t
         for guid in two_unique_uuid4
@@ -53,6 +48,11 @@ async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_uni
             ('Received signal `request_finished`, clearing guid', guid),
         ]
     ]
+    """
+    Checks that a following request does not inherit a previous GUID
+    """
+    tasks = [asyncio.create_task(async_client.get('/asgi')), asyncio.create_task(async_client.get('/asgi'))]
+    await asyncio.gather(*tasks)
     # Sort both lists and compare - order will vary between runs
     assert sorted([(x.message, x.correlation_id) for x in caplog.records]) == sorted(expected)
 

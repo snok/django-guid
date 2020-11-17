@@ -101,7 +101,6 @@ DJANGO_GUID = {
         )
     ],
     'IGNORE_URLS': ['no-guid'],
-    'UUID_LENGTH': 10,
 }
 
 # Set up logging for the project
@@ -153,7 +152,7 @@ LOGGING = {
         'django_guid': {
             'handlers': ['correlation_id_handler'],
             'level': 'DEBUG',
-            'propagate': False,
+            'propagate': True,
         },
         'django_guid.celery': {
             'handlers': ['celery_depth_handler'],
