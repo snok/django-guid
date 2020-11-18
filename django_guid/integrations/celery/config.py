@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from django.core.exceptions import ImproperlyConfigured
 
 if TYPE_CHECKING:
-    from django_guid.integrations.celery import CeleryIntegration
+    from django_guid.integrations.celery import CeleryIntegration  # pragma: no cover
 
 
 class CeleryIntegrationSettings:

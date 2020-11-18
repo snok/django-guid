@@ -2,7 +2,7 @@ from celery.signals import setup_logging
 
 
 @setup_logging.connect
-def config_loggers(*args, **kwargs) -> None:  # noqa: ANN002
+def config_loggers(*args, **kwargs) -> None:  # pragma: no cover
     """
     Configures celery to use the Django settings.py logging configuration.
     """
