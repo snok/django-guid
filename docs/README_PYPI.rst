@@ -60,7 +60,7 @@ making it accessible by using the ID of the current thread. (Version 2 of Django
 
 * Free software: BSD License
 * Documentation: https://django-guid.readthedocs.io
-* Homepage: https://github.com/JonasKs/django-guid
+* Homepage: https://github.com/snok/django-guid
 
 --------------
 
@@ -247,7 +247,7 @@ And make sure to add the new ``correlation_id`` filter to one or all of your for
 
 
 If these settings were confusing, please have a look in the demo projects'
-`settings.py <https://github.com/JonasKs/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
+`settings.py <https://github.com/snok/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
 
 4. Django GUID Logger (Optional)
 ================================

@@ -40,4 +40,4 @@ Read the `official docs <https://docs.djangoproject.com/en/dev/topics/logging/>`
 
 Ask for help
 ------------
-Still no luck? Create an `issue on GitHub <https://github.com/JonasKs/django-guid/issues/new/choose>`_ and ask for help.
+Still no luck? Create an `issue on GitHub <https://github.com/snok/django-guid/issues/new/choose>`_ and ask for help.

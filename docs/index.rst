@@ -73,7 +73,7 @@ making it accessible by using the ID of the current thread.
 
 * Free software: BSD License
 * Documentation: https://django-guid.readthedocs.io
-* Homepage: https://github.com/JonasKs/django-guid
+* Homepage: https://github.com/snok/django-guid
 
 --------------
 
