@@ -76,3 +76,19 @@ def test_worker_prerun_guid_exists(monkeypatch, mocker: MockerFixture, two_uniqu
         monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
         worker_prerun(mock_task)
     assert get_guid() == two_unique_uuid4[0]
+
+
+def test_worker_prerun_guid_does_not_exist(monkeypatch, mocker: MockerFixture, mock_uuid):
+    """
+    Tests that a GUID is set if it does not exist
+    """
+    mock_task = mocker.Mock()
+    mock_task.request = mocker.Mock()
+    mock_task.request.get.return_value = None
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [CeleryIntegration(log_parent=False)]
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
+        worker_prerun(mock_task)
+    assert get_guid() == '704ae5472cae4f8daa8f2cc5a5a8mock'
