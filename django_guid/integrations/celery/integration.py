@@ -43,4 +43,4 @@ class CeleryIntegration(Integration):
         """
         Does nothing, as all we need for Celery tracing is to register signals during setup.
         """
-        pass
+        pass  # pragma: no cover
