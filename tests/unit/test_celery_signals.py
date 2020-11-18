@@ -98,7 +98,7 @@ def test_worker_prerun_guid_does_not_exist(monkeypatch, mocker: MockerFixture, m
 
 def test_worker_prerun_guid_log_parent_no_origin(monkeypatch, mocker: MockerFixture, mock_uuid_two_unique):
     """
-    Tests that a GUID is set if it does not exist
+    Tests that depth works when there is no origin
     """
     from django_guid.integrations.celery.signals import parent_header
 
@@ -117,7 +117,7 @@ def test_worker_prerun_guid_log_parent_no_origin(monkeypatch, mocker: MockerFixt
 
 def test_worker_prerun_guid_log_parent_with_origin(monkeypatch, mocker: MockerFixture, mock_uuid_two_unique):
     """
-    Tests that a GUID is set if it does not exist
+    Tests that depth works when there is an origin
     """
     from django_guid.integrations.celery.signals import parent_header
 
@@ -135,6 +135,9 @@ def test_worker_prerun_guid_log_parent_with_origin(monkeypatch, mocker: MockerFi
 
 
 def test_cleanup(monkeypatch, mocker: MockerFixture):
+    """
+    Test that cleanup works as expected
+    """
     set_guid('123')
     celery_current.set('123')
     celery_parent.set('123')
