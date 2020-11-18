@@ -1,5 +1,6 @@
 import logging
 
+from celery import Task
 from celery.signals import before_task_publish, task_postrun, task_prerun
 
 from django_guid import clear_guid, get_guid, set_guid
@@ -29,7 +30,7 @@ def publish_task_from_worker_or_request(headers: dict, **kwargs) -> None:
 
 
 @task_prerun.connect
-def worker_prerun(task, **kwargs) -> None:  # noqa: ANN001
+def worker_prerun(task: Task, **kwargs) -> None:
     """
     Called before a worker starts executing a task.
     Here we make sure to set the appropriate correlation ID for all logs logged
@@ -56,7 +57,7 @@ def worker_prerun(task, **kwargs) -> None:  # noqa: ANN001
 
 
 @task_postrun.connect
-def clean_up(task, **kwargs) -> None:  # noqa: ANN001
+def clean_up(task: Task, **kwargs) -> None:
     """
     Called after a task is finished.
     Here we make sure to clean up the IDs we set in the pre-run method, so that
