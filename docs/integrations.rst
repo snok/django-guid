@@ -51,11 +51,155 @@ To add the integration, simply import ``SentryIntegration`` from the integration
         'INTEGRATIONS': [SentryIntegration()],
     }
 
+Celery
+------
+
+The Celery integration enables tracing for Celery workers. There's three possible scenarios:
+
+1. A task is published from a request within Django
+2. A task is published from another task
+3. A task is published from Celery Beat
+
+For scenario 1 and 2 the existing correlation IDs is transferred, and for scenario
+3 a unique ID is generated.
+
+To enable this behavior, simply add it to your list of integrations:
+
+.. code-block:: python
+
+    from django_guid.integrations import SentryIntegration
+
+    DJANGO_GUID = {
+        ...
+        'INTEGRATIONS': [
+            CeleryIntegration(
+                use_django_logging=True,
+                log_parent=True,
+            )
+        ],
+    }
+
+Integration settings
+^^^^^^^^^^^^^^^^^^^^
+
+These are the settings you can pass when instantiating the ``CeleryIntegration``:
+
+* **use_django_logging**: Tells celery to use the Django logging configuration (formatter).
+* **log_parent**: Enables the ``CeleryTracing`` log filter described below.
+* **uuid_length**: Lets you optionally trim the length of the integration generated UUIDs.
+
+Celery integration log filter
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Out of the box, the CeleryIntegration will make sure a correlation ID is present for any Celery task;
+but how do you make sense of duplicate logs in subprocesses? Given these example tasks, what happens if we a worker
+picks up ``debug_task`` as scheduled by Celery beat?
+
+.. code-block:: python
+
+    @app.task()
+    def debug_task() -> None:
+        logger.info('Debug task 1')
+        second_debug_task.delay()
+        second_debug_task.delay()
+
+
+    @app.task()
+    def second_debug_task() -> None:
+        logger.info('Debug task 2')
+        third_debug_task.delay()
+        fourth_debug_task.delay()
+
+
+    @app.task()
+    def third_debug_task() -> None:
+        logger.info('Debug task 3')
+        fourth_debug_task.delay()
+        fourth_debug_task.delay()
+
+
+    @app.task()
+    def fourth_debug_task() -> None:
+        logger.info('Debug task 4')
+
+
+It will be close to impossible to make sense of the logs generated,
+simply because the correlation ID tells you nothing about how subprocesses are linked. For this,
+the integration provides an additional log filter, ``CeleryTracing`` which logs the
+ID of the current process and the ID of the parent process. Using the log filter, the log output of the example tasks becomes:
+
+.. code-block:: bbcode
+
+       correlation-id               current-id
+              |        parent-id        |
+              |            |            |
+    INFO [3b162382e1] [   None   ] [93ddf3639c] demoproj.celery - Debug task 1
+    INFO [3b162382e1] [93ddf3639c] [24046ab022] demoproj.celery - Debug task 2
+    INFO [3b162382e1] [93ddf3639c] [cb5595a417] demoproj.celery - Debug task 2
+    INFO [3b162382e1] [24046ab022] [08f5428a66] demoproj.celery - Debug task 3
+    INFO [3b162382e1] [24046ab022] [32f40041c6] demoproj.celery - Debug task 4
+    INFO [3b162382e1] [cb5595a417] [1c75a4ed2c] demoproj.celery - Debug task 3
+    INFO [3b162382e1] [08f5428a66] [578ad2d141] demoproj.celery - Debug task 4
+    INFO [3b162382e1] [cb5595a417] [21b2ef77ae] demoproj.celery - Debug task 4
+    INFO [3b162382e1] [08f5428a66] [8cad7fc4d7] demoproj.celery - Debug task 4
+    INFO [3b162382e1] [1c75a4ed2c] [72a43319f0] demoproj.celery - Debug task 4
+    INFO [3b162382e1] [1c75a4ed2c] [ec3cf4113e] demoproj.celery - Debug task 4
+
+At the very least, this should provide a mechanism for linking parent/children processes
+in a meaningful way.
+
+To set up the filter, add :code:`django_guid.integrations.celery.log_filters.CeleryTracing` as a filter in your ``LOGGING`` configuration:
+
+.. code-block:: python
+
+    LOGGING = {
+        ...
+        'filters': {
+            'celery_tracing': {
+                '()': 'django_guid.integrations.celery.log_filters.CeleryTracing'
+            }
+        }
+    }
+
+Put that filter in your handler:
+
+.. code-block:: python
+
+    LOGGING = {
+        ...
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'medium',
+                'filters': ['correlation_id', 'celery_tracing'],
+            }
+        }
+    }
+
+And then you can **optionally** add ``celery_parent_id`` and/or ``celery_current_id`` to you formatter:
+
+.. code-block:: python
+
+    LOGGING = {
+        ...
+        'formatters': {
+            'medium': {
+                'format': '%(levelname)s [%(correlation_id)s] [%(celery_parent_id)s-%(celery_current_id)s] %(name)s - %(message)s'
+            }
+        }
+    }
+
+However, if you use a log management tool which lets you interact with ``log.extra`` value, leaving the filters
+out of the formatter might be preferable.
+
+If these settings were confusing, please have a look in the demo projects'
+`settings.py <https://github.com/snok/django-guid/blob/master/demoproj/settings.py>`_ file for a complete example.
+
 
 Writing your own integration
 ============================
 
-Creating your own custom integration requires you to inherit the ``Integration`` base class (which is found `here <https://github.com/JonasKs/django-guid/tree/master/django_guid/integrations/base>`_).
+Creating your own custom integration requires you to inherit the ``Integration`` base class (which is found `here <https://github.com/snok/django-guid/tree/master/django_guid/integrations/base>`_).
 
 The class is quite simple and only contains four methods and a class attribute:
 
