@@ -19,7 +19,7 @@ class CeleryIntegration(Integration):
     def __init__(self, use_django_logging: bool = False, log_parent: bool = False, uuid_length: int = 32) -> None:
         """
         :param use_django_logging: If true, configures Celery to use the logging settings defined in settings.py
-        :param log_parent: If true, traces the origin of a task. Should be True if you wish to use the CeleryParentId log filter.
+        :param log_parent: If true, traces the origin of a task. Should be True if you wish to use the CeleryTracing log filter.
         :param uuid_length: Optionally lets you set the length of the celery IDs generated for the log filter
         """
         super().__init__()

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+`3.1.0`_ - 18.11.2020
+---------------------
+
+**Features**
+
+* Added a new setting, ``UUID_LENGTH``, which lets you crop the UUIDs generated for log filters.
+* Added a new integration for tracing with Celery_.
+
 `3.0.1`_ - 12.11.2020
 ---------------------
 
@@ -213,3 +221,6 @@ see the `upgrading docs`_.
 .. _3.0.0: https://github.com/snok/django-guid/compare/2.2.0...3.0.0
 .. _upgrading docs: https://django-guid.readthedocs.io/en/latest/upgrading.html
 .. _3.0.1: https://github.com/snok/django-guid/compare/3.0.0...3.0.1
+.. _3.1.0: https://github.com/snok/django-guid/compare/3.0.1...3.1.0
+
+.. _Celery: https://docs.celeryproject.org/en/stable/
