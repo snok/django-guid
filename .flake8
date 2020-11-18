@@ -30,6 +30,8 @@ ignore=
     ANN101
     # Missing type annotation for cls in classmethod
     ANN102
+    # Missing type annotations for **args
+    ANN002
     # Missing type annotations for **kwargs
     ANN003
 

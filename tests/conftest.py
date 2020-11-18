@@ -24,3 +24,8 @@ def mock_uuid_two_unique(mocker, two_unique_uuid4):
         new_callable=mocker.PropertyMock,
         side_effect=two_unique_uuid4,
     )
+
+
+@pytest.fixture(autouse=True)
+def integrations(settings):
+    settings.DJANGO_GUID['INTEGRATIONS'] = []
