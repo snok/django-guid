@@ -29,5 +29,5 @@ class CeleryIntegrationSettings:
             raise ImproperlyConfigured('The CeleryIntegration use_django_logging setting must be a boolean.')
         if not isinstance(self.log_parent, bool):
             raise ImproperlyConfigured('The CeleryIntegration log_parent setting must be a boolean.')
-        if not isinstance(self.uuid_length, int):
+        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
             raise ImproperlyConfigured('The CeleryIntegration uuid_length setting must be an integer.')
