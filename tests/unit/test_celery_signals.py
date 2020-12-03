@@ -1,6 +1,5 @@
 import logging
 from copy import deepcopy
-from uuid import uuid4
 
 from django.conf import settings as django_settings
 from django.test import override_settings
@@ -160,11 +159,16 @@ def test_set_transaction_id(monkeypatch, caplog):
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=True)]
     with override_settings(DJANGO_GUID=mocked_settings):
+        # https://github.com/eisensheng/pytest-catchlog/issues/44
+        # Propagate is `False` in default settings
+        logger = logging.getLogger('django_guid.celery')
+        logger.addHandler(caplog.handler)
         settings = Settings()
         monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
         guid = generate_guid()
         set_transaction_id(guid)
-        assert f'Setting Sentry transaction_id to {guid}' in caplog.messages
+        logger.removeHandler(caplog.handler)
+        assert f'Setting Sentry transaction_id to {guid}' in [record.message for record in caplog.records]
 
 
 def test_dont_set_transaction_id(monkeypatch, caplog):
@@ -175,4 +179,4 @@ def test_dont_set_transaction_id(monkeypatch, caplog):
         monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
         guid = generate_guid()
         set_transaction_id(guid)
-        assert f'Setting Sentry transaction_id to {guid}' not in caplog.messages
+        assert f'Setting Sentry transaction_id to {guid}' not in [record.message for record in caplog.records]
