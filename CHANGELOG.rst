@@ -1,6 +1,13 @@
 Changelog
 =========
 
+`3.1.1`_ - 04.12.2020
+---------------------
+
+**Features**
+
+* Added a new setting, ``sentry_integration`` to the Celery integration, which sets ``transaction_id`` for Celery workers.
+
 `3.1.0`_ - 18.11.2020
 ---------------------
 
@@ -222,5 +229,6 @@ see the `upgrading docs`_.
 .. _upgrading docs: https://django-guid.readthedocs.io/en/latest/upgrading.html
 .. _3.0.1: https://github.com/snok/django-guid/compare/3.0.0...3.0.1
 .. _3.1.0: https://github.com/snok/django-guid/compare/3.0.1...3.1.0
+.. _3.1.1: https://github.com/snok/django-guid/compare/3.1.0...3.1.1
 
 .. _Celery: https://docs.celeryproject.org/en/stable/

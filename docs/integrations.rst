@@ -87,6 +87,7 @@ These are the settings you can pass when instantiating the ``CeleryIntegration``
 * **use_django_logging**: Tells celery to use the Django logging configuration (formatter).
 * **log_parent**: Enables the ``CeleryTracing`` log filter described below.
 * **uuid_length**: Lets you optionally trim the length of the integration generated UUIDs.
+* **sentry_integration**: If you use Sentry, enabling this setting will make sure ``transaction_id`` is set (like in the SentryIntegration) for Celery workers.
 
 Celery integration log filter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
