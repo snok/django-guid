@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 
 from django.core.exceptions import ImproperlyConfigured
 
+from django_guid.integrations import SentryIntegration
+
 if TYPE_CHECKING:
     from django_guid.integrations.celery import CeleryIntegration  # pragma: no cover
 
@@ -24,6 +26,10 @@ class CeleryIntegrationSettings:
     def uuid_length(self) -> int:
         return self.instance.uuid_length
 
+    @property
+    def sentry_integration(self) -> bool:
+        return self.instance.sentry_integration
+
     def validate(self) -> None:
         if not isinstance(self.use_django_logging, bool):
             raise ImproperlyConfigured('The CeleryIntegration use_django_logging setting must be a boolean.')
@@ -31,3 +37,7 @@ class CeleryIntegrationSettings:
             raise ImproperlyConfigured('The CeleryIntegration log_parent setting must be a boolean.')
         if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
             raise ImproperlyConfigured('The CeleryIntegration uuid_length setting must be an integer.')
+        if not isinstance(self.sentry_integration, bool):
+            raise ImproperlyConfigured('The CeleryIntegration sentry_integration setting must be a boolean.')
+        if self.sentry_integration:
+            SentryIntegration().setup()

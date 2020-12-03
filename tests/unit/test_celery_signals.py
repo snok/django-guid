@@ -1,4 +1,6 @@
+import logging
 from copy import deepcopy
+from uuid import uuid4
 
 from django.conf import settings as django_settings
 from django.test import override_settings
@@ -13,8 +15,10 @@ from django_guid.integrations.celery.signals import (
     clean_up,
     parent_header,
     publish_task_from_worker_or_request,
+    set_transaction_id,
     worker_prerun,
 )
+from django_guid.utils import generate_guid
 
 
 def test_task_publish_includes_correct_headers(monkeypatch):
@@ -150,3 +154,25 @@ def test_cleanup(monkeypatch, mocker: MockerFixture):
         clean_up(task=mocker.Mock())
 
     assert [get_guid(), celery_current.get(), celery_parent.get()] == [None, None, None]
+
+
+def test_set_transaction_id(monkeypatch, caplog):
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=True)]
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
+        guid = generate_guid()
+        set_transaction_id(guid)
+        assert f'Setting Sentry transaction_id to {guid}' in caplog.messages
+
+
+def test_dont_set_transaction_id(monkeypatch, caplog):
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=False)]
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
+        guid = generate_guid()
+        set_transaction_id(guid)
+        assert f'Setting Sentry transaction_id to {guid}' not in caplog.messages
