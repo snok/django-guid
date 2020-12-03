@@ -1,3 +1,4 @@
+import logging
 from copy import deepcopy
 
 from django.conf import settings as django_settings
@@ -13,8 +14,10 @@ from django_guid.integrations.celery.signals import (
     clean_up,
     parent_header,
     publish_task_from_worker_or_request,
+    set_transaction_id,
     worker_prerun,
 )
+from django_guid.utils import generate_guid
 
 
 def test_task_publish_includes_correct_headers(monkeypatch):
@@ -150,3 +153,40 @@ def test_cleanup(monkeypatch, mocker: MockerFixture):
         clean_up(task=mocker.Mock())
 
     assert [get_guid(), celery_current.get(), celery_parent.get()] == [None, None, None]
+
+
+def test_set_transaction_id(monkeypatch, caplog):
+    """
+    Tests that the `configure_scope()` is executed, given `sentry_integration=True` in CeleryIntegration
+    """
+    # https://github.com/eisensheng/pytest-catchlog/issues/44
+    logger = logging.getLogger('django_guid.celery')  # Ensure caplog can catch logs with `propagate=False`
+    logger.addHandler(caplog.handler)
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=True)]
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
+        guid = generate_guid()
+        set_transaction_id(guid)
+    logger.removeHandler(caplog.handler)  # Remove handler before test finish
+    assert f'Setting Sentry transaction_id to {guid}' in [record.message for record in caplog.records]
+
+
+def test_dont_set_transaction_id(monkeypatch, caplog):
+    """
+    Tests that the `configure_scope()` is not executed, given `sentry_integration=False` in CeleryIntegration
+    """
+    logger = logging.getLogger('django_guid.celery')
+    logger.addHandler(caplog.handler)
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=False)]
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
+        guid = generate_guid()
+        set_transaction_id(guid)
+    logger.removeHandler(caplog.handler)
+    assert f'Setting Sentry transaction_id to {guid}' not in [record.message for record in caplog.records]

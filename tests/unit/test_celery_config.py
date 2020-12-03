@@ -48,3 +48,19 @@ def test_validate_uuid_length():
 
     for setting in valid_settings:
         CeleryIntegrationSettings(CeleryIntegration(uuid_length=setting))
+
+
+def test_validate_sentry_integration():
+    """
+    Test that validation for sentry_integration works as expected
+    """
+    invalid_settings = [{}, [], 'asd', -1, 0, 3.3]
+    valid_settings = [True, False]
+    for setting in invalid_settings:
+        with pytest.raises(
+            ImproperlyConfigured, match='The CeleryIntegration sentry_integration setting must be a boolean.'
+        ):
+            CeleryIntegrationSettings(CeleryIntegration(sentry_integration=setting))
+
+    for setting in valid_settings:
+        CeleryIntegrationSettings(CeleryIntegration(sentry_integration=setting))

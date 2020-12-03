@@ -9,7 +9,20 @@ from django_guid.integrations.celery.context import celery_current, celery_paren
 from django_guid.utils import generate_guid
 
 logger = logging.getLogger('django_guid.celery')
+
 parent_header = 'CELERY_PARENT_ID'
+
+
+def set_transaction_id(guid: str) -> None:
+    """
+    Sets the Sentry transaction ID if the Celery sentry integration setting is True.
+    """
+    if settings.integration_settings.celery.sentry_integration:
+        from sentry_sdk import configure_scope
+
+        with configure_scope() as scope:
+            logger.debug('Setting Sentry transaction_id to %s', guid)
+            scope.set_tag('transaction_id', guid)
 
 
 @before_task_publish.connect
@@ -41,10 +54,12 @@ def worker_prerun(task: Task, **kwargs) -> None:
     if guid:
         logger.info('Setting GUID %s', guid)
         set_guid(guid)
+        set_transaction_id(guid)
     else:
         generated_guid = generate_guid(uuid_length=settings.integration_settings.celery.uuid_length)
         logger.info('Generated GUID %s', generated_guid)
         set_guid(generated_guid)
+        set_transaction_id(generated_guid)
 
     if settings.integration_settings.celery.log_parent:
         origin = task.request.get(parent_header)

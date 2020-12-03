@@ -16,7 +16,13 @@ class CeleryIntegration(Integration):
 
     identifier = 'CeleryIntegration'
 
-    def __init__(self, use_django_logging: bool = False, log_parent: bool = False, uuid_length: int = 32) -> None:
+    def __init__(
+        self,
+        use_django_logging: bool = False,
+        log_parent: bool = False,
+        uuid_length: int = 32,
+        sentry_integration: bool = False,
+    ) -> None:
         """
         :param use_django_logging: If true, configures Celery to use the logging settings defined in settings.py
         :param log_parent: If true, traces the origin of a task. Should be True if you wish to use the CeleryTracing log filter.
@@ -26,6 +32,7 @@ class CeleryIntegration(Integration):
         self.log_parent = log_parent
         self.use_django_logging = use_django_logging
         self.uuid_length = uuid_length
+        self.sentry_integration = sentry_integration
 
     def setup(self) -> None:
         """
