@@ -1,7 +1,7 @@
 Changelog
 =========
 
-`3.1.1`_ - 04.12.2020
+`3.2.0`_ - 04.12.2020
 ---------------------
 
 **Features**
@@ -229,6 +229,6 @@ see the `upgrading docs`_.
 .. _upgrading docs: https://django-guid.readthedocs.io/en/latest/upgrading.html
 .. _3.0.1: https://github.com/snok/django-guid/compare/3.0.0...3.0.1
 .. _3.1.0: https://github.com/snok/django-guid/compare/3.0.1...3.1.0
-.. _3.1.1: https://github.com/snok/django-guid/compare/3.1.0...3.1.1
+.. _3.2.0: https://github.com/snok/django-guid/compare/3.1.0...3.2.0
 
 .. _Celery: https://docs.celeryproject.org/en/stable/
