@@ -156,22 +156,31 @@ def test_cleanup(monkeypatch, mocker: MockerFixture):
 
 
 def test_set_transaction_id(monkeypatch, caplog):
+    """
+    Tests that the `configure_scope()` is executed, given `sentry_integration=True` in CeleryIntegration
+    """
+    # https://github.com/eisensheng/pytest-catchlog/issues/44
+    logger = logging.getLogger('django_guid.celery')  # Ensure caplog can catch logs with `propagate=False`
+    logger.addHandler(caplog.handler)
+
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=True)]
     with override_settings(DJANGO_GUID=mocked_settings):
-        # https://github.com/eisensheng/pytest-catchlog/issues/44
-        # Propagate is `False` in default settings
-        logger = logging.getLogger('django_guid.celery')
-        logger.addHandler(caplog.handler)
         settings = Settings()
         monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
         guid = generate_guid()
         set_transaction_id(guid)
-        logger.removeHandler(caplog.handler)
-        assert f'Setting Sentry transaction_id to {guid}' in [record.message for record in caplog.records]
+    logger.removeHandler(caplog.handler)  # Remove handler before test finish
+    assert f'Setting Sentry transaction_id to {guid}' in [record.message for record in caplog.records]
 
 
 def test_dont_set_transaction_id(monkeypatch, caplog):
+    """
+    Tests that the `configure_scope()` is not executed, given `sentry_integration=False` in CeleryIntegration
+    """
+    logger = logging.getLogger('django_guid.celery')
+    logger.addHandler(caplog.handler)
+
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['INTEGRATIONS'] = [CeleryIntegration(sentry_integration=False)]
     with override_settings(DJANGO_GUID=mocked_settings):
@@ -179,4 +188,5 @@ def test_dont_set_transaction_id(monkeypatch, caplog):
         monkeypatch.setattr('django_guid.integrations.celery.signals.settings', settings)
         guid = generate_guid()
         set_transaction_id(guid)
-        assert f'Setting Sentry transaction_id to {guid}' not in [record.message for record in caplog.records]
+    logger.removeHandler(caplog.handler)
+    assert f'Setting Sentry transaction_id to {guid}' not in [record.message for record in caplog.records]
