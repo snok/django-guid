@@ -67,7 +67,7 @@ To enable this behavior, simply add it to your list of integrations:
 
 .. code-block:: python
 
-    from django_guid.integrations import SentryIntegration
+    from django_guid.integrations import CeleryIntegration
 
     DJANGO_GUID = {
         ...
