@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+`2.2.1`_ - 2020-02-16
+---------------------
+**Package bugfix**
+
+* Fixes #56. Making `setup.py install`  possible.
+
+
 `2.2.0`_ - 2020-11-04
 ---------------------
 **Features**
@@ -190,3 +197,4 @@ Changelog
 .. _2.0.0: https://github.com/jonasks/django-guid/compare/1.1.1...2.0.0
 .. _2.1.0: https://github.com/jonasks/django-guid/compare/2.0.0...2.1.0
 .. _2.2.0: https://github.com/jonasks/django-guid/compare/2.1.0...2.2.0
+.. _2.2.1: https://github.com/jonasks/django-guid/compare/2.2.0...2.2.1
