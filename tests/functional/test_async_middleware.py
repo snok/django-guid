@@ -54,7 +54,7 @@ async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_uni
         ]
     ]
     # Sort both lists and compare - order will vary between runs
-    assert sorted([(x.message, x.correlation_id) for x in caplog.records]) == sorted(expected)
+    assert sorted((x.message, x.correlation_id) for x in caplog.records) == sorted(expected)
 
 
 @pytest.mark.asyncio
