@@ -8,5 +8,5 @@ def useless_function() -> bool:
     Useless function to demonstrate a function log message.
     :return: True
     """
-    logger.warning('Some warning in a function')
+    logger.warning('Some warning in a test function')
     return True
