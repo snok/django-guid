@@ -37,6 +37,7 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
 include = ["CHANGELOG.rst"]
+packages = [{ include = 'django_guid' }]
 
 [tool.poetry.dependencies]
 python = "^3.7"
