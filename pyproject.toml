@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-guid"
-version = "3.2.0"  # Remember to also change __init__.py version
+version = "3.2.1"  # Remember to also change __init__.py version
 description = "Middleware that enables single request-response cycle tracing by injecting a unique ID into project logs"
 authors = ["Jonas Krüger Svensson <jonas-ks@hotmail.com>"]
 maintainers = ["Sondre Lillebø Gundersen <sondrelg@live.no>"]
@@ -46,7 +46,7 @@ django = "^3.1.1"
 pre-commit = "^1.21.0"
 sphinx = "^2.4.4"
 sphinx_rtd_theme = "^0.4.3"
-pytest = "^5.4"
+pytest = "^6.2.5"
 pytest-cov = "^2.8.1"
 pytest-django = "^4.1.0"
 pytest-mock = "^3"

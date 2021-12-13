@@ -31,4 +31,3 @@ def clear_guid() -> None:
     if old_guid:
         logger.info('Clearing %s from the guid ContextVar', old_guid)
     guid.set(None)
-    return
