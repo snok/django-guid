@@ -120,7 +120,6 @@ Contents
     integrations
     extended_example
     troubleshooting
-    contributing
     upgrading
     publish
     changelog

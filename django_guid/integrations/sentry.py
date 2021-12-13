@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -27,7 +28,7 @@ class SentryIntegration(Integration):
                 'Please run `pip install sentry-sdk` if you wish to include this integration.'
             )
 
-    def run(self, guid: str, **kwargs) -> None:
+    def run(self, guid: str, **kwargs: Any) -> None:
         """
         Sets the Sentry transaction_id.
         """

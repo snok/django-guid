@@ -16,7 +16,7 @@ class IntegrationSettings:
     def celery(self) -> CeleryIntegrationSettings:
         return CeleryIntegrationSettings(self.settings['CeleryIntegration'])
 
-    def validate(self):
+    def validate(self) -> None:
         if 'CeleryIntegration' in self.settings:
             self.celery.validate()
 
@@ -53,14 +53,14 @@ class Settings:
         return self.settings.get('INTEGRATIONS', [])
 
     @property
-    def integration_settings(self):
+    def integration_settings(self) -> IntegrationSettings:
         return IntegrationSettings({integration.identifier: integration for integration in self.integrations})
 
     @property
-    def uuid_length(self):
+    def uuid_length(self) -> int:
         return self.settings.get('UUID_LENGTH', 32)
 
-    def validate(self):
+    def validate(self) -> None:
         if not isinstance(self.validate_guid, bool):
             raise ImproperlyConfigured('VALIDATE_GUID must be a boolean')
         if not isinstance(self.guid_header_name, str):

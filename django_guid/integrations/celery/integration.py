@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from django_guid.integrations import Integration
 
@@ -46,7 +47,7 @@ class CeleryIntegration(Integration):
             # Import pre-configured Celery signals that makes Celery adopt the settings.py log config
             from django_guid.integrations.celery.logging import config_loggers  # noqa
 
-    def run(self, guid: str, **kwargs) -> None:
+    def run(self, guid: str, **kwargs: Any) -> None:
         """
         Does nothing, as all we need for Celery tracing is to register signals during setup.
         """

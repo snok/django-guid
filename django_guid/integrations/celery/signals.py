@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from celery import Task
 from celery.signals import before_task_publish, task_postrun, task_prerun
@@ -26,7 +27,7 @@ def set_transaction_id(guid: str) -> None:
 
 
 @before_task_publish.connect
-def publish_task_from_worker_or_request(headers: dict, **kwargs) -> None:
+def publish_task_from_worker_or_request(headers: dict, **kwargs: Any) -> None:
     """
     Called when a request or celery worker publishes a task to the worker pool
     by calling task.delay(), task.apply_async() or using another equivalent method.
@@ -43,7 +44,7 @@ def publish_task_from_worker_or_request(headers: dict, **kwargs) -> None:
 
 
 @task_prerun.connect
-def worker_prerun(task: Task, **kwargs) -> None:
+def worker_prerun(task: Task, **kwargs: Any) -> None:
     """
     Called before a worker starts executing a task.
     Here we make sure to set the appropriate correlation ID for all logs logged
@@ -72,7 +73,7 @@ def worker_prerun(task: Task, **kwargs) -> None:
 
 
 @task_postrun.connect
-def clean_up(task: Task, **kwargs) -> None:
+def clean_up(task: Task, **kwargs: Any) -> None:
     """
     Called after a task is finished.
     Here we make sure to clean up the IDs we set in the pre-run method, so that
