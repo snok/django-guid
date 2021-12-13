@@ -1,6 +1,6 @@
 from django_guid.api import clear_guid, get_guid, set_guid  # noqa F401
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 default_app_config = 'django_guid.apps.DjangoGuidConfig'
 
 __all__ = ['clear_guid', 'get_guid', 'set_guid']

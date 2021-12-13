@@ -15,7 +15,7 @@ def get_correlation_id_from_header(request: HttpRequest) -> str:
     :param request: HttpRequest object
     :return: GUID
     """
-    given_guid = str(request.headers.get(settings.guid_header_name))
+    given_guid: str = str(request.headers.get(settings.guid_header_name))
     if not settings.validate_guid:
         logger.debug('Returning ID from header without validating it as a GUID')
         return given_guid
@@ -24,7 +24,10 @@ def get_correlation_id_from_header(request: HttpRequest) -> str:
         return given_guid
     else:
         new_guid = generate_guid()
-        logger.warning('%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
+        if all(letter.isalnum() or letter == '-' for letter in given_guid):
+            logger.warning('%s is not a valid GUID. New GUID is %s', given_guid, new_guid)
+        else:
+            logger.warning('Non-alnum %s provided. New GUID is %s', settings.guid_header_name, new_guid)
         return new_guid
 
 
@@ -38,7 +41,7 @@ def get_id_from_header(request: HttpRequest) -> str:
     """
     header: str = request.headers.get(settings.guid_header_name)  # Case insensitive headers.get added in Django2.2
     if header:
-        logger.info('%s found in the header: %s', settings.guid_header_name, header)
+        logger.info('%s found in the header', settings.guid_header_name)
         request.correlation_id = get_correlation_id_from_header(request)
     else:
         request.correlation_id = generate_guid()
@@ -80,5 +83,4 @@ def validate_guid(original_guid: str) -> bool:
     try:
         return bool(uuid.UUID(original_guid, version=4).hex)
     except ValueError:
-        logger.warning('Failed to validate GUID %s', original_guid)
         return False

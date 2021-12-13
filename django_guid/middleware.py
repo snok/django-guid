@@ -32,7 +32,6 @@ def process_incoming_request(request: HttpRequest) -> None:
         for integration in settings.integrations:
             logger.debug('Running integration: `%s`', integration.identifier)
             integration.run(guid=guid.get())
-    return
 
 
 def process_outgoing_request(response: HttpResponse, request: HttpRequest) -> None:
@@ -49,7 +48,6 @@ def process_outgoing_request(response: HttpResponse, request: HttpRequest) -> No
         for integration in settings.integrations:
             logger.debug('Running tear down for integration: `%s`', integration.identifier)
             integration.cleanup()
-    return
 
 
 @sync_and_async_middleware

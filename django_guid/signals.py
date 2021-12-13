@@ -25,4 +25,3 @@ def clear_guid(sender: Optional[dict], **kwargs: Any) -> None:
     """
     logger.debug('Received signal `request_finished`, clearing guid')
     guid.set(None)
-    return
