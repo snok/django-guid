@@ -1,6 +1,10 @@
 Changelog
 =========
 
+`3.2.1`_ - 13.12.2021
+---------------------
+Changes can be seen here_ going forward.
+
 `3.2.0`_ - 04.12.2020
 ---------------------
 
@@ -21,7 +25,7 @@ Changelog
 
 **Bugfix**
 
-* Importing an integration before a `SECRET_KEY` was set would cause a circular import.
+* Importing an integration before a ``SECRET_KEY`` was set would cause a circular import.
 
 
 `3.0.0`_ - 28.10.2020 - Full Django3.1+(ASGI/async) support!
@@ -230,5 +234,7 @@ see the `upgrading docs`_.
 .. _3.0.1: https://github.com/snok/django-guid/compare/3.0.0...3.0.1
 .. _3.1.0: https://github.com/snok/django-guid/compare/3.0.1...3.1.0
 .. _3.2.0: https://github.com/snok/django-guid/compare/3.1.0...3.2.0
+.. _3.2.1: https://github.com/snok/django-guid/compare/3.2.0...3.2.1
 
 .. _Celery: https://docs.celeryproject.org/en/stable/
+.. _here: https://github.com/snok/django-guid/releases
