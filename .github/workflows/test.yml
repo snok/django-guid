@@ -44,6 +44,10 @@ jobs:
       matrix:
         python-version: [ "3.7", "3.8", "3.9", "3.10" ]
         django-version: [ "3.1.4", "3.2", "4.0" ]
+        exclude:
+          # Django v4 drops Python 3.7 support
+          - django-version: 4.0
+            python-version: 3.7
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -53,7 +57,7 @@ jobs:
         id: poetry-cache
         with:
           path: ~/.local
-          key: key-0
+          key: key-2
       - uses: snok/install-poetry@v1
         with:
           virtualenvs-create: false
@@ -62,7 +66,7 @@ jobs:
         id: cache-venv
         with:
           path: .venv
-          key: ${{ hashFiles('**/poetry.lock') }}-0
+          key: ${{ hashFiles('**/poetry.lock') }}-3
       - run: |
           pip install virtualenv
           virtualenv .venv
