@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 from django.core.signals import request_finished
 from django.dispatch import receiver
@@ -10,7 +10,7 @@ logger = logging.getLogger('django_guid')
 
 
 @receiver(request_finished)
-def clear_guid(sender: Optional[dict], **kwargs: dict) -> None:
+def clear_guid(sender: Optional[dict], **kwargs: Any) -> None:
     """
     Receiver function for when a request finishes.
 

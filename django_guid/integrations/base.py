@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -20,13 +20,13 @@ class Integration:
         """
         pass
 
-    def run(self, guid: str, **kwargs) -> None:
+    def run(self, guid: str, **kwargs: Any) -> None:
         """
         Code here is executed in the middleware, before the view is called.
         """
         raise ImproperlyConfigured(f'The integration `{self.identifier}` is missing a `run` method')
 
-    def cleanup(self, **kwargs) -> None:
+    def cleanup(self, **kwargs: Any) -> None:
         """
         Code here is executed in the middleware, after the view is called.
         """
