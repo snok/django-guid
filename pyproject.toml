@@ -67,7 +67,7 @@ uvicorn = "^0.12.1"
 pytest-asyncio = "^0.14.0"
 celery = "^5.0.2"
 redis = "^3.5.3"
-ipython = "^7.19.0"
+ipython = "^7.31.1"
 
 [tool.black]
 line-length = 120
