@@ -45,8 +45,8 @@ jobs:
         id: poetry-cache
         with:
           path: ~/.local
-          key: key-4
-      - uses: snok/install-poetry@v1
+          key: key-5
+      - uses: snok/install-poetry@46d7fcb15525eab38c7b5a4cda4ffdf64ac5a331
         with:
           virtualenvs-create: false
           version: 1.1.13
