@@ -1,11 +1,15 @@
-from logging import Filter, LogRecord
+from logging import Filter
+from typing import TYPE_CHECKING
 
 from django_guid.integrations.celery.context import celery_current, celery_parent
+
+if TYPE_CHECKING:
+    from logging import LogRecord
 
 
 class CeleryTracing(Filter):
     # noinspection PyTypeHints
-    def filter(self, record: LogRecord) -> bool:
+    def filter(self, record: 'LogRecord') -> bool:
         """
         Sets two record attributes: celery parent and celery current.
         Celery origin is the tracing ID of the process that spawned the current

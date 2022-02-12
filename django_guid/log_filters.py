@@ -1,10 +1,14 @@
-from logging import Filter, LogRecord
+from logging import Filter
+from typing import TYPE_CHECKING
 
 from django_guid.middleware import guid
 
+if TYPE_CHECKING:
+    from logging import LogRecord
+
 
 class CorrelationId(Filter):
-    def filter(self, record: LogRecord) -> bool:
+    def filter(self, record: 'LogRecord') -> bool:
         """
         Determines that the specified record is to be logged.
 

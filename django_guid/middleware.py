@@ -4,7 +4,6 @@ from typing import Callable, Union
 
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpRequest, HttpResponse
 
 from django_guid.context import guid
 from django_guid.utils import get_id_from_header, ignored_url
@@ -14,12 +13,17 @@ try:
 except ImportError:  # pragma: no cover
     raise ImproperlyConfigured('Please use Django GUID 2.x for Django>=3.1. (`pip install django-guid>3`).')
 
+from typing import TYPE_CHECKING
+
 from django_guid.config import settings
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponse
 
 logger = logging.getLogger('django_guid')
 
 
-def process_incoming_request(request: HttpRequest) -> None:
+def process_incoming_request(request: 'HttpRequest') -> None:
     """
     Processes an incoming request. This function is called before the view and later middleware.
     Same logic for both async and sync views.
@@ -34,7 +38,7 @@ def process_incoming_request(request: HttpRequest) -> None:
             integration.run(guid=guid.get())
 
 
-def process_outgoing_request(response: HttpResponse, request: HttpRequest) -> None:
+def process_outgoing_request(response: 'HttpResponse', request: 'HttpRequest') -> None:
     """
     Process an outgoing request. This function is called after the view and before later middleware.
     """
@@ -60,7 +64,7 @@ def guid_middleware(get_response: Callable) -> Callable:
         raise ImproperlyConfigured('django_guid must be in installed apps')
     # fmt: off
     if asyncio.iscoroutinefunction(get_response):
-        async def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:
+        async def middleware(request: 'HttpRequest') -> Union['HttpRequest', 'HttpResponse']:
             logger.debug('async middleware called')
             process_incoming_request(request=request)
             # ^ Code above this line is executed before the view and later middleware
@@ -68,7 +72,7 @@ def guid_middleware(get_response: Callable) -> Callable:
             process_outgoing_request(response=response, request=request)
             return response
     else:
-        def middleware(request: HttpRequest) -> Union[HttpRequest, HttpResponse]:  # type: ignore
+        def middleware(request: 'HttpRequest') -> Union['HttpRequest', 'HttpResponse']:  # type: ignore
             logger.debug('sync middleware called')
             process_incoming_request(request=request)
             # ^ Code above this line is executed before the view and later middleware

@@ -1,15 +1,17 @@
 import logging
 import uuid
-from typing import Optional, Union
-
-from django.http import HttpRequest, HttpResponse
+from typing import TYPE_CHECKING, Optional, Union
 
 from django_guid.config import settings
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest, HttpResponse
+
 
 logger = logging.getLogger('django_guid')
 
 
-def get_correlation_id_from_header(request: HttpRequest) -> str:
+def get_correlation_id_from_header(request: 'HttpRequest') -> str:
     """
     Returns either the provided GUID or a new one depending on if the provided GUID is valid or not.
     :param request: HttpRequest object
@@ -31,7 +33,7 @@ def get_correlation_id_from_header(request: HttpRequest) -> str:
         return new_guid
 
 
-def get_id_from_header(request: HttpRequest) -> str:
+def get_id_from_header(request: 'HttpRequest') -> str:
     """
     Checks if the request contains the header specified in the Django settings.
     If it does, we fetch the header and attempt to validate the contents as GUID.
@@ -53,7 +55,7 @@ def get_id_from_header(request: HttpRequest) -> str:
     return request.correlation_id
 
 
-def ignored_url(request: Union[HttpRequest, HttpResponse]) -> bool:
+def ignored_url(request: Union['HttpRequest', 'HttpResponse']) -> bool:
     """
     Checks if the current URL is defined in the `IGNORE_URLS` setting.
 

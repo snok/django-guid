@@ -1,16 +1,20 @@
 import logging
 
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from rest_framework.request import Request
 from rest_framework.response import Response
 
 from demoproj.services.sync_services import useless_function
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
+    from rest_framework.request import Request
 
 logger = logging.getLogger(__name__)
 
 
-def index_view(request: HttpRequest) -> JsonResponse:
+def index_view(request: 'HttpRequest') -> JsonResponse:
     """
     Example view that logs a log and calls a function that logs a log.
 
@@ -22,7 +26,7 @@ def index_view(request: HttpRequest) -> JsonResponse:
     return JsonResponse({'detail': f'It worked! Useless function response is {useless_response}'})
 
 
-def no_guid(request: HttpRequest) -> JsonResponse:
+def no_guid(request: 'HttpRequest') -> JsonResponse:
     """
     Example view with a URL in the IGNORE_URLs list - no GUID will be in these logs
     """
@@ -32,7 +36,7 @@ def no_guid(request: HttpRequest) -> JsonResponse:
 
 
 @api_view(('GET',))
-def rest_view(request: Request) -> Response:
+def rest_view(request: 'Request') -> Response:
     """
     Example DRF view that logs a log and calls a function that logs a log.
 
