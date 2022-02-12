@@ -1,13 +1,15 @@
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from celery import Task
 from celery.signals import before_task_publish, task_postrun, task_prerun
 
 from django_guid import clear_guid, get_guid, set_guid
 from django_guid.config import settings
 from django_guid.integrations.celery.context import celery_current, celery_parent
 from django_guid.utils import generate_guid
+
+if TYPE_CHECKING:
+    from celery import Task
 
 logger = logging.getLogger('django_guid.celery')
 
@@ -44,7 +46,7 @@ def publish_task_from_worker_or_request(headers: dict, **kwargs: Any) -> None:
 
 
 @task_prerun.connect
-def worker_prerun(task: Task, **kwargs: Any) -> None:
+def worker_prerun(task: 'Task', **kwargs: Any) -> None:
     """
     Called before a worker starts executing a task.
     Here we make sure to set the appropriate correlation ID for all logs logged
@@ -73,7 +75,7 @@ def worker_prerun(task: Task, **kwargs: Any) -> None:
 
 
 @task_postrun.connect
-def clean_up(task: Task, **kwargs: Any) -> None:
+def clean_up(task: 'Task', **kwargs: Any) -> None:
     """
     Called after a task is finished.
     Here we make sure to clean up the IDs we set in the pre-run method, so that

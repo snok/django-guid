@@ -1,14 +1,18 @@
 import logging
 import asyncio
-from django.http import HttpRequest, JsonResponse
+from django.http import JsonResponse
 
 from demoproj.services.async_services import useless_function
 from django_guid import get_guid, set_guid, clear_guid
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 logger = logging.getLogger(__name__)
 
 
-async def index_view(request: HttpRequest) -> JsonResponse:
+async def index_view(request: 'HttpRequest') -> JsonResponse:
     """
     Example view that logs a log and calls a function that logs a log.
 
@@ -22,7 +26,7 @@ async def index_view(request: HttpRequest) -> JsonResponse:
     return JsonResponse({'detail': f'It worked! Useless function response is {results}'})
 
 
-async def django_guid_api_usage(request: HttpRequest) -> JsonResponse:
+async def django_guid_api_usage(request: 'HttpRequest') -> JsonResponse:
     """
     Uses each API function
     """
