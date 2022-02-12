@@ -46,7 +46,7 @@ def test_run_method_not_accepting_kwargs(client):
     from django_guid.integrations import SentryIntegration
 
     class BadIntegration(SentryIntegration):
-        def run(self, guid):
+        def run(self, guid):  # pragma: no cover
             pass
 
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
@@ -65,7 +65,7 @@ def test_cleanup_method_not_accepting_kwargs(client):
     from django_guid.integrations import SentryIntegration
 
     class BadIntegration(SentryIntegration):
-        def cleanup(self, guid):
+        def cleanup(self, guid):  # pragma: no cover
             pass
 
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
