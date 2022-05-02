@@ -70,9 +70,15 @@ def generate_guid(uuid_length: Optional[int] = None) -> str:
 
     :return: GUID
     """
+    guid = uuid.uuid4()
+    if settings.uuid_format == 'string':
+        guid = str(guid)
+    else:
+        guid = str(getattr(guid, settings.uuid_format))
+
     if uuid_length is None:
-        return uuid.uuid4().hex[: settings.uuid_length]
-    return uuid.uuid4().hex[:uuid_length]
+        return guid[: settings.uuid_length]
+    return guid[:uuid_length]
 
 
 def validate_guid(original_guid: str) -> bool:

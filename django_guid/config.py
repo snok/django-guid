@@ -58,7 +58,11 @@ class Settings:
 
     @property
     def uuid_length(self) -> int:
-        return self.settings.get('UUID_LENGTH', 32)
+        return self.settings.get('UUID_LENGTH', 36)
+
+    @property
+    def uuid_format(self) -> str:
+        return self.settings.get('UUID_FORMAT', 'hex')
 
     def validate(self) -> None:
         if not isinstance(self.validate_guid, bool):
@@ -75,8 +79,10 @@ class Settings:
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
         if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
-        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
-            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-32')
+        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 36:
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-36')
+        if self.uuid_format not in ('hex', 'string', 'int'):
+            raise ImproperlyConfigured('UUID_FORMAT must be either hex, int, or string')
 
         self._validate_and_setup_integrations()
 

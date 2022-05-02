@@ -14,6 +14,7 @@ Default settings are shown below:
         'EXPOSE_HEADER': True,
         'INTEGRATIONS': [],
         'UUID_LENGTH': 32,
+        'UUID_FORMAT': 'hex',
     }
 
 
@@ -75,9 +76,19 @@ URL endpoints where the middleware will be disabled. You can put your health che
 
 UUID_LENGTH
 -----------
-* **Default**: ``32``
+* **Default**: ``36``
 * **Type**: ``int``
 
 If a full UUID hex is too long for you, this settings lets you specify the length you wish to use.
 The chance of collision in a UUID is so low, that most systems will get away with a lot
 fewer than 32 characters.
+
+UUID_LENGTH
+-----------
+* **Default**: ``hex``
+* **Type**: ``string``
+
+If a UUID hex is not suitable for you, this settings lets you specify the format you wish to use. The options are:
+* ``hex``: The default, a 32 character hexadecimal string.
+* ``int``: A 128 bit integer.
+* ``str``: A 36 character string.

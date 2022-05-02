@@ -87,12 +87,21 @@ def test_not_string_in_igore_urls():
 
 
 def test_uuid_len_fail():
-    for setting in [True, False, {}, [], 'asd', -1, 0, 33]:
+    for setting in [True, False, {}, [], 'asd', -1, 0, 37]:
         mocked_settings = deepcopy(django_settings.DJANGO_GUID)
         mocked_settings['UUID_LENGTH'] = setting
         with override_settings(DJANGO_GUID=mocked_settings):
-            with pytest.raises(ImproperlyConfigured, match='UUID_LENGTH must be an integer and be between 1-32'):
+            with pytest.raises(ImproperlyConfigured, match='UUID_LENGTH must be an integer and be between 1-36'):
                 Settings().validate()
+
+
+@pytest.mark.parametrize('uuid_format', ['bytes', 'urn', 'bytes_le'])
+def test_uuid_format_fail(uuid_format):
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['UUID_FORMAT'] = uuid_format
+    with override_settings(DJANGO_GUID=mocked_settings):
+        with pytest.raises(ImproperlyConfigured, match='UUID_FORMAT must be either hex, int, or string'):
+            Settings().validate()
 
 
 def test_converts_correctly():
