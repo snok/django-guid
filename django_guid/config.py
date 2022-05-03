@@ -1,5 +1,6 @@
 # flake8: noqa: D102
-from typing import List, Union
+from collections import defaultdict
+from typing import Dict, List, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
@@ -58,7 +59,8 @@ class Settings:
 
     @property
     def uuid_length(self) -> int:
-        return self.settings.get('UUID_LENGTH', 36)
+        default_lenth: Dict[str, int] = defaultdict(lambda: 32, hex=32, string=36)
+        return self.settings.get('UUID_LENGTH', default_lenth[self.uuid_format])
 
     @property
     def uuid_format(self) -> str:
