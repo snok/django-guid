@@ -81,8 +81,12 @@ class Settings:
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
         if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
-        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 36:
-            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-36')
+        if type(self.uuid_length) is not int or self.uuid_length < 1:
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer and positive')
+        if self.uuid_format == 'string' and not 1 <= self.uuid_length <= 36:
+            raise ImproperlyConfigured('UUID_LENGTH must be between 1-36 when UUID_FORMAT is string')
+        if self.uuid_format == 'hex' and not 1 <= self.uuid_length <= 32:
+            raise ImproperlyConfigured('UUID_LENGTH must be between 1-32 when UUID_FORMAT is hex')
         if self.uuid_format not in ('hex', 'string', 'int'):
             raise ImproperlyConfigured('UUID_FORMAT must be either hex, int, or string')
 
