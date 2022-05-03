@@ -76,7 +76,7 @@ URL endpoints where the middleware will be disabled. You can put your health che
 
 UUID_LENGTH
 -----------
-* **Default**: ``36``
+* **Default**: ``32``
 * **Type**: ``int``
 
 If a full UUID hex is too long for you, this settings lets you specify the length you wish to use.
