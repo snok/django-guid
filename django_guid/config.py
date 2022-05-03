@@ -59,8 +59,8 @@ class Settings:
 
     @property
     def uuid_length(self) -> int:
-        default_lenth: Dict[str, int] = defaultdict(lambda: 32, hex=32, string=36)
-        return self.settings.get('UUID_LENGTH', default_lenth[self.uuid_format])
+        default_length: Dict[str, int] = defaultdict(lambda: 32, string=36)
+        return self.settings.get('UUID_LENGTH', default_length[self.uuid_format])
 
     @property
     def uuid_format(self) -> str:
