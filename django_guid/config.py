@@ -87,8 +87,8 @@ class Settings:
             raise ImproperlyConfigured('UUID_LENGTH must be between 1-36 when UUID_FORMAT is string')
         if self.uuid_format == 'hex' and not 1 <= self.uuid_length <= 32:
             raise ImproperlyConfigured('UUID_LENGTH must be between 1-32 when UUID_FORMAT is hex')
-        if self.uuid_format not in ('hex', 'string', 'int'):
-            raise ImproperlyConfigured('UUID_FORMAT must be either hex, int, or string')
+        if self.uuid_format not in ('hex', 'string'):
+            raise ImproperlyConfigured('UUID_FORMAT must be either hex or string')
 
         self._validate_and_setup_integrations()
 

@@ -74,10 +74,10 @@ def generate_guid(uuid_length: Optional[int] = None) -> str:
     if settings.uuid_format == 'string':
         guid = str(guid)
     else:
-        guid = str(getattr(guid, settings.uuid_format))
+        guid = getattr(guid, settings.uuid_format)
 
     if uuid_length is None:
-        return guid[: settings.uuid_length]
+        return guid[:settings.uuid_length]
     return guid[:uuid_length]
 
 

@@ -89,6 +89,5 @@ UUID_LENGTH
 * **Type**: ``string``
 
 If a UUID hex is not suitable for you, this settings lets you specify the format you wish to use. The options are:
-* ``hex``: The default, a 32 character hexadecimal string.
-* ``int``: A 128 bit integer.
-* ``str``: A 36 character string.
+* ``hex``: The default, a 32 character hexadecimal string. e.g. ee586b0fba3c44849d20e1548210c050
+* ``str``: A 36 character string. e.g. ee586b0f-ba3c-4484-9d20-e1548210c050

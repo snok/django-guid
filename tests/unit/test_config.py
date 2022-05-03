@@ -116,7 +116,7 @@ def test_uuid_format_fail(uuid_format):
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['UUID_FORMAT'] = uuid_format
     with override_settings(DJANGO_GUID=mocked_settings):
-        with pytest.raises(ImproperlyConfigured, match='UUID_FORMAT must be either hex, int, or string'):
+        with pytest.raises(ImproperlyConfigured, match='UUID_FORMAT must be either hex or string'):
             Settings().validate()
 
 
