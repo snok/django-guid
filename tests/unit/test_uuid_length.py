@@ -1,6 +1,7 @@
-import pytest
 from django.conf import settings as django_settings
 from django.test import override_settings
+
+import pytest
 
 from django_guid.utils import generate_guid
 

@@ -70,11 +70,10 @@ def generate_guid(uuid_length: Optional[int] = None) -> str:
 
     :return: GUID
     """
-    guid = uuid.uuid4()
     if settings.uuid_format == 'string':
-        guid = str(guid)
+        guid = str(uuid.uuid4())
     else:
-        guid = getattr(guid, settings.uuid_format)
+        guid = uuid.uuid4().hex
 
     if uuid_length is None:
         return guid[:settings.uuid_length]
