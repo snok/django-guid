@@ -1,3 +1,4 @@
+import pytest
 from django.conf import settings as django_settings
 from django.test import override_settings
 
@@ -13,13 +14,16 @@ def test_uuid_length():
         assert len(guid) == i
 
 
-def test_uuid_length_setting():
+@pytest.mark.parametrize('maximum_range,uuid_format,expected_type', [(33, 'hex', str), (37, 'string', str)])
+def test_uuid_length_setting(maximum_range, uuid_format, expected_type):
     """
     Make sure that the settings value is used as a default.
     """
-    for i in range(33):
-        mocked_settings = django_settings.DJANGO_GUID
-        mocked_settings['UUID_LENGTH'] = i
+    mocked_settings = django_settings.DJANGO_GUID
+    mocked_settings['UUID_FORMAT'] = uuid_format
+    for uuid_lenght in range(33):
+        mocked_settings['UUID_LENGTH'] = uuid_lenght
         with override_settings(DJANGO_GUID=mocked_settings):
             guid = generate_guid()
-            assert len(guid) == i
+            assert isinstance(guid, expected_type)
+            assert len(guid) == uuid_lenght
