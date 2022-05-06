@@ -8,6 +8,10 @@ import pytest
 
 from django_guid.config import Settings
 
+UUID_LENGTH_IS_NOT_INTEGER = 'UUID_LENGTH must be an integer and positive'
+UUID_LENGHT_IS_NOT_CORRECT_RANGE_HEX_FORMAT = 'UUID_LENGTH must be between 1-32 when UUID_FORMAT is hex'
+UUID_LENGHT_IS_NOT_CORRECT_RANGE_STRING_FORMAT = 'UUID_LENGTH must be between 1-36 when UUID_FORMAT is string'
+
 
 @override_settings()
 def test_no_config(settings):
@@ -86,13 +90,34 @@ def test_not_string_in_igore_urls():
                 Settings().validate()
 
 
-def test_uuid_len_fail():
-    for setting in [True, False, {}, [], 'asd', -1, 0, 33]:
-        mocked_settings = deepcopy(django_settings.DJANGO_GUID)
-        mocked_settings['UUID_LENGTH'] = setting
-        with override_settings(DJANGO_GUID=mocked_settings):
-            with pytest.raises(ImproperlyConfigured, match='UUID_LENGTH must be an integer and be between 1-32'):
-                Settings().validate()
+@pytest.mark.parametrize(
+    'uuid_length,uuid_format,error_message',
+    [
+        (True, 'hex', UUID_LENGTH_IS_NOT_INTEGER),
+        (False, 'hex', UUID_LENGTH_IS_NOT_INTEGER),
+        ({}, 'hex', UUID_LENGTH_IS_NOT_INTEGER),
+        (-1, 'hex', UUID_LENGTH_IS_NOT_INTEGER),
+        (0, 'hex', UUID_LENGTH_IS_NOT_INTEGER),
+        (33, 'hex', UUID_LENGHT_IS_NOT_CORRECT_RANGE_HEX_FORMAT),
+        (37, 'string', UUID_LENGHT_IS_NOT_CORRECT_RANGE_STRING_FORMAT),
+    ],
+)
+def test_uuid_len_fail(uuid_length, uuid_format, error_message):
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['UUID_LENGTH'] = uuid_length
+    mocked_settings['UUID_FORMAT'] = uuid_format
+    with override_settings(DJANGO_GUID=mocked_settings):
+        with pytest.raises(ImproperlyConfigured, match=error_message):
+            Settings().validate()
+
+
+@pytest.mark.parametrize('uuid_format', ['bytes', 'urn', 'bytes_le'])
+def test_uuid_format_fail(uuid_format):
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['UUID_FORMAT'] = uuid_format
+    with override_settings(DJANGO_GUID=mocked_settings):
+        with pytest.raises(ImproperlyConfigured, match='UUID_FORMAT must be either hex or string'):
+            Settings().validate()
 
 
 def test_converts_correctly():

@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: 22.1.0
+    rev: 22.3.0
     hooks:
       - id: black
         args: ['--quiet']
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.1.0
+    rev: v4.2.0
     hooks:
       - id: check-case-conflict
       - id: end-of-file-fixer
@@ -31,7 +31,7 @@ repos:
         ]
         args: ['--enable-extensions=G']
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.31.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         args: ["--py36-plus"]
@@ -42,15 +42,7 @@ repos:
         files: 'django_guid/.*'
       - id: isort
         files: 'tests/.*'
-  - repo: local
-    hooks:
-      - id: rst
-        name: rst
-        entry: rst-lint --encoding utf-8
-        files: ^(CHANGELOG.rst|README.rst|CONTRIBUTING.rst|CONTRIBUTORS.rst|docs/api.rst|docs/extended_example.rst|docs/index.rst|docs/install.rst/index.rst|docs/integration.rst/index.rst|docs/publish.rst/index.rst|docs/settings.rst/index.rst|docs/troubleshooting.rst)$
-        language: python
-        additional_dependencies: [pygments, restructuredtext_lint]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.931
+    rev: v0.950
     hooks:
       - id: mypy

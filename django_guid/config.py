@@ -1,5 +1,6 @@
 # flake8: noqa: D102
-from typing import List, Union
+from collections import defaultdict
+from typing import Dict, List, Union
 
 from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
@@ -58,7 +59,12 @@ class Settings:
 
     @property
     def uuid_length(self) -> int:
-        return self.settings.get('UUID_LENGTH', 32)
+        default_length: Dict[str, int] = defaultdict(lambda: 32, string=36)
+        return self.settings.get('UUID_LENGTH', default_length[self.uuid_format])
+
+    @property
+    def uuid_format(self) -> str:
+        return self.settings.get('UUID_FORMAT', 'hex')
 
     def validate(self) -> None:
         if not isinstance(self.validate_guid, bool):
@@ -75,8 +81,14 @@ class Settings:
             raise ImproperlyConfigured('IGNORE_URLS must be an array')
         if not all(isinstance(url, str) for url in self.settings.get('IGNORE_URLS', [])):
             raise ImproperlyConfigured('IGNORE_URLS must be an array of strings')
-        if type(self.uuid_length) is not int or not 1 <= self.uuid_length <= 32:
-            raise ImproperlyConfigured('UUID_LENGTH must be an integer and be between 1-32')
+        if type(self.uuid_length) is not int or self.uuid_length < 1:
+            raise ImproperlyConfigured('UUID_LENGTH must be an integer and positive')
+        if self.uuid_format == 'string' and not 1 <= self.uuid_length <= 36:
+            raise ImproperlyConfigured('UUID_LENGTH must be between 1-36 when UUID_FORMAT is string')
+        if self.uuid_format == 'hex' and not 1 <= self.uuid_length <= 32:
+            raise ImproperlyConfigured('UUID_LENGTH must be between 1-32 when UUID_FORMAT is hex')
+        if self.uuid_format not in ('hex', 'string'):
+            raise ImproperlyConfigured('UUID_FORMAT must be either hex or string')
 
         self._validate_and_setup_integrations()
 
