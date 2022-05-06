@@ -76,7 +76,7 @@ def generate_guid(uuid_length: Optional[int] = None) -> str:
         guid = uuid.uuid4().hex
 
     if uuid_length is None:
-        return guid[:settings.uuid_length]
+        return guid[: settings.uuid_length]
     return guid[:uuid_length]
 
 
