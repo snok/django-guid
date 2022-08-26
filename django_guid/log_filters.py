@@ -18,5 +18,5 @@ class CorrelationId(Filter):
         :param record: Log record
         :return: True
         """
-        record.correlation_id = guid.get()  # type: ignore[attr-defined]
+        record.correlation_id = guid.get()
         return True
