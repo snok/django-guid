@@ -9,7 +9,7 @@ if os.name == 'nt':
     # Windows configuration to make celery run ok on Windows
     os.environ.setdefault('FORKED_BY_MULTIPROCESSING', '1')
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demoproj.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'src.settings')
 
 app = Celery('django_guid')
 app.config_from_object('django.conf:settings', namespace='CELERY')
@@ -21,7 +21,7 @@ def debug_task() -> None:
     """
     This is just an example task.
     """
-    logger.info('Debug task 1')
+    logger.info('debug task 1')
     second_debug_task.delay()
     second_debug_task.delay()
 
@@ -31,7 +31,7 @@ def second_debug_task() -> None:
     """
     This is just an example task.
     """
-    logger.info('Debug task 2')
+    logger.info('debug task 2')
     third_debug_task.delay()
     fourth_debug_task.delay()
 
@@ -41,7 +41,7 @@ def third_debug_task() -> None:
     """
     This is just an example task.
     """
-    logger.info('Debug task 3')
+    logger.info('debug task 3')
     fourth_debug_task.delay()
     fourth_debug_task.delay()
 
@@ -51,4 +51,4 @@ def fourth_debug_task() -> None:
     """
     This is just an example task.
     """
-    logger.info('Debug task 4')
+    logger.info('debug task 4')
