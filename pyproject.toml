@@ -17,7 +17,6 @@ classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
     'Framework :: Django',
-    'Framework :: Django :: 3.0',
     'Framework :: Django :: 3.1',
     'Framework :: Django :: 3.2',
     'Framework :: Django :: 4.0',
@@ -51,20 +50,20 @@ django = [
 ]
 
 [tool.poetry.dev-dependencies]
-pre-commit = "^2.9"
-sphinx = "^2.4.4"
-sphinx_rtd_theme = "^0.4.3"
-pytest = "^6.2.5"
-pytest-django = "^4.1.0"
-pytest-mock = "^3"
-pytest-subtests = "^0.3"
-djangorestframework = "^3.11.0"
-sentry-sdk = "^0.14.3"
-gunicorn = "^20.0.4"
-uvicorn = "^0.12.1"
-pytest-asyncio = "^0.14.0"
-celery = "^5.0.2"
-redis = "^3.5.3"
+pre-commit = "*"
+sphinx = "*"
+sphinx_rtd_theme = "*"
+pytest = "*"
+pytest-django = "*"
+pytest-mock = "*"
+pytest-subtests = "*"
+djangorestframework = "*"
+sentry-sdk = "*"
+gunicorn = "*"
+uvicorn = "*"
+pytest-asyncio = "*"
+celery = "*"
+redis = "*"
 coverage = [
     { extras = ["toml"], version = "^6", python = ">=3.10" },
     { extras = ["toml"], version = "^5 || ^6", python = "<3.10" },
