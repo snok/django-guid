@@ -30,6 +30,7 @@ repos:
           'flake8-annotations',  # Enforces type annotation
         ]
         args: ['--enable-extensions=G']
+        files: r'^django_guid'
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.2.2
     hooks:
@@ -46,3 +47,4 @@ repos:
     rev: v0.991
     hooks:
       - id: mypy
+        files: r'^django_guid'
