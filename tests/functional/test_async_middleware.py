@@ -7,7 +7,6 @@ from django.test import override_settings
 import pytest
 
 
-@pytest.mark.asyncio
 async def test_one_request(async_client, caplog, mock_uuid):
     response = await async_client.get('/asgi')
     expected = [
@@ -29,7 +28,6 @@ async def test_one_request(async_client, caplog, mock_uuid):
     assert response['Correlation-ID'] == '704ae5472cae4f8daa8f2cc5a5a8mock'
 
 
-@pytest.mark.asyncio
 async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_unique, two_unique_uuid4):
     """
     Checks that a following request does not inherit a previous GUID
@@ -57,7 +55,6 @@ async def test_two_requests_concurrently(async_client, caplog, mock_uuid_two_uni
     assert sorted((x.message, x.correlation_id) for x in caplog.records) == sorted(expected)
 
 
-@pytest.mark.asyncio
 async def test_ignored_url(async_client, caplog, monkeypatch):
     """
     Test that a URL specified in IGNORE_URLS is ignored in the async view

@@ -1,7 +1,6 @@
 import pytest
 
 
-@pytest.mark.asyncio
 async def test_api(async_client, caplog, mock_uuid):
     await async_client.get('/api-usage')
     expected = [
