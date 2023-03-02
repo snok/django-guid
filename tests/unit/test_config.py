@@ -43,20 +43,11 @@ def test_invalid_return_header_setting():
             Settings().validate()
 
 
-def test_invalid_expose_header_setting():
-    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
-    mocked_settings['EXPOSE_HEADER'] = 'string'
-    with override_settings(DJANGO_GUID=mocked_settings):
-        with pytest.raises(ImproperlyConfigured, match='EXPOSE_HEADER must be a boolean'):
-            Settings().validate()
-
-
 def test_valid_settings():
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['VALIDATE_GUID'] = False
     mocked_settings['GUID_HEADER_NAME'] = 'Correlation-ID-TEST'
     mocked_settings['RETURN_HEADER'] = False
-    mocked_settings['EXPOSE_HEADER'] = False
     with override_settings(DJANGO_GUID=mocked_settings):
         assert not Settings().validate_guid
         assert Settings().guid_header_name == 'Correlation-ID-TEST'
