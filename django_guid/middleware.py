@@ -46,7 +46,11 @@ def process_outgoing_request(response: 'HttpResponse', request: 'HttpRequest') -
         if settings.return_header:
             response[settings.guid_header_name] = guid.get()  # Adds the GUID to the response header
             if settings.expose_header:
-                response['Access-Control-Expose-Headers'] = settings.guid_header_name
+                access_control_header = response.get('Access-Control-Expose-Headers', None)
+                if access_control_header:
+                    response['Access-Control-Expose-Headers'] += f", {settings.guid_header_name}"
+                else:
+                    response['Access-Control-Expose-Headers'] = settings.guid_header_name
 
         # Run tear down for all the integrations
         for integration in settings.integrations:
