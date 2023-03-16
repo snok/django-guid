@@ -277,14 +277,17 @@ Simply add django_guid to your loggers in the project, like in the example below
 
 This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
 
+******************
+CORS Configuration
+******************
 
-## CORS Configuration
+When calling the API from a browser in JavaScript code, and using cross-origin resource sharing, you must configure your server to allow the Correlation-ID property in inbound requests, and to return a response which allows the browser to make use of the header in scripts via the `Access-Control-Allow-Headers` and `Access-Control-Expose-Headers` respectively. By making use of the popular `django-cors-headers <https://pypi.org/project/django-cors-headers/>`__ package, you can expose the Correlation-ID easily with configuration by adding the following to your Django ``settings.py`` file:
 
-When calling the API from a browser in JavaScript code, and using cross-origin resource sharing, you must configure your server to allow the Correlation-ID property in inbound requests, and to return a response which allows the browser to make use of the header in scripts via the `Access-Control-Allow-Headers` and `Access-Control-Expose-Headers`. By making use of the popular [django-cors-headers](https://pypi.org/project/django-cors-headers/) package, you can expose the Correlation-ID easily with configuration by adding the following to your Django settings.py file below the `DJANGO_GUID` settings:
+.. code-block:: python
 
-.. code-block::python
     INSTALLED_APPS = [
         ...,
+        'django_guid',
         'corsheaders',
         ...,
     ]
@@ -305,9 +308,6 @@ When calling the API from a browser in JavaScript code, and using cross-origin r
 
     CORS_ALLOWED_ORIGINS = [
         "https://example.com",
-        "https://sub.example.com",
-        "http://localhost:8080",
-        "http://127.0.0.1:9000",
     ]
 
     CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -317,4 +317,3 @@ When calling the API from a browser in JavaScript code, and using cross-origin r
     CORS_EXPOSE_HEADERS = [
         DJANGO_GUID['GUID_HEADER_NAME'],
     ]
-
