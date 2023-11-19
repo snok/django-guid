@@ -83,11 +83,11 @@ If a full UUID hex is too long for you, this settings lets you specify the lengt
 The chance of collision in a UUID is so low, that most systems will get away with a lot
 fewer than 32 characters.
 
-UUID_LENGTH
+UUID_FORMAT
 -----------
 * **Default**: ``hex``
 * **Type**: ``string``
 
 If a UUID hex is not suitable for you, this settings lets you specify the format you wish to use. The options are:
 * ``hex``: The default, a 32 character hexadecimal string. e.g. ee586b0fba3c44849d20e1548210c050
-* ``str``: A 36 character string. e.g. ee586b0f-ba3c-4484-9d20-e1548210c050
+* ``string``: A 36 character string. e.g. ee586b0f-ba3c-4484-9d20-e1548210c050
