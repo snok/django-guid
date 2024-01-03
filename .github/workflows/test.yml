@@ -29,14 +29,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.7.15", "3.8.13", "3.9.15", "3.10.8", "3.11.0" ]
-        django-version: [ "3.2", "4.0", "4.1" ]
+        python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.7", "3.12.1"]
+        django-version: [ "3.2", "4.2", "5.0"]
         exclude:
-          # Django v4 drops Python 3.7 support
-          - django-version: 4.0
-            python-version: 3.7.15
-          - django-version: 4.1
-            python-version: 3.7.15
+          # Django v3 does not support Python >3.10
+          - django-version: 3.2
+            python-version: 3.11.7
+          - django-version: 3.2
+            python-version: 3.12.1
+          # Django v5 drops Python <3.10 support
+          - django-version: 5.0
+            python-version: 3.8.18
+          - django-version: 5.0
+            python-version: 3.9.18
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
