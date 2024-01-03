@@ -98,7 +98,6 @@ class Settings:
         """
         self.integration_settings.validate()
         for integration in self.integrations:
-
             # Make sure all integration methods are callable
             for method, name in [
                 (integration.setup, 'setup'),
