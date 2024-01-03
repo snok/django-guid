@@ -14,7 +14,7 @@
           <img src="https://img.shields.io/pypi/v/django-guid.svg" alt="Package version">
       </a>
       <a href="https://pypi.python.org/pypi/django-guid#downloads">
-          <img src="https://img.shields.io/badge/python-3.7+-blue.svg" alt="Downloads">
+          <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Downloads">
       </a>
       <a href="https://pypi.python.org/pypi/django-guid">
           <img src="https://img.shields.io/pypi/djversions/django-guid?color=0C4B33&logo=django&logoColor=white&label=django" alt="Django versions">
@@ -73,7 +73,7 @@ making it accessible by using the ID of the current thread. (Version 2 of Django
 
 **Resources**:
 
-* Free software: BSD License
+* Free software: MIT License
 * Documentation: https://django-guid.readthedocs.io
 * Homepage: https://github.com/snok/django-guid
 
