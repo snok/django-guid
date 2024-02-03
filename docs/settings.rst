@@ -36,8 +36,9 @@ VALIDATE_GUID
 * **Type**: ``boolean``
 
 
-Whether the :code:`GUID_HEADER_NAME` should be validated or not.
-If the GUID sent to through the header is not a valid GUID (:code:`uuid.uuid4`).
+Whether the :code:`GUID_HEADER_NAME` should be validated or not. If set to :code:`True`
+incoming headers which are not a valid GUID (:code:`uuid.uuid4`), will be replaced with
+a new one.
 
 
 RETURN_HEADER

@@ -45,7 +45,9 @@ Add :code:`django_guid.log_filters.CorrelationId` as a filter in your ``LOGGING`
         ...
         'filters': {
             'correlation_id': {
-                '()': 'django_guid.log_filters.CorrelationId'
+                '()': 'django_guid.log_filters.CorrelationId',
+                # You can optionally override the record field name where the guid is stored
+                'correlation_id_field': 'correlation_id'
             }
         }
     }
