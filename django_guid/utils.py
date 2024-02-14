@@ -1,7 +1,7 @@
 import logging
+import re
 import uuid
 from typing import TYPE_CHECKING, Optional, Union
-import re
 
 from django_guid.config import settings
 
@@ -103,7 +103,7 @@ def is_url_in_ignored_list(request: Union['HttpRequest', 'HttpResponse']) -> boo
     """
     endpoint = request.path.strip('/')
     for ignore_url in settings.ignore_urls:
-        pattern = ignore_url.replace('*', r'[\s\S]+')
+        pattern = ignore_url.replace('*', r'[\s\S]+')  # noqa
         pattern = '^' + pattern + '$'
         search = re.search(pattern, endpoint)
         if search:
