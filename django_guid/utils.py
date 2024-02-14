@@ -103,8 +103,8 @@ def is_url_in_ignored_list(request: Union['HttpRequest', 'HttpResponse']) -> boo
     """
     endpoint = request.path.strip('/')
     for ignore_url in settings.ignore_urls:
-        pattern = ignore_url.replace("*", r"[\s\S]+")
-        pattern = "^" + pattern + "$"
+        pattern = ignore_url.replace('*', r'[\s\S]+')
+        pattern = '^' + pattern + '$'
         search = re.search(pattern, endpoint)
         if search:
             # logger.info("URL Ignored")
