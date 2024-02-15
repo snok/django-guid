@@ -102,12 +102,12 @@ def is_url_in_ignored_list(request: Union['HttpRequest', 'HttpResponse']) -> boo
     :return: Boolean
     """
     endpoint = request.path.strip('/')
-    for ignore_url in settings.ignore_urls:
-        pattern = ignore_url.replace('*', r'[\s\S]+')  # noqa
-        pattern = '^' + pattern + '$'
-        search = re.search(pattern, endpoint)
-        if search:
-            # logger.info("URL Ignored")
-            return True
-    # logger.info("URL not Ignored")
+
+    IGNORE_URLS = []
+    for url in settings.ignore_urls:
+        url_regex = url.replace('*', r'[\s\S]*')  # noqa
+        url_regex = '^' + url_regex + '$'
+        IGNORE_URLS.append(re.compile(url_regex))
+    if any(url.match(endpoint) for url in IGNORE_URLS):
+        return True
     return False
