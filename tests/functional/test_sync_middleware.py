@@ -2,6 +2,7 @@ from copy import deepcopy
 
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
+from django.conf import settings as django_settings
 
 import pytest
 
@@ -287,7 +288,7 @@ def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
         client.get('/')
 
 
-def test_url_ignored_without_regex(client, caplog):
+def test_url_ignored_without_regex(client, caplog, monkeypatch):
     """
     Test that a URL specified in IGNORE_URLS is ignored.
     :param client: Django client
@@ -298,6 +299,8 @@ def test_url_ignored_without_regex(client, caplog):
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['IGNORE_URLS'] = ['no-guid']
     with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
         client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
         # No log message should have a GUID, aka `None` on index 1.
         expected = [
@@ -309,21 +312,25 @@ def test_url_ignored_without_regex(client, caplog):
         assert [(x.message, x.correlation_id) for x in caplog.records] == expected
 
 
-def test_url_ignored_with_regex(client, caplog):
+def test_url_ignored_with_regex(client, caplog, monkeypatch):
     """
-    Test that a URL with regex pattern specified in IGNORE_URLS is ignored.
+    Test that a URL specified with regex in IGNORE_URLS is ignored.
     :param client: Django client
     :param caplog: Caplog fixture
     """
-    from django.conf import settings as django_settings
-
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['IGNORE_URLS'] = ['no-guid/*']
+
     with override_settings(DJANGO_GUID=mocked_settings):
-        client.get('/no-guid/regex-test', **{'HTTP_Correlation-ID': 'bad-guid'})
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+        print(django_settings.DJANGO_GUID)
+        url_to_hit = '/no-guid/regex-test'
+        response = client.get(url_to_hit, **{'HTTP_Correlation-ID': 'bad-guid'})
         # No log message should have a GUID, aka `None` on index 1.
         expected = [
             ('sync middleware called', None),
+            (f'Not Found: {url_to_hit}', None),
             ('Received signal `request_finished`, clearing guid', None),
         ]
         assert [(x.message, x.correlation_id) for x in caplog.records] == expected
