@@ -1,8 +1,8 @@
 from copy import deepcopy
 
+from django.conf import settings as django_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
-from django.conf import settings as django_settings
 
 import pytest
 
