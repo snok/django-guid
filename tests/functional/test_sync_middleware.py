@@ -318,7 +318,7 @@ def test_url_ignored_without_regex(client, caplog):
     from django.conf import settings as django_settings
 
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
-    mocked_settings['IGNORE_URLS'] = {'no-guid'}
+    mocked_settings['IGNORE_URLS'] = ['no-guid']
     with override_settings(DJANGO_GUID=mocked_settings):
         client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
         # No log message should have a GUID, aka `None` on index 1.
@@ -340,7 +340,7 @@ def test_url_ignored_with_regex(client, caplog):
     from django.conf import settings as django_settings
 
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
-    mocked_settings['IGNORE_URLS'] = {'no-guid/*'}
+    mocked_settings['IGNORE_URLS'] = ['no-guid/*']
     with override_settings(DJANGO_GUID=mocked_settings):
         client.get('/no-guid/regex-test', **{'HTTP_Correlation-ID': 'bad-guid'})
         # No log message should have a GUID, aka `None` on index 1.
