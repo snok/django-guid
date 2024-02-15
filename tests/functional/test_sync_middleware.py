@@ -302,6 +302,8 @@ def test_url_ignored_without_regex(client, caplog):
         # No log message should have a GUID, aka `None` on index 1.
         expected = [
             ('sync middleware called', None),
+            ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
+            ('Some warning in a function', None),
             ('Received signal `request_finished`, clearing guid', None),
         ]
         assert [(x.message, x.correlation_id) for x in caplog.records] == expected
