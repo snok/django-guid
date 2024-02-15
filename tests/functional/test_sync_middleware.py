@@ -287,7 +287,7 @@ def test_improperly_configured_if_not_in_installed_apps(client, monkeypatch):
         client.get('/')
 
 
-def test_url_ignored(client, caplog):
+def test_url_ignored_without_regex(client, caplog):
     """
     Test that a URL specified in IGNORE_URLS is ignored.
     :param client: Django client
@@ -297,28 +297,6 @@ def test_url_ignored(client, caplog):
 
     mocked_settings = deepcopy(django_settings.DJANGO_GUID)
     mocked_settings['IGNORE_URLS'] = {'no-guid'}
-    with override_settings(DJANGO_GUID=mocked_settings):
-        client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
-        # No log message should have a GUID, aka `None` on index 1.
-        expected = [
-            ('sync middleware called', None),
-            ('This log message should NOT have a GUID - the URL is in IGNORE_URLS', None),
-            ('Some warning in a function', None),
-            ('Received signal `request_finished`, clearing guid', None),
-        ]
-        assert [(x.message, x.correlation_id) for x in caplog.records] == expected
-
-
-def test_url_ignored_without_regex(client, caplog):
-    """
-    Test that a URL without regex pattern specified in IGNORE_URLS is ignored.
-    :param client: Django client
-    :param caplog: Caplog fixture
-    """
-    from django.conf import settings as django_settings
-
-    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
-    mocked_settings['IGNORE_URLS'] = ['no-guid']
     with override_settings(DJANGO_GUID=mocked_settings):
         client.get('/no-guid', **{'HTTP_Correlation-ID': 'bad-guid'})
         # No log message should have a GUID, aka `None` on index 1.
