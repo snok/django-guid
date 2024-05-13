@@ -38,10 +38,6 @@ class Settings:
         return self.settings.get('RETURN_HEADER', True)
 
     @property
-    def expose_header(self) -> bool:
-        return self.settings.get('EXPOSE_HEADER', True)
-
-    @property
     def ignore_urls(self) -> List[str]:
         return list({url.strip('/') for url in self.settings.get('IGNORE_URLS', [])})
 
@@ -73,8 +69,6 @@ class Settings:
             raise ImproperlyConfigured('GUID_HEADER_NAME must be a string')  # Note: Case insensitive
         if not isinstance(self.return_header, bool):
             raise ImproperlyConfigured('RETURN_HEADER must be a boolean')
-        if not isinstance(self.expose_header, bool):
-            raise ImproperlyConfigured('EXPOSE_HEADER must be a boolean')
         if not isinstance(self.integrations, (list, tuple)):
             raise ImproperlyConfigured('INTEGRATIONS must be an array')
         if not isinstance(self.settings.get('IGNORE_URLS', []), (list, tuple)):
