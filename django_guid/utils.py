@@ -1,4 +1,5 @@
 import logging
+import re
 import uuid
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -91,3 +92,22 @@ def validate_guid(original_guid: str) -> bool:
         return bool(uuid.UUID(original_guid, version=4).hex)
     except ValueError:
         return False
+
+
+def is_url_in_ignored_list(request: Union['HttpRequest', 'HttpResponse']) -> bool:
+    """
+    Support for Regex added
+    Checks if the current URL is defined in the `IGNORE_URLS` setting.
+
+    :return: Boolean
+    """
+    endpoint = request.path.strip('/')
+
+    IGNORE_URLS = []
+    for url in settings.ignore_urls:
+        url_regex = url.replace('*', r'[\s\S]*')  # noqa
+        url_regex = '^' + url_regex + '$'
+        IGNORE_URLS.append(re.compile(url_regex))
+    if any(url.match(endpoint) for url in IGNORE_URLS):
+        return True
+    return False
