@@ -6,7 +6,7 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 
 from django_guid.context import guid
-from django_guid.utils import get_id_from_header, ignored_url, ignored_regex_url
+from django_guid.utils import get_id_from_header, ignored_regex_url, ignored_url
 
 try:
     from django.utils.decorators import sync_and_async_middleware
