@@ -6,7 +6,7 @@ from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
 
 from django_guid.context import guid
-from django_guid.utils import get_id_from_header, ignored_url
+from django_guid.utils import get_id_from_header, ignored_url, ignored_regex_url
 
 try:
     from django.utils.decorators import sync_and_async_middleware
@@ -28,7 +28,7 @@ def process_incoming_request(request: 'HttpRequest') -> None:
     Processes an incoming request. This function is called before the view and later middleware.
     Same logic for both async and sync views.
     """
-    if not ignored_url(request=request):
+    if (not ignored_url(request=request)) and (not ignored_regex_url(request=request)):
         # Process request and store the GUID in a contextvar
         guid.set(get_id_from_header(request))
 
@@ -42,7 +42,7 @@ def process_outgoing_request(response: 'HttpResponse', request: 'HttpRequest') -
     """
     Process an outgoing request. This function is called after the view and before later middleware.
     """
-    if not ignored_url(request=request):
+    if (not ignored_url(request=request)) and (not ignored_regex_url(request=request)):
         if settings.return_header:
             response[settings.guid_header_name] = guid.get()  # Adds the GUID to the response header
             if settings.expose_header:

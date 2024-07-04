@@ -307,3 +307,27 @@ def test_url_ignored(client, caplog):
             ('Received signal `request_finished`, clearing guid', None),
         ]
         assert [(x.message, x.correlation_id) for x in caplog.records] == expected
+
+
+def test_url_ignored_with_regex(client, caplog, monkeypatch):
+    """
+    Test that a URL specified in IGNORE_URLS is ignored.
+    :param client: Django client
+    :param caplog: Caplog fixture
+    """
+    from django.conf import settings as django_settings
+
+    mocked_settings = deepcopy(django_settings.DJANGO_GUID)
+    mocked_settings['IGNORE_REGEX_URLS'] = {'no-*'}
+    with override_settings(DJANGO_GUID=mocked_settings):
+        settings = Settings()
+        monkeypatch.setattr('django_guid.utils.settings', settings)
+        client.get('/no-guid-regex', **{'HTTP_Correlation-ID': 'bad-guid'})
+        # No log message should have a GUID, aka `None` on index 1.
+        expected = [
+            ('sync middleware called', None),
+            ('This log message should NOT have a GUID - the URL is in IGNORE_REGEX_URLS', None),
+            ('Some warning in a function', None),
+            ('Received signal `request_finished`, clearing guid', None),
+        ]
+        assert [(x.message, x.correlation_id) for x in caplog.records] == expected

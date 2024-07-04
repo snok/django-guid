@@ -46,6 +46,10 @@ class Settings:
         return list({url.strip('/') for url in self.settings.get('IGNORE_URLS', [])})
 
     @property
+    def ignore_regex_urls(self) -> List[str]:
+        return list({url.strip('/') for url in self.settings.get('IGNORE_REGEX_URLS', [])})
+
+    @property
     def validate_guid(self) -> bool:
         return self.settings.get('VALIDATE_GUID', True)
 
