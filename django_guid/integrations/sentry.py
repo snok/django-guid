@@ -34,7 +34,7 @@ class SentryIntegration(Integration):
         """
         import sentry_sdk
 
-        if sentry_sdk.VERSION >= "2.0.0":
+        if sentry_sdk.VERSION >= '2.0.0':
             scope = sentry_sdk.get_isolation_scope()
             scope.set_tag('transaction_id', guid)
         else:
