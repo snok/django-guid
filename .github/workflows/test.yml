@@ -15,11 +15,6 @@ jobs:
         with:
           python-version: "3.11.0"
       - run: pip install pre-commit
-      - uses: actions/cache@v3
-        id: pre-commit-cache
-        with:
-          path: ~/.cache/pre-commit
-          key: key-1
       - run: pre-commit run --all-files
         env:
           SKIP: rst
@@ -42,27 +37,16 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: "${{ matrix.python-version }}"
-      - uses: actions/cache@v3
-        id: poetry-cache
-        with:
-          path: ~/.local
-          key: key-5
       - uses: snok/install-poetry@v1
         with:
           virtualenvs-create: false
           version: 1.2.2
-      - uses: actions/cache@v3
-        id: cache-venv
-        with:
-          path: .venv
-          key: ${{ hashFiles('**/poetry.lock') }}-6
       - run: |
           pip install virtualenv
           virtualenv .venv
           source .venv/bin/activate
           pip install pip setuptools wheel -U
           poetry install --no-interaction --no-root
-        if: steps.cache-venv.outputs.cache-hit != 'true'
       - run: |
           source .venv/bin/activate
           pip install "Django==${{ matrix.django-version }}"
