@@ -29,17 +29,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.7", "3.12.1" ]
+        python-version: [ "3.9.18", "3.10.13", "3.11.7", "3.12.1" ]
         django-version: [ "4.2", "5.0", "5.1" ]
         exclude:
-          # Django v3 does not support Python >3.10
-          - django-version: 3.2
-            python-version: 3.11.7
-          - django-version: 3.2
-            python-version: 3.12.1
           # Django v5 drops Python <3.10 support
-          - django-version: 5.0
-            python-version: 3.8.18
           - django-version: 5.0
             python-version: 3.9.18
     steps:
