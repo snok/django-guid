@@ -19,7 +19,7 @@ jobs:
         id: pre-commit-cache
         with:
           path: ~/.cache/pre-commit
-          key: key-0
+          key: key-1
       - run: pre-commit run --all-files
         env:
           SKIP: rst
@@ -44,7 +44,7 @@ jobs:
         id: poetry-cache
         with:
           path: ~/.local
-          key: key-4
+          key: key-5
       - uses: snok/install-poetry@v1
         with:
           virtualenvs-create: false
@@ -53,7 +53,7 @@ jobs:
         id: cache-venv
         with:
           path: .venv
-          key: ${{ hashFiles('**/poetry.lock') }}-5
+          key: ${{ hashFiles('**/poetry.lock') }}-6
       - run: |
           pip install virtualenv
           virtualenv .venv
