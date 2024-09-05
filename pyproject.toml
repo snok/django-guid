@@ -17,11 +17,9 @@ classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
     'Framework :: Django',
-    'Framework :: Django :: 3.2',
-    'Framework :: Django :: 4.0',
-    'Framework :: Django :: 4.1',
     'Framework :: Django :: 4.2',
     'Framework :: Django :: 5.0',
+    'Framework :: Django :: 5.1',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
@@ -48,7 +46,7 @@ packages = [{ include = 'django_guid' }]
 [tool.poetry.dependencies]
 python = "^3.8"
 django = [
-    { version = "^3.2 | ^4.0", python = ">=3.8,<3.10" },
+    { version = "^4.0", python = ">=3.8,<3.10" },
     { version = "^4.0 | ^5.0", python = ">=3.10" }
 ]
 
