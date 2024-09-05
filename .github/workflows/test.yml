@@ -35,6 +35,8 @@ jobs:
           # Django v5 drops Python <3.10 support
           - django-version: 5.0
             python-version: 3.9.18
+          - django-version: 5.1
+            python-version: 3.9.18
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
