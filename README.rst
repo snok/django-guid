@@ -51,23 +51,6 @@
 Django GUID attaches a unique correlation ID/request ID to all your log outputs for every request.
 In other words, all logs connected to a request now has a unique ID attached to it, making debugging simple.
 
-Which version of Django GUID you should use depends on your Django version and whether you run ``ASGI`` or ``WSGI`` servers.
-To determine which Django-GUID version you should use, please see the table below.
-
-
-+---------------------+--------------------------+
-|   Django version    |   Django-GUID version    |
-+=====================+==========================+
-| 3.1.1 or above      |  3.x.x - ASGI and WSGI   |
-+---------------------+--------------------------+
-| 3.0.0 - 3.1.0       |  2.x.x - Only WSGI       |
-+---------------------+--------------------------+
-| 2.2.x               |  2.x.x - Only WSGI       |
-+---------------------+--------------------------+
-
-Django GUID >= 3.0.0 uses ``ContextVar`` to store and access the GUID. Previous versions stored the GUID to an object,
-making it accessible by using the ID of the current thread. (Version 2 of Django GUID is supported until Django2.2 LTS is over.)
-
 --------------
 
 
