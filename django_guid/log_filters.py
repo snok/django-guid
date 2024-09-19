@@ -1,7 +1,7 @@
 from logging import Filter
 from typing import TYPE_CHECKING
 
-from django_guid.middleware import guid
+from django_guid.context import guid
 
 if TYPE_CHECKING:
     from logging import LogRecord
