@@ -41,4 +41,4 @@ class SentryIntegration(Integration):
             with sentry_sdk.configure_scope() as scope:
                 scope.set_tag('transaction_id', guid)
 
-        logger.debug('Added transaction_id to Sentry scope.')
+        logger.debug(f'Setting Sentry transaction_id to {guid}')
