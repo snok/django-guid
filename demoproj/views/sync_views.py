@@ -35,6 +35,15 @@ def no_guid(request: 'HttpRequest') -> JsonResponse:
     return JsonResponse({'detail': f'It worked also! Useless function response is {useless_response}'})
 
 
+def no_guid_regex(request: 'HttpRequest') -> JsonResponse:
+    """
+    Example view with a URL in the IGNORE_REGEX_URLS list - no GUID will be in these logs
+    """
+    logger.info('This log message should NOT have a GUID - the URL is in IGNORE_REGEX_URLS')
+    useless_response = useless_function()
+    return JsonResponse({'detail': f'It worked also! Useless function response is {useless_response}'})
+
+
 @api_view(('GET',))
 def rest_view(request: 'Request') -> Response:
     """
