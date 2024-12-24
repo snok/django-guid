@@ -114,7 +114,6 @@ Package settings are added in your ``settings.py``:
         'GUID_HEADER_NAME': 'Correlation-ID',
         'VALIDATE_GUID': True,
         'RETURN_HEADER': True,
-        'EXPOSE_HEADER': True,
         'INTEGRATIONS': [],
         'IGNORE_URLS': [],
         'UUID_LENGTH': 32,
@@ -138,13 +137,6 @@ Package settings are added in your ``settings.py``:
 * :code:`RETURN_HEADER`
         Whether to return the GUID (Correlation-ID) as a header in the response or not.
         It will have the same name as the :code:`GUID_HEADER_NAME` setting.
-
-    Default: True
-
-* :code:`EXPOSE_HEADER`
-        Whether to return :code:`Access-Control-Expose-Headers` for the GUID header if
-        :code:`RETURN_HEADER` is :code:`True`, has no effect if :code:`RETURN_HEADER` is :code:`False`.
-        This is allows the JavaScript Fetch API to access the header when CORS is enabled.
 
     Default: True
 
@@ -267,3 +259,44 @@ Simply add django_guid to your loggers in the project, like in the example below
     }
 
 This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
+
+******************
+CORS Configuration
+******************
+
+When calling the API from a browser in JavaScript code, and using cross-origin resource sharing, you must configure your server to allow the Correlation-ID property in inbound requests, and to return a response which allows the browser to make use of the header in scripts via the `Access-Control-Allow-Headers` and `Access-Control-Expose-Headers` respectively. By making use of the popular `django-cors-headers <https://pypi.org/project/django-cors-headers/>`__ package, you can expose the Correlation-ID easily with configuration by adding the following to your Django ``settings.py`` file:
+
+.. code-block:: python
+
+    INSTALLED_APPS = [
+        ...,
+        'django_guid',
+        'corsheaders',
+        ...,
+    ]
+
+    MIDDLEWARE = [
+        ...,
+        'django_guid.middleware.guid_middleware',
+        'corsheaders.middleware.CorsMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        ...,
+    ]
+
+    DJANGO_GUID = {
+        ...,
+        'GUID_HEADER_NAME': 'Correlation-ID',
+        ...,
+    }
+
+    CORS_ALLOWED_ORIGINS = [
+        "https://example.com",
+    ]
+
+    CORS_ALLOW_HEADERS = list(default_headers) + [
+        DJANGO_GUID['GUID_HEADER_NAME'],
+    ]
+
+    CORS_EXPOSE_HEADERS = [
+        DJANGO_GUID['GUID_HEADER_NAME'],
+    ]
