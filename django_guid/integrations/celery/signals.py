@@ -22,8 +22,9 @@ def set_transaction_id(guid: str) -> None:
     """
     if settings.integration_settings.celery.sentry_integration:
         import sentry_sdk
+        from packaging import version
 
-        if sentry_sdk.VERSION >= '2.0.0':
+        if version.parse(sentry_sdk.VERSION) >= version.parse('2.12.0'):
             with sentry_sdk.isolation_scope() as scope:
                 scope.set_tag('transaction_id', guid)
         else:
