@@ -33,12 +33,13 @@ class SentryIntegration(Integration):
         Sets the Sentry transaction_id.
         """
         import sentry_sdk
+        from packaging import version
 
-        if sentry_sdk.VERSION >= '2.0.0':
+        if version.parse(sentry_sdk.VERSION) >= version.parse('2.12.0'):
             with sentry_sdk.isolation_scope() as scope:
                 scope.set_tag('transaction_id', guid)
         else:
             with sentry_sdk.configure_scope() as scope:
                 scope.set_tag('transaction_id', guid)
 
-        logger.debug(f'Setting Sentry transaction_id to {guid}')
+        logger.debug('Setting Sentry transaction_id to %s', guid)

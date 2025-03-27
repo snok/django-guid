@@ -21,11 +21,17 @@ def set_transaction_id(guid: str) -> None:
     Sets the Sentry transaction ID if the Celery sentry integration setting is True.
     """
     if settings.integration_settings.celery.sentry_integration:
-        from sentry_sdk import configure_scope
+        import sentry_sdk
+        from packaging import version
 
-        with configure_scope() as scope:
-            logger.debug('Setting Sentry transaction_id to %s', guid)
-            scope.set_tag('transaction_id', guid)
+        if version.parse(sentry_sdk.VERSION) >= version.parse('2.12.0'):
+            with sentry_sdk.isolation_scope() as scope:
+                scope.set_tag('transaction_id', guid)
+        else:
+            with sentry_sdk.configure_scope() as scope:
+                scope.set_tag('transaction_id', guid)
+
+        logger.debug('Setting Sentry transaction_id to %s', guid)
 
 
 @before_task_publish.connect
