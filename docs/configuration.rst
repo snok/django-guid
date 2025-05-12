@@ -104,3 +104,49 @@ Simply add django_guid to your loggers in the project, like in the example below
     }
 
 This is especially useful when implementing the package, if you plan to pass existing GUIDs to the middleware, as misconfigured GUIDs will not raise exceptions, but will generate warning logs.
+
+
+5. Django Management commands (Optional)
+----------------------------------------
+
+There is no obvious entry point for Django management commands so GUIDs are not added to code within those commands by default.
+If you wish to add GUIDs to logs generated from management commands, you can use a custom base class, such as this example:
+
+.. code-block:: python
+
+    from django.core.management import BaseCommand
+    from django_guid.context import guid
+    from django_guid.utils import generate_guid
+
+
+    class CommandWithGUID(BaseCommand):
+
+        def handle(self, *args, **options):
+            guid.set(generate_guid())
+            self.do_task(*args, **options)
+
+        def do_task(self, *args, **options):
+            """
+            The actual logic of the command. Subclasses must implement
+            this method.
+            """
+            raise NotImplementedError(
+                "subclasses of CommandWithGUID must provide a do_task() method"
+            )
+
+
+You can then inherit from this when creating your own management commands and all logs will have a GUID available.
+For example, if you have the class above in a file `command.py` in your `home` app:
+
+.. code-block:: python
+
+    from home.command import CommandWithGUID
+
+
+    class MyCommandWithGUID(CommandWithGUID):
+
+        def do_task(self, *args, **options):
+            """
+            Add the code for your custom command here
+            """
+            do_something()
