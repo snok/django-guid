@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: 23.12.1
+    rev: 26.3.1
     hooks:
       - id: black
         args: ['--quiet']
@@ -16,7 +16,7 @@ repos:
       - id: detect-private-key
       - id: double-quote-string-fixer
   - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.3.0
     hooks:
       - id: flake8
         additional_dependencies: [
@@ -31,10 +31,10 @@ repos:
         ]
         args: ['--enable-extensions=G']
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
-        args: ["--py36-plus"]
+        args: ["--py38-plus"]
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
@@ -43,7 +43,7 @@ repos:
       - id: isort
         files: 'tests/.*'
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.19.1
     hooks:
       - id: mypy
         additional_dependencies:
