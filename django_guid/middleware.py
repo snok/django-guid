@@ -45,8 +45,6 @@ def process_outgoing_request(response: 'HttpResponse', request: 'HttpRequest') -
     if not ignored_url(request=request):
         if settings.return_header:
             response[settings.guid_header_name] = guid.get()  # Adds the GUID to the response header
-            if settings.expose_header:
-                response['Access-Control-Expose-Headers'] = settings.guid_header_name
 
         # Run tear down for all the integrations
         for integration in settings.integrations:
