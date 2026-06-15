@@ -24,43 +24,69 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14" ]
-        django-version: [ "4.2", "5.0", "5.1", "5.2", "6.0" ]
-        exclude:
-          # Django 4.2 does not support Python 3.13+
+        # For Django/Python compatibility see e.g.:
+        # https://docs.djangoproject.com/en/dev/faq/install/#what-python-version-can-i-use-with-django
+        # https://docs.djangoproject.com/en/6.0/releases/6.0/#python-compatibility
+        include:
+          # Django 4.2 supports Python 3.8, 3.9, 3.10, 3.11, 3.12
           - django-version: "4.2"
-            python-version: "3.13"
+            python-version: "3.8"
+
           - django-version: "4.2"
-            python-version: "3.14"
-          # Django 5.x drops Python <3.10 support
-          - django-version: "5.0"
-            python-version: "3.8"
-          - django-version: "5.0"
             python-version: "3.9"
-          - django-version: "5.1"
-            python-version: "3.8"
-          - django-version: "5.1"
-            python-version: "3.9"
-          - django-version: "5.2"
-            python-version: "3.8"
-          - django-version: "5.2"
-            python-version: "3.9"
-          # Django 5.0 does not support Python 3.13+
-          - django-version: "5.0"
-            python-version: "3.13"
-          - django-version: "5.0"
-            python-version: "3.14"
-          # Django 6.0 requires Python 3.13+
-          - django-version: "6.0"
-            python-version: "3.8"
-          - django-version: "6.0"
-            python-version: "3.9"
-          - django-version: "6.0"
+
+          - django-version: "4.2"
             python-version: "3.10"
-          - django-version: "6.0"
+
+          - django-version: "4.2"
             python-version: "3.11"
+
+          - django-version: "4.2"
+            python-version: "3.12"
+
+          # Django 5.0 supports Python 3.10, 3.11, 3.12
+          - django-version: "5.0"
+            python-version: "3.10"
+
+          - django-version: "5.0"
+            python-version: "3.11"
+
+          - django-version: "5.0"
+            python-version: "3.12"
+
+          # Django 5.1 supports Python 3.10, 3.11, 3.12
+          - django-version: "5.1"
+            python-version: "3.10"
+
+          - django-version: "5.1"
+            python-version: "3.11"
+
+          - django-version: "5.1"
+            python-version: "3.12"
+
+          # Django 5.2 supports Python 3.10, 3.11, 3.12, 3.13
+          - django-version: "5.2"
+            python-version: "3.10"
+
+          - django-version: "5.2"
+            python-version: "3.11"
+
+          - django-version: "5.2"
+            python-version: "3.12"
+
+          - django-version: "5.2"
+            python-version: "3.13"
+
+          # Django 6.0 supports Python 3.12, 3.13, 3.14
           - django-version: "6.0"
             python-version: "3.12"
+
+          - django-version: "6.0"
+            python-version: "3.13"
+
+          - django-version: "6.0"
+            python-version: "3.14"
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
