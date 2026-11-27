@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   linting:
@@ -20,7 +20,8 @@ jobs:
           SKIP: rst
 
   test:
-    runs-on: ubuntu-latest
+    # Python 3.8 and 3.9 have no builds for Ubuntu 26.04 (ubuntu-latest), so they run on 24.04
+    runs-on: ${{ contains(fromJSON('["3.8", "3.9"]'), matrix.python-version) && 'ubuntu-24.04' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -88,5 +89,6 @@ jobs:
       - uses: codecov/codecov-action@v2
         with:
           file: ./coverage.xml
-          fail_ci_if_error: true
+          # Uploads from fork PRs have no token and can be rate limited; that shouldn't fail tests that passed
+          fail_ci_if_error: false
         if: matrix.python-version == '3.11'
