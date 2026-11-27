@@ -1,9 +1,10 @@
-import asyncio
 import logging
 from typing import Callable, Union
 
 from django.apps import apps
 from django.core.exceptions import ImproperlyConfigured
+
+from asgiref.sync import iscoroutinefunction
 
 from django_guid.context import guid
 from django_guid.utils import get_id_from_header, ignored_url
@@ -63,7 +64,7 @@ def guid_middleware(get_response: Callable) -> Callable:
     if not apps.is_installed('django_guid'):
         raise ImproperlyConfigured('django_guid must be in installed apps')
     # fmt: off
-    if asyncio.iscoroutinefunction(get_response):
+    if iscoroutinefunction(get_response):
         async def middleware(request: 'HttpRequest') -> Union['HttpRequest', 'HttpResponse']:
             logger.debug('async middleware called')
             process_incoming_request(request=request)
